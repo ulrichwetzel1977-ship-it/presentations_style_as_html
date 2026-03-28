@@ -3,191 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hybrid Presentation Architect v4.0</title>
+    <title>Hybrid Presentation Architect v7.2 | Full Feature Edition</title>
     <style>
         :root { 
             --primary: #0071e3; 
             --bg: #f5f5f7; 
             --text: #1d1d1f; 
             --secondary: #86868b;
+            --accent-light: #e8f0fe;
         }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; 
-            background: var(--bg); 
-            padding: 20px; 
-            color: var(--text); 
-            line-height: 1.5;
+            background: var(--bg); padding: 20px; color: var(--text); line-height: 1.5;
         }
         .card { 
-            max-width: 900px; 
-            margin: 40px auto; 
-            background: white; 
-            padding: 40px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            max-width: 950px; margin: 40px auto; background: white; padding: 40px; 
+            border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05);
         }
-        h1 { font-size: 28px; font-weight: 700; color: var(--primary); margin-bottom: 30px; letter-spacing: -0.5px; }
+        h1 { font-size: 32px; font-weight: 700; color: var(--primary); margin-bottom: 30px; letter-spacing: -0.8px; }
+        .section { margin-top: 35px; padding-top: 25px; border-top: 1px solid #eee; }
+        .section-title { font-size: 13px; text-transform: uppercase; color: var(--secondary); letter-spacing: 1.2px; margin-bottom: 20px; font-weight: 700; }
         
-        .section { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
-        .section-title { font-size: 14px; text-transform: uppercase; color: var(--secondary); letter-spacing: 1px; margin-bottom: 15px; font-weight: 600; }
-        
-        label { display: block; font-weight: 600; margin: 10px 0 5px; font-size: 14px; }
+        label { display: block; font-weight: 600; margin: 12px 0 6px; font-size: 14px; color: #333; }
         input, select, textarea { 
             width: 100%; padding: 14px; border: 1px solid #d2d2d7; border-radius: 12px; 
-            font-size: 15px; background: #fff; box-sizing: border-box; transition: all 0.2s;
+            font-size: 15px; background: #fff; box-sizing: border-box; transition: all 0.2s ease;
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(0,113,227,0.1); }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(0,113,227,0.12); }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         .module-grid { 
             display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; 
-            background: #f9f9f9; padding: 20px; border-radius: 15px; border: 1px solid #eee;
+            background: #f9f9f9; padding: 22px; border-radius: 18px; border: 1px solid #eee;
         }
-        .module-item { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+        .module-item { display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; padding: 8px; border-radius: 8px; transition: background 0.2s; }
+        .module-item:hover { background: #f0f0f0; }
         .module-item input { width: auto; cursor: pointer; }
-        .module-item.mandatory { opacity: 0.6; cursor: default; }
-
-        .btn { 
-            background: var(--primary); color: white; border: none; padding: 20px; 
-            border-radius: 14px; cursor: pointer; font-size: 17px; font-weight: 600; 
-            width: 100%; margin-top: 30px; transition: transform 0.1s; 
-        }
-        .btn:active { transform: scale(0.98); }
-
-        #result-box { 
-            margin-top: 40px; display: none; background: #1c1c1e; color: #f5f5f7; 
-            padding: 25px; border-radius: 15px; position: relative; border: 1px solid #3a3a3c;
-        }
-        #prompt-text { white-space: pre-wrap; font-size: 13px; font-family: "SF Mono", Menlo, monospace; color: #d1d1d6; }
         
-        .copy-btn { 
-            position: absolute; top: 15px; right: 15px; background: #3a3a3c; color: white; 
-            border: none; padding: 8px 15px; cursor: pointer; border-radius: 8px; font-size: 12px;
+        .mode-selector { background: var(--accent-light); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #b0d4ff; }
+        .btn { 
+            background: var(--primary); color: white; border: none; padding: 22px; 
+            border-radius: 16px; cursor: pointer; font-size: 18px; font-weight: 600; width: 100%; margin-top: 30px; 
         }
-        .copy-btn:hover { background: #48484a; }
-
-        textarea { height: 120px; }
-        .highlight-box { background: #e8f0fe; border: 1px solid #b0d4ff; padding: 15px; border-radius: 12px; margin-top: 10px; font-size: 13px; color: #0056b3; }
+        #result-box { margin-top: 40px; display: none; background: #1c1c1e; color: #f5f5f7; padding: 30px; border-radius: 20px; position: relative; }
+        #prompt-text { white-space: pre-wrap; font-size: 13px; font-family: "SF Mono", monospace; color: #d1d1d6; line-height: 1.6; }
+        .copy-btn { position: absolute; top: 20px; right: 20px; background: #0071e3; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 10px; font-weight: 600; }
+        .info-badge { background: #e8f0fe; color: #0056b3; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 6px; }
+        .checkbox-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>🚀 Presentation Architect</h1>
+    <h1>🚀 Presentation Architect v7.2</h1>
 
-    <div class="section-title">1. Basis-Konfiguration</div>
+    <div class="section-title">1. Projekt & Branding</div>
     <div class="grid">
         <div>
-            <label>GitHub Repository URL (Öffentlich)</label>
+            <label>GitHub Repository URL</label>
             <input type="text" id="repoUrl" placeholder="https://github.com/nutzer/repo-name" oninput="save()">
         </div>
         <div>
-            <label>Standard-Titel der Präsentation</label>
-            <input type="text" id="title" placeholder="z.B. Strategie-Workshop 2026">
+            <label>Thema der Präsentation</label>
+            <input type="text" id="title" placeholder="z.B. Strategieworkshop S/4HANA">
         </div>
     </div>
 
     <div class="grid">
         <div>
-            <label>Präsentations-Typ (Engine)</label>
-            <select id="engine">
-                <option value="reveal">Reveal.js (Klassische Folien)</option>
-                <option value="app">App-Style (Interaktiver Workshop / SPA)</option>
-            </select>
-        </div>
-        <div>
             <label>Design-Theme</label>
             <select id="theme">
-                <option value="apple">Apple Style (Clean & Glass)</option>
+                <option value="apple">Apple Style (Glassmorphism)</option>
                 <option value="datagroup">Datagroup Style (Corporate)</option>
             </select>
         </div>
+        <div>
+            <label>Engine</label>
+            <select id="engine">
+                <option value="app">App-Style Engine (Interaktiv)</option>
+                <option value="reveal">Reveal.js Engine (Klassisch)</option>
+            </select>
+        </div>
     </div>
 
     <div class="section">
-        <div class="section-title">2. Modul-Bibliothek (Components)</div>
-        <div class="module-grid">
-            <label class="module-item mandatory"><input type="checkbox" checked disabled> ⚙️ Settings (Session Mgr)</label>
-            <label class="module-item mandatory"><input type="checkbox" id="mod-protocol" checked disabled> 📝 Protocol System</label>
+        <div class="section-title">2. Zeitplan & Kapitel-Logik</div>
+        <div class="mode-selector">
+            <label>Gewünschter Zeitplan / Agenda-Punkte (Optional)</label>
+            <textarea id="agenda-input" placeholder="z.B.:&#10;09:00 - 09:45 Intro & Strategie&#10;09:45 - 11:30 Architektur Deep-Dive"></textarea>
             
-            <label class="module-item"><input type="checkbox" class="lib-mod" value="fue-calculator"> 📐 FUE-Rechner & TCO</label>
-            <label class="module-item"><input type="checkbox" class="lib-mod" value="kanban"> 🃏 Kanban & Cards</label>
-            <label class="module-item"><input type="checkbox" class="lib-mod" value="job-profile"> 👤 Job-Profile / PDF</label>
-            <label class="module-item"><input type="checkbox" class="lib-mod" value="checklist"> ✅ Checklisten</label>
-            <label class="module-item"><input type="checkbox" class="lib-mod" value="charts"> 📊 Live-Diagramme</label>
-        </div>
-        <div class="highlight-box">
-            <strong>Hinweis:</strong> Jede Präsentation enthält automatisch ein Einstellungs-Modal für Kundendaten und Agenda. Alle Daten werden im globalen JSON-Export gesichert.
+            <div class="checkbox-row">
+                <input type="checkbox" id="auto-chapter" checked style="width: 20px; height: 20px; cursor: pointer;">
+                <label for="auto-chapter" style="margin:0; cursor: pointer;">KI-Kapitel-Analyse (Themen kapseln & Divider erstellen)</label>
+            </div>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-title">3. Inhalt & Recherche-Briefing</div>
-        <label>Beschreibung der Folien / Recherche-Auftrag</label>
-        <textarea id="content" placeholder="Was soll recherchiert werden? Welche Inhalte brauchen die Folien? (z.B. 'Erstelle 8 Folien für einen SAP-Workshop. Nutze auf Folie 4 den FUE-Rechner.')"></textarea>
+        <div class="section-title">3. Strategie & Arbeitsmodus</div>
+        <div class="grid">
+            <div>
+                <label>Arbeitsmodus</label>
+                <select id="work-mode" onchange="toggleModeInfo()">
+                    <option value="consultant">🚀 KI-Consultant Modus (Freie Storyline)</option>
+                    <option value="structured">📝 Strukturierte Vorgabe (Feste Folienliste)</option>
+                </select>
+            </div>
+            <div>
+                <label>Hauptziel der Präsentation</label>
+                <input type="text" id="goal" placeholder="Management überzeugen? Sizing klären?">
+            </div>
+        </div>
+        <div id="mode-info" style="margin-top:10px; font-size:12px; color: #0056b3; font-weight: 500;">
+            INFO: Im Consultant-Modus übernimmt die KI die didaktische Planung.
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">4. Komponenten & Briefing</div>
+        <div class="module-grid">
+            <label class="module-item"><input type="checkbox" class="lib-mod" value="fue-calculator"> 📐 FUE-Rechner</label>
+            <label class="module-item"><input type="checkbox" class="lib-mod" value="kanban"> 🃏 Kanban Board</label>
+            <label class="module-item"><input type="checkbox" class="lib-mod" value="job-profile"> 👤 Job Profile</label>
+            <label class="module-item"><input type="checkbox" class="lib-mod" value="checklist"> ✅ Checklisten</label>
+            <label class="module-item"><input type="checkbox" class="lib-mod" value="charts"> 📊 Charts</label>
+        </div>
+        <label id="content-label" style="margin-top:20px">Detaillierte Anweisungen / Folieninhalte</label>
+        <textarea id="content" placeholder="Hier zusätzliche Infos oder die genaue Folienliste eingeben..."></textarea>
     </div>
 
     <button class="btn" onclick="generate()">Master-Prompt generieren</button>
 
     <div id="result-box">
-        <button class="copy-btn" onclick="copy()">Kopieren</button>
+        <button class="copy-btn" onclick="copy()">Prompt Kopieren</button>
         <pre id="prompt-text"></pre>
     </div>
 </div>
 
 <script>
-    // Speichert Repo-URL lokal im Browser
+    // URL Speichern in LocalStorage
     function save() { localStorage.setItem('savedRepo', document.getElementById('repoUrl').value); }
-    window.onload = () => { if(localStorage.getItem('savedRepo')) document.getElementById('repoUrl').value = localStorage.getItem('savedRepo'); }
+    
+    window.onload = () => { 
+        if(localStorage.getItem('savedRepo')) document.getElementById('repoUrl').value = localStorage.getItem('savedRepo');
+        toggleModeInfo();
+    };
+
+    // UI-Texte dynamisch anpassen
+    function toggleModeInfo() {
+        const mode = document.getElementById('work-mode').value;
+        const info = document.getElementById('mode-info');
+        const label = document.getElementById('content-label');
+        if(mode === 'consultant') {
+            info.innerText = "🚀 INFO: Die KI schlägt selbstständig Kapitel, Folienanzahl und Modul-Einsatz vor.";
+            label.innerText = "Besondere Wünsche (z.B. 'Fokus auf Clean Core')";
+        } else {
+            info.innerText = "📝 INFO: Bitte gib unten genau an, welche Inhalte auf welcher Folie stehen sollen.";
+            label.innerText = "Genaue Folienreihenfolge";
+        }
+    }
 
     function generate() {
         const repo = document.getElementById('repoUrl').value.replace(/\/$/, "");
         const raw = repo.replace("github.com", "raw.githubusercontent.com") + "/main/";
         const engine = document.getElementById('engine').value;
         const theme = document.getElementById('theme').value;
-        const title = document.getElementById('title').value || "Interaktive Präsentation";
-        const content = document.getElementById('content').value;
+        const title = document.getElementById('title').value || "Workshop";
+        const goal = document.getElementById('goal').value || "Ergebnissicherung";
+        const userContent = document.getElementById('content').value;
+        const agendaInput = document.getElementById('agenda-input').value;
+        const mode = document.getElementById('work-mode').value;
+        const autoChapter = document.getElementById('auto-chapter').checked;
         
-        // Liste der Module (Settings und Protocol sind immer dabei)
         let modules = ['settings', 'protocol'];
         const optionalModules = Array.from(document.querySelectorAll('.lib-mod:checked')).map(m => m.value);
         modules = modules.concat(optionalModules);
 
         let moduleInstructions = "";
         modules.forEach(mod => {
-            const folderPath = `js/lib/${mod}/`;
-            moduleInstructions += `
-MODUL: ${mod.toUpperCase()}
-- Logik-Quelle (.js): ${raw}${folderPath}${mod}.js
-- Design-Vorgabe (.md): ${raw}${folderPath}${mod}.md
-- Anweisung: Bette die Logik ein und gestalte die UI-Komponenten (Modals, Widgets) exakt nach dem Blueprint im selben Verzeichnis.
-`;
+            moduleInstructions += `\nMODUL: ${mod.toUpperCase()}\n- Logik: ${raw}js/lib/${mod}/${mod}.js\n- Blueprint: ${raw}js/lib/${mod}/${mod}.md\n- Integration: Inlining des Codes und Umsetzung der UI nach Blueprint.`;
         });
 
-        const masterPrompt = `Agiere als Senior Frontend Engineer und Präsentations-Experte. Erstelle eine **einzelne, eigenständige HTML-Datei** (Standalone) für die Präsentation: "${title}".
+        // KAPITEL & AGENDA LOGIK FÜR DEN PROMPT
+        let chapterLogic = `
+**5. AGENDA- & KAPITEL-STRUKTUR:**
+- **Folie 2 (Agenda):** Muss die Zeiträume und Hauptthemen (Kapitel) übersichtlich darstellen.
+${agendaInput ? `- Nutze diesen Zeitplan als Basis: ${agendaInput}` : "- Schlage selbstständig sinnvolle Zeiträume für einen 4-stündigen Workshop vor."}
+${autoChapter ? `- **Kapitel-Analyse:** Analysiere die inhaltlichen Folien und gruppiere sie in logische Themenblöcke (Kapitel). Erstelle für jedes neue Kapitel automatisch eine Zwischen-Folie (Section Divider) mit der Klasse '.slide-section' (Blaues Design).` : ""}
+- Jedes Kapitel kapselt die ihm zugeordneten Folien.`;
 
-**1. TECHNISCHE BASIS (ENGINE & DESIGN):**
-- Engine: ${engine === 'reveal' ? 'Reveal.js 4.5.0 (via CDN)' : 'Custom App-Style Engine (Navigation via app-init.js)'}
-- Base-CSS: ${raw}css/base.css
-- Engine-CSS: ${raw}css/engine-${engine}.css
-- Theme-CSS: ${raw}css/theme-${theme}.css
-- Engine-Logik: ${raw}js/engines/${engine}-init.js
+        const masterPrompt = `Agiere als Senior SAP-Consultant und Frontend Engineer. Erstelle eine **einzelne Standalone-HTML-Datei** (Inlined) für: "${title}".
 
-**2. MODUL-BIBLIOTHEK (INLINING):**
-Lies die folgenden Modul-Paare (.js und .md) aus meinem Repository. Alle JavaScript-Logiken müssen eingebettet werden. Die UI-Elemente müssen strikt nach den Markdown-Blueprints gestaltet werden:
+**1. DESIGN-GESETZ (PIXEL-PERFECT):**
+- **Inlining:** Kopiere den VOLLSTÄNDIGEN Inhalt aller .css und .js Dateien direkt in die HTML. Verlinke nichts extern!
+- **CSS-Vorgabe:** Nutze ausschließlich die Variablen aus base.css (--primary, --bg-color, --radius, etc.).
+- **Struktur:** Jede Inhaltsfolie braucht einen .slide-header, .slide-body und die .slide-notes-box (mit ID 'protocolInput').
+- **Branding:** Nutze den ${theme === 'apple' ? 'Apple Style (Clean & Glass)' : 'Datagroup Style (Corporate)'}.
+
+**2. QUELLEN:**
+- Base-CSS: ${raw}css/base.css | Engine-CSS: ${raw}css/engine-${engine}.css
+- Theme-CSS: ${raw}css/theme-${theme}.css | Logic: ${raw}js/engines/${engine}-init.js
 ${moduleInstructions}
 
-**3. INHALT & RECHERCHE-AUFTRAG:**
-${content}
+**3. STORYLINE:**
+- **Folie 1 (Cover):** Nutze IDs 'display-title', 'display-customer', 'display-date'.
+- **Folie 2 (Agenda):** Nutze ID 'display-agenda-list'.
+${mode === 'consultant' ? `- **Consultant-Auftrag:** Entwirf eine Storyline für das Ziel: "${goal}". Entscheide frei über Folienanzahl und Modul-Einsatz.` : `- **Struktur-Auftrag:** Setze folgende Folienvorgabe um: ${userContent}`}
 
-**4. SPEZIFISCHE FUNKTIONEN (OBLIGATORISCH):**
-- **Einstellungsbereich:** Integriere das Einstellungs-Modal (SettingsModule). Ermögliche die Anpassung von Kunde, Titel, Datum und der interaktiven Agenda.
-- **Daten-Sicherung:** Der JSON-Export muss die Metadaten (Settings), die Agenda und die Protokoll-Notizen (ProtocolModule) in einem Objekt kombinieren.
-- **PowerPoint-Steuerung:** Aktiviere Tastaturnavigation (Pfeiltasten, Leertaste) und Vollbildmodus (Taste 'f').
-- **Videos:** Nutze 'data-autoplay' für eingebettete Medien.
+${chapterLogic}
 
-GIB NUR DEN VOLLSTÄNDIGEN HTML-CODE DER DATEI AUS.`;
+**4. INTERAKTION:**
+- Settings-Modal (Zahnrad) für Metadaten & Agenda. 
+- JSON-Export für alle Sitzungsdaten (Settings + Protokoll + Agenda).
+- Steuerung: Pfeiltasten, Leertaste, 'f' für Fullscreen.
+
+GIB NUR DEN VOLLSTÄNDIGEN HTML-CODE AUS.`;
 
         document.getElementById('prompt-text').innerText = masterPrompt;
         document.getElementById('result-box').style.display = 'block';
@@ -195,8 +225,7 @@ GIB NUR DEN VOLLSTÄNDIGEN HTML-CODE DER DATEI AUS.`;
     }
 
     function copy() {
-        const text = document.getElementById('prompt-text').innerText;
-        navigator.clipboard.writeText(text).then(() => alert("Prompt kopiert! Füge ihn jetzt in den KI-Chat ein."));
+        navigator.clipboard.writeText(document.getElementById('prompt-text').innerText).then(() => alert("Master-Prompt kopiert!"));
     }
 </script>
 
