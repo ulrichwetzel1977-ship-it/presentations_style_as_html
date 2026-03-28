@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hybrid Presentation Architect v4.0</title>
+    <style>
+        :root { 
+            --primary: #0071e3; 
+            --bg: #f5f5f7; 
+            --text: #1d1d1f; 
+            --secondary: #86868b;
+        }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; 
+            background: var(--bg); 
+            padding: 20px; 
+            color: var(--text); 
+            line-height: 1.5;
+        }
+        .card { 
+            max-width: 900px; 
+            margin: 40px auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+        }
+        h1 { font-size: 28px; font-weight: 700; color: var(--primary); margin-bottom: 30px; letter-spacing: -0.5px; }
+        
+        .section { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .section-title { font-size: 14px; text-transform: uppercase; color: var(--secondary); letter-spacing: 1px; margin-bottom: 15px; font-weight: 600; }
+        
+        label { display: block; font-weight: 600; margin: 10px 0 5px; font-size: 14px; }
+        input, select, textarea { 
+            width: 100%; padding: 14px; border: 1px solid #d2d2d7; border-radius: 12px; 
+            font-size: 15px; background: #fff; box-sizing: border-box; transition: all 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(0,113,227,0.1); }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        
+        .module-grid { 
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; 
+            background: #f9f9f9; padding: 20px; border-radius: 15px; border: 1px solid #eee;
+        }
+        .module-item { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+        .module-item input { width: auto; cursor: pointer; }
+        .module-item.mandatory { opacity: 0.6; cursor: default; }
+
+        .btn { 
+            background: var(--primary); color: white; border: none; padding: 20px; 
+            border-radius: 14px; cursor: pointer; font-size: 17px; font-weight: 600; 
+            width: 100%; margin-top: 30px; transition: transform 0.1s; 
+        }
+        .btn:active { transform: scale(0.98); }
+
+        #result-box { 
+            margin-top: 40px; display: none; background: #1c1c1e; color: #f5f5f7; 
+            padding: 25px; border-radius: 15px; position: relative; border: 1px solid #3a3a3c;
+        }
+        #prompt-text { white-space: pre-wrap; font-size: 13px; font-family: "SF Mono", Menlo, monospace; color: #d1d1d6; }
+        
+        .copy-btn { 
+            position: absolute; top: 15px; right: 15px; background: #3a3a3c; color: white; 
+            border: none; padding: 8px 15px; cursor: pointer; border-radius: 8px; font-size: 12px;
+        }
+        .copy-btn:hover { background: #48484a; }
+
+        textarea { height: 120px; }
+        .highlight-box { background: #e8f0fe; border: 1px solid #b0d4ff; padding: 15px; border-radius: 12px; margin-top: 10px; font-size: 13px; color: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🚀 Presentation Architect</h1>
+
+    <div class="section-title">1. Basis-Konfiguration</div>
+    <div class="grid">
+        <div>
+            <label>GitHub Repository URL (Öffentlich)</label>
+            <input type="text" id="repoUrl" placeholder="https://github.com/nutzer/repo-name" oninput="save()">
+        </div>
+        <div>
+            <label>Standard-Titel der Präsentation</label>
+            <input type="text" id="title" placeholder="z.B. Strategie-Workshop 2026">
+        </div>
+    </div>
+
+    <div class="grid">
+        <div>
+            <label>Präsentations-Typ (Engine)</label>
+            <select id="engine">
+                <option value="reveal">Reveal.js (Klassische Folien)</option>
+                <option value="app">App-Style (Interaktiver Workshop / SPA)</option>
+            </select>
+        </div>
+        <div>
+            <label>Design-Theme</label>
+            <select id="theme">
+                <option value="apple">Apple Style (Clean & Glass)</option>
+                <option value="datagroup">Datagroup Style (Corporate)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">2. Modul-Bibliothek (Components)</div>
+        <div class="module-grid">
+            <label class="module-item mandatory"><input type="checkbox" checked disabled> ⚙️ Settings (Session Mgr)</label>
+            <label class="module-item mandatory"><input type="checkbox" id="mod-protocol" checked disabled> 📝 Protocol System</label>
+            
+            <label class="module-item"><input type="checkbox" class="lib-mod" value="fue-calculator"> 📐 FUE-Rechner & TCO</label>
+            <label class="module-item"><input type="checkbox" class="lib-mod" value="kanban"> 🃏 Kanban & Cards</label>
+            <label class="module-item"><input type="checkbox" class="lib-mod" value="job-profile"> 👤 Job-Profile / PDF</label>
+            <label class="module-item"><input type="checkbox" class="lib-mod" value="checklist"> ✅ Checklisten</label>
+            <label class="module-item"><input type="checkbox" class="lib-mod" value="charts"> 📊 Live-Diagramme</label>
+        </div>
+        <div class="highlight-box">
+            <strong>Hinweis:</strong> Jede Präsentation enthält automatisch ein Einstellungs-Modal für Kundendaten und Agenda. Alle Daten werden im globalen JSON-Export gesichert.
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">3. Inhalt & Recherche-Briefing</div>
+        <label>Beschreibung der Folien / Recherche-Auftrag</label>
+        <textarea id="content" placeholder="Was soll recherchiert werden? Welche Inhalte brauchen die Folien? (z.B. 'Erstelle 8 Folien für einen SAP-Workshop. Nutze auf Folie 4 den FUE-Rechner.')"></textarea>
+    </div>
+
+    <button class="btn" onclick="generate()">Master-Prompt generieren</button>
+
+    <div id="result-box">
+        <button class="copy-btn" onclick="copy()">Kopieren</button>
+        <pre id="prompt-text"></pre>
+    </div>
+</div>
+
+<script>
+    // Speichert Repo-URL lokal im Browser
+    function save() { localStorage.setItem('savedRepo', document.getElementById('repoUrl').value); }
+    window.onload = () => { if(localStorage.getItem('savedRepo')) document.getElementById('repoUrl').value = localStorage.getItem('savedRepo'); }
+
+    function generate() {
+        const repo = document.getElementById('repoUrl').value.replace(/\/$/, "");
+        const raw = repo.replace("github.com", "raw.githubusercontent.com") + "/main/";
+        const engine = document.getElementById('engine').value;
+        const theme = document.getElementById('theme').value;
+        const title = document.getElementById('title').value || "Interaktive Präsentation";
+        const content = document.getElementById('content').value;
+        
+        // Liste der Module (Settings und Protocol sind immer dabei)
+        let modules = ['settings', 'protocol'];
+        const optionalModules = Array.from(document.querySelectorAll('.lib-mod:checked')).map(m => m.value);
+        modules = modules.concat(optionalModules);
+
+        let moduleInstructions = "";
+        modules.forEach(mod => {
+            const folderPath = `js/lib/${mod}/`;
+            moduleInstructions += `
+MODUL: ${mod.toUpperCase()}
+- Logik-Quelle (.js): ${raw}${folderPath}${mod}.js
+- Design-Vorgabe (.md): ${raw}${folderPath}${mod}.md
+- Anweisung: Bette die Logik ein und gestalte die UI-Komponenten (Modals, Widgets) exakt nach dem Blueprint im selben Verzeichnis.
+`;
+        });
+
+        const masterPrompt = `Agiere als Senior Frontend Engineer und Präsentations-Experte. Erstelle eine **einzelne, eigenständige HTML-Datei** (Standalone) für die Präsentation: "${title}".
+
+**1. TECHNISCHE BASIS (ENGINE & DESIGN):**
+- Engine: ${engine === 'reveal' ? 'Reveal.js 4.5.0 (via CDN)' : 'Custom App-Style Engine (Navigation via app-init.js)'}
+- Base-CSS: ${raw}css/base.css
+- Engine-CSS: ${raw}css/engine-${engine}.css
+- Theme-CSS: ${raw}css/theme-${theme}.css
+- Engine-Logik: ${raw}js/engines/${engine}-init.js
+
+**2. MODUL-BIBLIOTHEK (INLINING):**
+Lies die folgenden Modul-Paare (.js und .md) aus meinem Repository. Alle JavaScript-Logiken müssen eingebettet werden. Die UI-Elemente müssen strikt nach den Markdown-Blueprints gestaltet werden:
+${moduleInstructions}
+
+**3. INHALT & RECHERCHE-AUFTRAG:**
+${content}
+
+**4. SPEZIFISCHE FUNKTIONEN (OBLIGATORISCH):**
+- **Einstellungsbereich:** Integriere das Einstellungs-Modal (SettingsModule). Ermögliche die Anpassung von Kunde, Titel, Datum und der interaktiven Agenda.
+- **Daten-Sicherung:** Der JSON-Export muss die Metadaten (Settings), die Agenda und die Protokoll-Notizen (ProtocolModule) in einem Objekt kombinieren.
+- **PowerPoint-Steuerung:** Aktiviere Tastaturnavigation (Pfeiltasten, Leertaste) und Vollbildmodus (Taste 'f').
+- **Videos:** Nutze 'data-autoplay' für eingebettete Medien.
+
+GIB NUR DEN VOLLSTÄNDIGEN HTML-CODE DER DATEI AUS.`;
+
+        document.getElementById('prompt-text').innerText = masterPrompt;
+        document.getElementById('result-box').style.display = 'block';
+        document.getElementById('result-box').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copy() {
+        const text = document.getElementById('prompt-text').innerText;
+        navigator.clipboard.writeText(text).then(() => alert("Prompt kopiert! Füge ihn jetzt in den KI-Chat ein."));
+    }
+</script>
+
+</body>
+</html>

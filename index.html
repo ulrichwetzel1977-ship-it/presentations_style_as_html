@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Workshop Präsentation</title>
+
+    <link rel="stylesheet" href="css/base.css">
+    <link id="theme-link" rel="stylesheet" href="css/theme-apple.css">
+    </head>
+<body>
+
+    <header class="presentation-header">
+        <div class="header-meta">
+            <span class="header-customer" id="display-customer">Kundenname</span>
+            <span class="header-title" id="display-title">Präsentationstitel</span>
+        </div>
+        <div class="header-controls">
+            <span id="display-date" style="margin-right: 20px; font-size: 13px; color: var(--text-secondary);">Datum</span>
+            <button class="btn-secondary" onclick="document.getElementById('settingsModal').classList.add('open')">⚙️</button>
+        </div>
+    </header>
+
+    <div class="presentation" id="presentation-root">
+        <div class="slides-container">
+            </div>
+    </div>
+
+    <aside class="protocol-area glass-card" id="protocol-sidebar">
+        <label class="input-label">📝 Folien-Notizen</label>
+        <textarea id="protocolInput" placeholder="Ergebnisse festhalten..."></textarea>
+        <div style="display: flex; gap: 5px; margin-top: 10px;">
+            <button class="btn-secondary" style="font-size: 11px;" onclick="SettingsModule.exportFullSession()">💾 Export</button>
+            <button class="btn-secondary" style="font-size: 11px;" onclick="document.getElementById('importFile').click()">📂 Import</button>
+            <input type="file" id="importFile" style="display:none" onchange="ProtocolModule.importJSON(event)">
+        </div>
+    </aside>
+
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Workshop Einstellungen</h3>
+                <button onclick="this.closest('.modal-overlay').classList.remove('open')" style="background:none; border:none; color:white; cursor:pointer;">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Kunde</label>
+                    <input type="text" id="set-customer">
+                </div>
+                <div class="input-group">
+                    <label>Titel</label>
+                    <input type="text" id="set-title">
+                </div>
+                <div class="input-group">
+                    <label>Datum</label>
+                    <input type="text" id="set-date">
+                </div>
+                <hr style="margin: 20px 0;">
+                <h4>Agenda-Editor</h4>
+                <div id="agenda-editor-container">
+                    </div>
+                <button class="btn-primary" style="width:100%; margin-top: 20px;" onclick="SettingsModule.saveSettingsFromModal()">Speichern & Schließen</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/lib/settings/settings.js"></script>
+    <script src="js/lib/protocol/protocol.js"></script>
+    
+    <script src="js/engines/app-init.js"></script>
+
+</body>
+</html>

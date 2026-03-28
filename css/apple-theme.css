@@ -1,0 +1,34 @@
+/* apple-theme.css */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #1d1d1f;
+    --accent-color: #0071e3;
+    --secondary-color: #f5f5f7;
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --border-radius: 12px;
+}
+
+.reveal {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+}
+
+.reveal h1, .reveal h2, .reveal h3 {
+    color: var(--text-color);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+/* Karten-Objekte (z.B. für Kanban oder Boxen) */
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+}
+
+.reveal .controls-arrow { color: var(--accent-color) !important; }
+.reveal .progress { color: var(--accent-color) !important; }

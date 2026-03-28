@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAP Transformation: Live TCO & ROI Rechner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --apple-bg: #f5f5f7;
+            --apple-card: rgba(255, 255, 255, 0.7);
+            --apple-card-solid: #ffffff;
+            --apple-text: #1d1d1f;
+            --apple-muted: #86868b;
+            --apple-blue: #0071e3;
+            --apple-border: rgba(0, 0, 0, 0.08);
+            --apple-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+        }
+
+        body {
+            background-color: var(--apple-bg);
+            color: var(--apple-text);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass-card {
+            background: var(--apple-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: var(--apple-shadow);
+            border: 1px solid var(--apple-border);
+        }
+
+        .input-field {
+            background-color: #f5f5f7;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            width: 100%;
+            transition: all 0.2s ease;
+            color: var(--apple-text);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+        }
+
+        .input-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--apple-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .metric-label {
+            font-size: 13px;
+            color: var(--apple-muted);
+            font-weight: 500;
+        }
+
+        /* Scrollbar styling for lists */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #d2d2d7;
+            border-radius: 10px;
+        }
+
+        .btn-apple {
+            background-color: var(--apple-blue);
+            color: white;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-apple:hover {
+            background-color: #0077ED;
+        }
+        .btn-apple-outline {
+            background-color: transparent;
+            color: var(--apple-blue);
+            border: 1px solid var(--apple-blue);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-apple-outline:hover {
+            background-color: rgba(0, 113, 227, 0.1);
+        }
+        
+        .icon-btn {
+            color: var(--apple-muted);
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        .icon-btn:hover {
+            color: #ff3b30;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e5e5ea;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        input:checked + .slider {
+            background-color: var(--apple-blue);
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-6 lg:p-8">
+
+    <div class="max-w-[1400px] mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">Transformation Analyzer</h1>
+                <p class="text-lg text-[#86868b] font-medium">Live TCO & ROI Kalkulation: On-Premise vs. RISE with SAP</p>
+            </div>
+            <div class="flex gap-4 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
+                <div class="text-center px-4">
+                    <div class="text-[11px] font-bold text-gray-400 uppercase">WACC (Zins)</div>
+                    <div class="flex items-center gap-1">
+                        <input type="number" id="inp-wacc" value="8.0" step="0.5" class="w-16 text-center font-bold text-gray-800 bg-transparent outline-none border-b border-gray-200 focus:border-blue-500">
+                        <span class="font-bold text-gray-800">%</span>
+                    </div>
+                </div>
+                <div class="w-px bg-gray-200"></div>
+                <div class="text-center px-4">
+                    <div class="text-[11px] font-bold text-gray-400 uppercase">Laufzeit</div>
+                    <select id="inp-horizon" class="bg-transparent font-bold text-gray-800 outline-none cursor-pointer border-b border-gray-200 focus:border-blue-500">
+                        <option value="3">3 Jahre</option>
+                        <option value="5" selected>5 Jahre</option>
+                        <option value="7">7 Jahre</option>
+                        <option value="10">10 Jahre</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top KPI Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="glass-card p-5">
+                <span class="metric-label">TCO On-Premise (Barwert)</span>
+                <div class="metric-value mt-1" id="out-tco-onprem">€ 0</div>
+                <div class="text-xs text-gray-500 mt-2">Inkl. Hardware Refresh & OpEx</div>
+            </div>
+            <div class="glass-card p-5 relative overflow-hidden" id="card-tco-rise">
+                <div class="absolute top-0 right-0 bg-[#0071e3] text-white text-[11px] font-bold px-3 py-1 rounded-bl-lg" id="badge-savings">0%</div>
+                <span class="metric-label">TCO RISE (Barwert)</span>
+                <div class="metric-value text-[#0071e3] mt-1" id="out-tco-rise">€ 0</div>
+                <div class="text-xs text-[#0071e3] mt-2 opacity-80">Inkl. Implementierung & Abo</div>
+            </div>
+            <div class="glass-card p-5 bg-gradient-to-br from-[#f5f9ff] to-white">
+                <span class="metric-label">Netto Business Value / Jahr</span>
+                <div class="metric-value text-green-600 mt-1" id="out-annual-value">€ 0</div>
+                <div class="text-xs text-gray-500 mt-2">Summe aller ROI-Faktoren</div>
+            </div>
+            <div class="glass-card p-5">
+                <span class="metric-label">Return on Investment (ROI)</span>
+                <div class="flex items-baseline gap-2 mt-1">
+                    <div class="metric-value" id="out-roi">0%</div>
+                    <div class="text-sm font-medium text-gray-500" id="out-payback">(Amortisation: -)</div>
+                </div>
+                <div class="w-full bg-gray-100 h-1 mt-3 rounded-full overflow-hidden">
+                    <div class="bg-green-500 h-full transition-all duration-500" id="bar-roi" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Parameters -->
+            <div class="flex flex-col gap-6">
+                
+                <!-- FUE & Abo Control -->
+                <div class="glass-card p-5 relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
+                        <h2 class="text-lg font-semibold">1. FUE & RISE Abonnement</h2>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-medium text-gray-500">Mapping Modus</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-fue-mode" onchange="toggleFUEInputMode()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Mode 1: Manual FUE Input (Default) -->
+                    <div id="fue-manual-mode" class="fade-in">
+                        <div class="mb-4">
+                            <label class="input-label">Direkteingabe: Anzahl Nutzer (FUE)</label>
+                            <input type="number" id="inp-fues-manual" value="1500" class="input-field font-bold text-lg" step="50" oninput="updateFUECalculations()">
+                        </div>
+                    </div>
+
+                    <!-- Mode 2: Legacy License Mapping -->
+                    <div id="fue-mapping-mode" class="hidden fade-in bg-gray-50 p-3 rounded-xl mb-4 border border-gray-100">
+                        <p class="text-[11px] text-gray-500 mb-3 font-medium uppercase tracking-wider">Aus Alt-Lizenzen berechnen</p>
+                        
+                        <div class="grid grid-cols-12 gap-2 mb-2 items-center text-xs font-semibold text-gray-600">
+                            <div class="col-span-5">Lizenztyp (Legacy)</div>
+                            <div class="col-span-3 text-center">Anzahl</div>
+                            <div class="col-span-2 text-center" title="Umrechnungsfaktor">Faktor</div>
+                            <div class="col-span-2 text-right">= FUE</div>
+                        </div>
+
+                        <!-- Professional / Advanced -->
+                        <div class="grid grid-cols-12 gap-2 mb-2 items-center">
+                            <div class="col-span-5 text-sm text-gray-800">Professional (Advanced)</div>
+                            <div class="col-span-3"><input type="number" id="map-prof" value="500" class="input-field !py-1 !px-2 text-center" oninput="updateFUECalculations()"></div>
+                            <div class="col-span-2 text-center text-xs text-gray-500 bg-gray-200 rounded px-1">1 : 1</div>
+                            <div class="col-span-2 text-right font-bold text-sm" id="calc-prof">500</div>
+                        </div>
+                        
+                        <!-- Functional / Core -->
+                        <div class="grid grid-cols-12 gap-2 mb-2 items-center">
+                            <div class="col-span-5 text-sm text-gray-800">Functional (Core)</div>
+                            <div class="col-span-3"><input type="number" id="map-func" value="300" class="input-field !py-1 !px-2 text-center" oninput="updateFUECalculations()"></div>
+                            <div class="col-span-2 text-center text-xs text-gray-500 bg-gray-200 rounded px-1">5 : 1</div>
+                            <div class="col-span-2 text-right font-bold text-sm" id="calc-func">60</div>
+                        </div>
+
+                        <!-- Productivity / Basic -->
+                        <div class="grid grid-cols-12 gap-2 mb-2 items-center">
+                            <div class="col-span-5 text-sm text-gray-800">Productivity (Basic)</div>
+                            <div class="col-span-3"><input type="number" id="map-prod" value="1500" class="input-field !py-1 !px-2 text-center" oninput="updateFUECalculations()"></div>
+                            <div class="col-span-2 text-center text-xs text-gray-500 bg-gray-200 rounded px-1">30 : 1</div>
+                            <div class="col-span-2 text-right font-bold text-sm" id="calc-prod">50</div>
+                        </div>
+
+                        <div class="mt-3 pt-2 border-t border-gray-200 flex justify-between items-center">
+                            <span class="text-sm font-bold text-gray-700">Berechnete Gesamt-FUE:</span>
+                            <span class="text-lg font-bold text-[#0071e3]" id="total-mapped-fue">610</span>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Section (Common for both modes) -->
+                    <div class="grid grid-cols-2 gap-4 mb-4 mt-2">
+                        <div>
+                            <label class="input-label">Listenpreis / FUE (€/Mt.)</label>
+                            <input type="number" id="inp-fue-price" value="175" class="input-field" step="1" oninput="updateFUECalculations()">
+                        </div>
+                        <div>
+                            <label class="input-label">Kundenrabatt (%)</label>
+                            <input type="number" id="inp-discount" value="20" class="input-field" step="1" max="100" min="0" oninput="updateFUECalculations()">
+                        </div>
+                    </div>
+
+                    <div class="bg-[#f5f5f7] p-3 rounded-lg border border-gray-200 flex justify-between items-center">
+                        <div>
+                            <div class="text-[10px] uppercase text-gray-500 font-bold">Aktiver FUE Wert</div>
+                            <div class="font-bold text-gray-800" id="display-active-fue">1,500 FUE</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[10px] uppercase text-gray-500 font-bold">RISE Abo (Netto/Jahr)</div>
+                            <div class="font-bold text-[#0071e3] text-lg" id="out-rise-annual-cost">€ 0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Setup (Einmalkosten vs. Laufend) -->
+                <div class="glass-card p-5">
+                    <h2 class="text-lg font-semibold mb-4 border-b border-gray-100 pb-2">2. Kostenstruktur</h2>
+                    
+                    <div class="mb-4">
+                        <h3 class="text-sm font-bold text-gray-800 mb-3">Einmalkosten Projekte (Jahr 0)</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="input-label">On-Prem Hw-Refresh</label>
+                                <input type="number" id="inp-onprem-capex" value="1200000" class="input-field" step="100000" oninput="updateMainCalculation()">
+                            </div>
+                            <div>
+                                <label class="input-label">RISE Migration</label>
+                                <input type="number" id="inp-rise-capex" value="1800000" class="input-field" step="100000" oninput="updateMainCalculation()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-800 mb-3">Laufende Kosten On-Prem (OpEx/Jahr)</h3>
+                        <div>
+                            <label class="input-label">RZ, Basis, Wartung, Strom</label>
+                            <input type="number" id="inp-onprem-opex" value="850000" class="input-field" step="50000" oninput="updateMainCalculation()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Column: Chart -->
+            <div class="glass-card p-6 flex flex-col">
+                <h2 class="text-lg font-semibold mb-2">3. Kumulierte Cashflows (NPV)</h2>
+                <p class="text-sm text-gray-500 mb-6">Gegenüberstellung der Gesamtkosten unter Berücksichtigung der Kapitalkosten.</p>
+                <div class="relative flex-grow min-h-[300px]">
+                    <canvas id="tcoChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Right Column: ROI Factors (CRUD) -->
+            <div class="glass-card p-0 flex flex-col h-[650px] xl:h-auto">
+                <div class="p-5 border-b border-gray-100 bg-white/50 rounded-t-[20px] flex justify-between items-center">
+                    <div>
+                        <h2 class="text-lg font-semibold">4. Business Value (ROI)</h2>
+                        <p class="text-xs text-gray-500 mt-1">Jährliche Mehrwerte / Einsparungen</p>
+                    </div>
+                    <button onclick="addFactor()" class="btn-apple-outline text-xs py-1.5 px-3 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Neu
+                    </button>
+                </div>
+                
+                <!-- Scrollable List -->
+                <div class="flex-grow overflow-y-auto custom-scroll p-3 bg-gray-50/50" id="roi-list">
+                    <!-- JS generated items go here -->
+                </div>
+                
+                <!-- Footer -->
+                <div class="p-5 border-t border-gray-100 bg-white rounded-b-[20px] shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-gray-600">Gesamtnutzen pro Jahr:</span>
+                        <span class="text-xl font-bold text-green-600" id="out-total-roi-sum">€ 0</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- 1. State Management ---
+        const state = {
+            isMappingMode: false,
+            activeFUE: 1500,
+            annualRiseCost: 0,
+            roiFactors: [
+                { id: 1, name: 'Reduzierung IT-Infrastruktur (Hardware/Storage)', value: 120000 },
+                { id: 2, name: 'Einsparungen SAP Basis Administration', value: 95000 },
+                { id: 3, name: 'Geringere Ausfallzeiten (SLA Verbesserung)', value: 80000 },
+                { id: 4, name: 'Reduzierung RZ-Energiekosten & Kühlung', value: 45000 },
+                { id: 5, name: 'Schnellere Time-to-Market (Agilität)', value: 150000 },
+                { id: 6, name: 'Working Capital: Bestandsreduzierung', value: 110000 },
+                { id: 7, name: 'Beschleunigter Finanzabschluss (DSO)', value: 65000 },
+                { id: 8, name: 'Produktivitätssteigerung FICO', value: 55000 },
+                { id: 9, name: 'Einkauf: Reduzierung Maverick Buying', value: 70000 },
+                { id: 10, name: 'Effizienz in Logistik & Lagerhaltung', value: 85000 },
+                { id: 11, name: 'Automatisierung HR-Prozesse', value: 40000 },
+                { id: 12, name: 'Reduzierte Audit- & Compliance-Kosten', value: 30000 },
+                { id: 13, name: 'Geringere externe IT-Beraterkosten (Run)', value: 100000 },
+                { id: 14, name: 'Predictive Maintenance (Produktion)', value: 90000 },
+                { id: 15, name: 'Vertriebsproduktivität (Mobile Fiori)', value: 130000 },
+                { id: 16, name: 'Frachtkosten-Optimierung', value: 60000 },
+                { id: 17, name: 'Konsolidierung Drittanbieter-Software', value: 75000 },
+                { id: 18, name: 'Höherer Customer Lifetime Value', value: 80000 },
+                { id: 19, name: 'Beschleunigte M&A Integration', value: 100000 },
+                { id: 20, name: 'Verbesserte Datenqualität & Reporting', value: 50000 }
+            ]
+        };
+
+        let myChart = null;
+
+        // FUE Mapping Ratios (SAP Standard)
+        const FUE_RATIOS = {
+            professional: 1,     // 1 Prof = 1 FUE
+            functional: 1/5,     // 5 Func = 1 FUE
+            productivity: 1/30   // 30 Prod = 1 FUE
+        };
+
+        // --- 2. Formatters & Helpers ---
+        const formatCurrency = (value) => {
+            return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
+        };
+
+        const formatShortCurrency = (value) => {
+            if(Math.abs(value) >= 1000000) return `€ ${(value / 1000000).toFixed(2)}M`;
+            if(Math.abs(value) >= 1000) return `€ ${(value / 1000).toFixed(0)}k`;
+            return `€ ${Math.round(value)}`;
+        };
+
+        function generateId() {
+            return Math.floor(Math.random() * 1000000);
+        }
+
+        // --- 3. DOM Elements ---
+        const els = {
+            // General Params
+            wacc: document.getElementById('inp-wacc'),
+            horizon: document.getElementById('inp-horizon'),
+            
+            // FUE & Pricing
+            toggleMode: document.getElementById('toggle-fue-mode'),
+            divManual: document.getElementById('fue-manual-mode'),
+            divMapping: document.getElementById('fue-mapping-mode'),
+            fuesManual: document.getElementById('inp-fues-manual'),
+            mapProf: document.getElementById('map-prof'),
+            mapFunc: document.getElementById('map-func'),
+            mapProd: document.getElementById('map-prod'),
+            calcProf: document.getElementById('calc-prof'),
+            calcFunc: document.getElementById('calc-func'),
+            calcProd: document.getElementById('calc-prod'),
+            totalMappedFue: document.getElementById('total-mapped-fue'),
+            fuePrice: document.getElementById('inp-fue-price'),
+            discount: document.getElementById('inp-discount'),
+            displayActiveFue: document.getElementById('display-active-fue'),
+            outRiseAnnual: document.getElementById('out-rise-annual-cost'),
+
+            // Costs
+            onPremCapex: document.getElementById('inp-onprem-capex'),
+            riseCapex: document.getElementById('inp-rise-capex'),
+            onPremOpex: document.getElementById('inp-onprem-opex'),
+            
+            // Outputs KPIs
+            outTcoOnprem: document.getElementById('out-tco-onprem'),
+            outTcoRise: document.getElementById('out-tco-rise'),
+            outAnnualValue: document.getElementById('out-annual-value'),
+            outRoi: document.getElementById('out-roi'),
+            outPayback: document.getElementById('out-payback'),
+            badgeSavings: document.getElementById('badge-savings'),
+            cardTcoRise: document.getElementById('card-tco-rise'),
+            barRoi: document.getElementById('bar-roi'),
+            outTotalRoiSum: document.getElementById('out-total-roi-sum'),
+            
+            // Lists
+            roiList: document.getElementById('roi-list')
+        };
+
+        // --- 4. Core Logic: FUE & Pricing ---
+
+        window.toggleFUEInputMode = function() {
+            state.isMappingMode = els.toggleMode.checked;
+            if (state.isMappingMode) {
+                els.divManual.classList.add('hidden');
+                els.divMapping.classList.remove('hidden');
+            } else {
+                els.divManual.classList.remove('hidden');
+                els.divMapping.classList.add('hidden');
+            }
+            updateFUECalculations();
+        };
+
+        window.updateFUECalculations = function() {
+            // 1. Determine active FUE amount based on mode
+            if (state.isMappingMode) {
+                const prof = parseFloat(els.mapProf.value) || 0;
+                const func = parseFloat(els.mapFunc.value) || 0;
+                const prod = parseFloat(els.mapProd.value) || 0;
+
+                const fueProf = prof * FUE_RATIOS.professional;
+                const fueFunc = func * FUE_RATIOS.functional;
+                const fueProd = prod * FUE_RATIOS.productivity;
+
+                // Update intermediate calculation displays (ceiling to whole numbers)
+                els.calcProf.innerText = Math.ceil(fueProf);
+                els.calcFunc.innerText = Math.ceil(fueFunc);
+                els.calcProd.innerText = Math.ceil(fueProd);
+
+                const totalMapped = Math.ceil(fueProf + fueFunc + fueProd);
+                els.totalMappedFue.innerText = totalMapped;
+                state.activeFUE = totalMapped;
+            } else {
+                state.activeFUE = parseFloat(els.fuesManual.value) || 0;
+            }
+
+            els.displayActiveFue.innerText = `${state.activeFUE.toLocaleString()} FUE`;
+
+            // 2. Calculate Annual Cost
+            const price = parseFloat(els.fuePrice.value) || 0;
+            const discount = parseFloat(els.discount.value) || 0;
+            
+            const monthlyGross = state.activeFUE * price;
+            const monthlyNet = monthlyGross * (1 - (discount / 100));
+            state.annualRiseCost = monthlyNet * 12;
+
+            els.outRiseAnnual.innerText = formatShortCurrency(state.annualRiseCost);
+
+            // 3. Trigger main calculation update
+            updateMainCalculation();
+        };
+
+        // --- 5. Core Logic: TCO & ROI ---
+
+        function calculateNPV(rate, cashflows) {
+            let npv = 0;
+            for (let t = 0; t < cashflows.length; t++) {
+                npv += cashflows[t] / Math.pow(1 + rate, t);
+            }
+            return npv;
+        }
+
+        function getTotalAnnualBusinessValue() {
+            return state.roiFactors.reduce((sum, factor) => sum + (parseFloat(factor.value) || 0), 0);
+        }
+
+        window.updateMainCalculation = function() {
+            // 1. Get Params
+            const years = parseInt(els.horizon.value);
+            const wacc = parseFloat(els.wacc.value) / 100;
+            const onPremCapex = parseFloat(els.onPremCapex.value) || 0;
+            const onPremOpex = parseFloat(els.onPremOpex.value) || 0;
+            const riseCapex = parseFloat(els.riseCapex.value) || 0;
+            const annualRiseSub = state.annualRiseCost;
+            const annualBusinessValue = getTotalAnnualBusinessValue();
+
+            // Update UI immediate values
+            els.outTotalRoiSum.innerText = formatCurrency(annualBusinessValue);
+            els.outAnnualValue.innerText = formatShortCurrency(annualBusinessValue);
+
+            // 2. Generate Cashflows
+            let cfOnPrem = [onPremCapex];
+            let cfRise = [riseCapex];
+            let cfBenefits = [0]; // Year 0 usually no operational benefits
+
+            for (let i = 1; i <= years; i++) {
+                cfOnPrem.push(onPremOpex);
+                cfRise.push(annualRiseSub);
+                cfBenefits.push(annualBusinessValue);
+            }
+
+            // 3. Calculate NPVs
+            const npvOnPrem = calculateNPV(wacc, cfOnPrem);
+            const npvRise = calculateNPV(wacc, cfRise);
+            const npvBenefits = calculateNPV(wacc, cfBenefits);
+
+            // 4. Update KPI Cards
+            els.outTcoOnprem.innerText = formatShortCurrency(npvOnPrem);
+            els.outTcoRise.innerText = formatShortCurrency(npvRise);
+
+            // Savings calculation
+            const savingsPercent = ((npvOnPrem - npvRise) / npvOnPrem) * 100;
+            if (savingsPercent > 0) {
+                els.badgeSavings.innerText = `-${savingsPercent.toFixed(0)}% günstiger`;
+                els.badgeSavings.classList.remove('bg-red-500');
+                els.badgeSavings.classList.add('bg-[#0071e3]');
+                els.cardTcoRise.classList.add('border-[#0071e3]', 'bg-[#f0f7ff]');
+                els.outTcoRise.classList.remove('text-red-500');
+                els.outTcoRise.classList.add('text-[#0071e3]');
+            } else {
+                els.badgeSavings.innerText = `+${Math.abs(savingsPercent).toFixed(0)}% teurer`;
+                els.badgeSavings.classList.remove('bg-[#0071e3]');
+                els.badgeSavings.classList.add('bg-red-500');
+                els.cardTcoRise.classList.remove('border-[#0071e3]', 'bg-[#f0f7ff]');
+                els.outTcoRise.classList.remove('text-[#0071e3]');
+                els.outTcoRise.classList.add('text-red-500');
+            }
+
+            // ROI & Payback Calculation
+            const totalOnPremAvoided = npvOnPrem - onPremCapex; 
+            const totalRiseRunning = npvRise - riseCapex;
+            const netBenefitNPV = npvBenefits + (totalOnPremAvoided - totalRiseRunning);
+            
+            const roi = (netBenefitNPV / riseCapex) * 100;
+            
+            if (roi > 0) {
+                els.outRoi.innerText = `${roi.toFixed(0)}%`;
+                els.outRoi.className = 'metric-value text-green-600';
+                els.barRoi.style.width = Math.min(roi / 5, 100) + '%';
+            } else {
+                els.outRoi.innerText = `0%`;
+                els.outRoi.className = 'metric-value text-gray-800';
+                els.barRoi.style.width = '0%';
+            }
+
+            // Simple Payback (undiscounted)
+            const annualNetCashflow = annualBusinessValue + (onPremOpex - annualRiseSub);
+            if(annualNetCashflow > 0) {
+                const paybackYears = riseCapex / annualNetCashflow;
+                if(paybackYears <= years) {
+                    const totalMonths = Math.round(paybackYears * 12);
+                    const y = Math.floor(totalMonths / 12);
+                    const m = totalMonths % 12;
+                    els.outPayback.innerText = `Amortisation: ${y}J ${m}M`;
+                } else {
+                    els.outPayback.innerText = `Amortisation: > ${years} Jahre`;
+                }
+            } else {
+                els.outPayback.innerText = `Kein positiver Cashflow`;
+            }
+
+            updateChart(years, cfOnPrem, cfRise, wacc);
+        }
+
+        // --- 6. Charting ---
+        function updateChart(years, cfOnPrem, cfRise, wacc) {
+            const labels = [];
+            const dataOnPrem = [];
+            const dataRise = [];
+
+            let cumOnPrem = 0;
+            let cumRise = 0;
+
+            for (let i = 0; i <= years; i++) {
+                labels.push(i === 0 ? 'Jahr 0' : `Jahr ${i}`);
+                cumOnPrem += cfOnPrem[i] / Math.pow(1 + wacc, i);
+                cumRise += cfRise[i] / Math.pow(1 + wacc, i);
+                dataOnPrem.push(cumOnPrem);
+                dataRise.push(cumRise);
+            }
+
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            const ctx = document.getElementById('tcoChart').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'TCO On-Premise',
+                            data: dataOnPrem,
+                            borderColor: '#86868b',
+                            backgroundColor: 'rgba(134, 134, 139, 0.05)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 4,
+                        },
+                        {
+                            label: 'TCO RISE with SAP',
+                            data: dataRise,
+                            borderColor: '#0071e3',
+                            backgroundColor: 'rgba(0, 113, 227, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 5,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatShortCurrency(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.03)' },
+                            ticks: { callback: function(value) { return formatShortCurrency(value); } }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // --- 7. ROI List CRUD Operations ---
+        function renderROIFactors() {
+            els.roiList.innerHTML = '';
+            state.roiFactors.forEach((factor, index) => {
+                const item = document.createElement('div');
+                item.className = 'bg-white p-3 mb-2 rounded-xl border border-gray-100 shadow-sm flex gap-3 items-center group transition-all hover:shadow-md';
+                item.innerHTML = `
+                    <div class="font-bold text-gray-300 w-6 text-center text-sm">${index + 1}</div>
+                    <div class="flex-grow flex flex-col gap-1">
+                        <input type="text" value="${factor.name}" onchange="updateFactorName(${factor.id}, this.value)" class="text-sm font-medium text-gray-800 bg-transparent outline-none border-b border-transparent focus:border-blue-300 transition-colors" placeholder="Faktor Name">
+                        <div class="flex items-center gap-1">
+                            <span class="text-xs text-gray-400">€</span>
+                            <input type="number" value="${factor.value}" onchange="updateFactorValue(${factor.id}, this.value)" onkeyup="if(event.key==='Enter') this.blur()" class="text-sm font-bold text-green-600 bg-transparent outline-none border-b border-transparent focus:border-green-300 transition-colors w-24" step="1000">
+                            <span class="text-[10px] text-gray-400">/ Jahr</span>
+                        </div>
+                    </div>
+                    <button onclick="deleteFactor(${factor.id})" class="icon-btn p-2 opacity-0 group-hover:opacity-100 transition-opacity" title="Löschen">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                `;
+                els.roiList.appendChild(item);
+            });
+            updateMainCalculation();
+        }
+
+        window.updateFactorName = function(id, newName) {
+            const factor = state.roiFactors.find(f => f.id === id);
+            if(factor) factor.name = newName;
+        };
+
+        window.updateFactorValue = function(id, newValue) {
+            const factor = state.roiFactors.find(f => f.id === id);
+            if(factor) {
+                factor.value = parseFloat(newValue) || 0;
+                updateMainCalculation();
+            }
+        };
+
+        window.addFactor = function() {
+            state.roiFactors.push({
+                id: generateId(),
+                name: 'Neuer Business Value Treiber',
+                value: 50000
+            });
+            renderROIFactors();
+            setTimeout(() => { els.roiList.scrollTop = els.roiList.scrollHeight; }, 50);
+        };
+
+        window.deleteFactor = function(id) {
+            state.roiFactors = state.roiFactors.filter(f => f.id !== id);
+            renderROIFactors();
+        };
+
+        // --- 8. Initialization & Listeners ---
+        // Listeners for General and Cost Inputs
+        const inputsToListen = ['wacc', 'horizon'];
+        inputsToListen.forEach(key => {
+            els[key].addEventListener('change', updateMainCalculation); // dropdowns/wacc better on change
+        });
+
+        // Initial Render Sequence
+        updateFUECalculations(); // Setup initial FUE state and price
+        renderROIFactors();      // Render list and trigger main calc
+
+    </script>
+</body>
+</html>

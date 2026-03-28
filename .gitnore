@@ -1,0 +1,7 @@
+# OS spezifisch
+.DS_Store
+Thumbs.db
+
+# Lokale Exporte (optional, falls du sie nicht im Git willst)
+exports/*.json
+exports/*.pdf

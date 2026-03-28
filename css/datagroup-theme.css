@@ -1,0 +1,40 @@
+/* datagroup-theme.css */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #1a1a1a;
+    --datagroup-green: #a2c037; /* Das typische DATAGROUP Grün */
+    --datagroup-blue: #003366;  /* Dunkelblau für Kontraste */
+    --accent-color: var(--datagroup-green);
+    --font-family: 'Roboto', Arial, sans-serif;
+    --border-radius: 0px; /* Eher eckig/professionell gehalten */
+}
+
+.reveal {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+}
+
+.reveal h1, .reveal h2 {
+    color: var(--datagroup-blue);
+    text-transform: uppercase;
+    font-weight: 900;
+    border-left: 10px solid var(--datagroup-green);
+    padding-left: 20px;
+}
+
+/* Buttons und Interaktive Elemente */
+button {
+    background-color: var(--datagroup-green);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.header {
+    background: var(--datagroup-blue);
+    color: white;
+    border-bottom: 4px solid var(--datagroup-green);
+}
