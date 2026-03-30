@@ -279,6 +279,10 @@
                             <span class="text-sm">Speichern/Laden (Arbeitsfortschritt als JSON Im-/Export)</span>
                         </label>
                         <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="chkDisclaimerState" checked class="w-4 h-4 text-blue-600 rounded">
+                            <span class="text-sm">Disclaimer hinzufügen als letzte Folie</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
                             <input type="checkbox" id="chkFeatureChapters" checked class="w-4 h-4 text-blue-600 rounded">
                             <span class="text-sm">Kapitelfolien (Trennerfolien für jedes Kapitel einfügen)</span>
                         </label>
@@ -665,7 +669,7 @@
 
             // Build Prompt String
             let prompt = `Act as an Expert Frontend Developer and Presentation Designer.\n\n`;
-            prompt += `AUFGABE: Erstelle eine interaktive Präsentation als **EINE EINZIGE HTML-DATEI** (Single-File). Das bedeutet: Sämtliches CSS und JavaScript muss direkt im <style> und <script> Block der HTML Datei integriert sein. Keine externen lokalen Dateien referenzieren (außer standard CDNs).\n\n`;
+            prompt += `AUFGABE: Erstelle eine interaktive Präsentation als **EINE EINZIGE HTML-DATEI** (Single-File). Das bedeutet: Sämtliches CSS und JavaScript muss direkt im <style> und <script> Block der HTML Datei integriert sein. Keine externen lokalen Dateien referenzieren (benutze nicht die tailwind Klassen).\n\n`;
             
             prompt += `### GLOBALE PRÄSENTATIONS-DATEN\n`;
             prompt += `- Titel: ${title}\n`;
@@ -719,6 +723,7 @@
             const includeSettings = document.getElementById('chkFeatureSettings').checked;
             const includeProtocol = document.getElementById('chkFeatureProtocol').checked;
             const includeState = document.getElementById('chkFeatureState').checked;
+            const includeDisclaimer = document.getElementById('chkDisclaimerState').checked;
             const includeChapters = document.getElementById('chkFeatureChapters').checked;
 
             prompt += `### GENERELLE PFLICHT-FUNKTIONEN (Immer einbauen)\n`;
@@ -733,6 +738,38 @@
             }
             if (includeState) {
                 prompt += `${reqCounter++}. **JSON Export/Import:** Biete Funktionen an, um den gesamten Arbeitsfortschritt der Präsentation (Notizen, Settings, ggf. eingegebene Inhalte) als JSON-Datei herunterzuladen und wieder hochzuladen, um später weiterarbeiten zu können.\n`;
+            }
+            if (includeDisclaimer) {
+                prompt += `${reqCounter++}. **Füge als letzte Folie einen Disclaimer hinzu. Die HTML Struktur für den Disclaimer ist zu befolgen:\n`;
+                prompt += `## HTML-Struktur (Vorgabe)'\n`;
+                prompt += '```html`\n';
+                prompt += '<div class="slide slide-disclaimer" data-slide="final" data-title="Rechtliche Hinweise">\n';
+                prompt += '\n';
+                prompt += '<div class="branding-logo"></div>\n';
+                prompt += '<div class="branding-claim"></div>\n';
+                prompt += '\n';
+                prompt += '<div class="slide-header">\n';
+                prompt += '<div>\n';
+                prompt += '   <div>\n';
+                prompt += '      <div class="slide-module-tag">DATAGROUP SE</div>\n';
+                prompt += '      <div class="slide-title">Rechtliche Hinweise / Disclaimer</div>\n';
+                prompt += '   </div>\n';
+                prompt += '</div>\n';
+                prompt += '\n';
+                prompt += '<div class="slide-body disclaimer-text">\n';
+                prompt += '    <p>Diese Präsentation wurde von der Firma DATAGROUP SE erstellt und ist ausschließlich als Entscheidungshilfe für den Empfänger gedacht.</p>\n';
+                prompt += '    \n';
+                prompt += '    <p>Diese Präsentation ist kein Prospekt und versteht sich in keiner Art und Weise als Angebot oder Aufforderung, Gesellschaftsanteile oder sonstige Anteile zu kaufen bzw. zu zeichnen.</p>\n';
+                prompt += '    \n';
+                prompt += '    <p>Diese Präsentation wurde nach bestem Wissen zusammengestellt, dennoch übernimmt DATAGROUP SE keinerlei Gewähr für Genauigkeit und Vollständigkeit der ausdrücklich oder implizit gemachten Angaben. Dies gilt auch für jede andere schriftliche oder mündliche Aussage, die gegenüber dem interessierten Empfänger oder dessen Beratern gemacht wurde. Jegliche Haftung ist ausdrücklich ausgeschlossen.</p>\n';
+                prompt += '    \n';
+                prompt += '    <p>Diese Präsentation beinhaltet Angaben, Schätzungen und Voraussagen in Bezug auf die erwartete zukünftige Entwicklung. Sie basieren auf verschiedenen Annahmen, die vom Management der DATAGROUP SE in Bezug auf die erwarteten Ergebnisse getroffen wurden, und können sich je nach der tatsächlichen Entwicklung als wahr oder falsch herausstellen. Für die Richtigkeit dieser Angaben wird keine Gewähr übernommen. Die in dieser Präsentation gemachten Angaben sind nur eine Auswahl und deshalb nicht vollständig. Erweiterungen, Änderungen oder Korrekturen bleiben ausdrücklich vorbehalten. Für die Richtigkeit von Kennzahlen und Schätzungen aus explizit gekennzeichneten, öffentlich zugänglichen Quellen übernimmt die DATAGROUP SE keine Gewähr.</p>\n';
+                prompt += '    \n';
+                prompt += '    <p>Diese Präsentation ist vertraulich und sie bzw. ihr Inhalt darf weder ganz noch teilweise an Dritte weitergegeben werden.</p>\n';
+                prompt += '    \n';    
+                prompt += '   <p>Ohne vorherige Zustimmung der DATAGROUP SE dürfen unter keinen Umständen Mitarbeiter, Repräsentanten, Vertreter, Berater, Kunden oder Lieferanten der DATAGROUP SE kontaktiert werden.</p>\n';
+                prompt += '   </div>\n';
+                prompt += ' </div>\n';
             }
             prompt += `\n`;
 
@@ -780,7 +817,9 @@
                 const topic = document.getElementById('aiTopic').value;
                 const count = document.getElementById('aiSlideCount').value;
                 prompt += `MODUS: Voll-KI Generierung.\n`;
-                prompt += `Recherchiere und erstelle den Inhalt für genau ${count} Folien basierend auf folgendem Auftrag:\n"${topic}"\n`;
+
+                //prompt += `Recherchiere und erstelle den Inhalt für genau ${count} Folien basierend auf folgendem Auftrag:\n"${topic}"\n`;
+                prompt += `Recherchiere und erstelle den Inhalt und baue die Folien basierend auf folgendem Auftrag:\n"${topic}"\n`;
                 prompt += `Teile die Inhalte logisch auf die Agenda-Punkte auf.\n\n`;
             } else {
                 const topic = document.getElementById('manualTopic').value;
@@ -892,6 +931,7 @@
                     chkFeatureSettings: document.getElementById('chkFeatureSettings').checked,
                     chkFeatureProtocol: document.getElementById('chkFeatureProtocol').checked,
                     chkFeatureState: document.getElementById('chkFeatureState').checked,
+                    chkDisclaimerState: document.getElementById('chkDisclaimerState').checked,
                     chkFeatureChapters: document.getElementById('chkFeatureChapters').checked,
                     chkEmbedCode: document.getElementById('chkEmbedCode').checked
                 },
@@ -962,6 +1002,7 @@
                     if (s.chkFeatureSettings !== undefined) document.getElementById('chkFeatureSettings').checked = s.chkFeatureSettings;
                     if (s.chkFeatureProtocol !== undefined) document.getElementById('chkFeatureProtocol').checked = s.chkFeatureProtocol;
                     if (s.chkFeatureState !== undefined) document.getElementById('chkFeatureState').checked = s.chkFeatureState;
+                    if (s.chkDisclaimerState !== undefined) document.getElementById('chkDisclaimerState').checked = s.chkDisclaimerState;
                     if (s.chkFeatureChapters !== undefined) document.getElementById('chkFeatureChapters').checked = s.chkFeatureChapters;
                     if (s.chkEmbedCode !== undefined) document.getElementById('chkEmbedCode').checked = s.chkEmbedCode;
 
