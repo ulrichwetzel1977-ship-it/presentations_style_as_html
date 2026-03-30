@@ -536,8 +536,7 @@
                 const repoRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`);
                 if (!repoRes.ok) throw new Error(`Repository Fehler: ${repoRes.status}`);
                 const repoData = await repoRes.json();
-                defaultBranchName = repoData.default_branch;
-                const defaultBranch = defaultBranchName; // Damit der restliche Code der Funktion weiterläuft
+                const defaultBranch = repoData.default_branch;
 
                 // 2. Hole den gesamten Verzeichnisbaum rekursiv
                 const treeRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/git/trees/${defaultBranch}?recursive=1`);
@@ -612,12 +611,13 @@
                 const hasHTML = !!data.html;
                 const hasCSS = !!data.css;
 
-                if (hasJS && hasMD) {
+                // Nur MD ist zwingend erforderlich, damit der Ordner als Funktion erkannt wird
+                if (hasMD) {
                     const div = document.createElement('div');
                     div.className = "flex items-center justify-between p-2 hover:bg-white rounded border border-transparent hover:border-[var(--border)] transition-colors";
                     
-                    let badges = `<span class="text-[10px] bg-blue-100 text-blue-800 px-1 rounded ml-2">JS</span>
-                                  <span class="text-[10px] bg-green-100 text-green-800 px-1 rounded ml-1">MD</span>`;
+                    let badges = `<span class="text-[10px] bg-green-100 text-green-800 px-1 rounded ml-1">MD</span>`;
+                    if (hasJS) badges += `<span class="text-[10px] bg-blue-100 text-blue-800 px-1 rounded ml-2">JS</span>`;
                     if (hasHTML) badges += `<span class="text-[10px] bg-orange-100 text-orange-800 px-1 rounded ml-1">HTML</span>`;
                     if (hasCSS) badges += `<span class="text-[10px] bg-purple-100 text-purple-800 px-1 rounded ml-1">CSS</span>`;
 
@@ -685,7 +685,6 @@
                 }
             }
 
-
             // Ergänzung um die pfade für die Logos und bilder sauber zu finden
             const repoOwner = document.getElementById('ghOwner').value.trim();
             const repoName = document.getElementById('ghRepo').value.trim();
@@ -714,13 +713,13 @@
 
             prompt += `### GENERELLE PFLICHT-FUNKTIONEN (Immer einbauen)\n`;
             let reqCounter = 1;
-            prompt += `${reqCounter++}. **Navigation:** Die Folien müssen per Tastatur (Pfeiltaste Links/Rechts) und buttons unten rechts am bildrand navigierbar sein (z.B. durch ein / Ausblenden von <section> Elementen).\n`;
+            prompt += `${reqCounter++}. **Navigation:** Die Folien müssen per Tastatur (Pfeiltaste Links/Rechts) navigierbar sein (z.B. durch ein / Ausblenden von <section> Elementen).\n`;
             
             if (includeSettings) {
                 prompt += `${reqCounter++}. **Einstellungsbereich:** Es muss eine sichtbare UI geben (z.B. in einem ausklappbaren Sidebar-Menü), in der der Nutzer Agenda, Titel, Kundenname und Datum nachträglich ändern kann. Die Folien sollen nummeriert sein. Diese Änderungen müssen im DOM sichtbar werden.\n`;
             }
             if (includeProtocol) {
-                prompt += `${reqCounter++}. **Protokoll/Notizen-Funktion:** Integriere zu JEDER Folie einen Bereich (z.B. am Rand oder als Overlay), in dem der Nutzer Notizen/Protokolle für den Kunden oder Workshop erfassen kann. Implementiere einen Button, der die erfassten Folien-Notizen als PDF und als einfachen Text exportiert (Nutze dafür html2pdf.js über CDN: https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js).\n`;
+                prompt += `${reqCounter++}. **Protokoll/Notizen-Funktion:** Integriere zu JEDER Folie einen Bereich (z.B. am Rand oder als Overlay), in dem der Nutzer Notizen/Protokolle für den Kunden oder Workshop erfassen kann. Implementiere einen Button, der die erfassten Folien-Notizen als PDF und als einfachen Text exportiert (Nutze dafür html2pdf.js über CDN: https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js). WICHTIG FÜR DEN PDF-EXPORT: Das erzeugte PDF muss so formatiert sein, dass die aktuelle Folie als Bild passend auf die Seite skaliert wird und die erfassten Notizen/Protokolle zu dieser Folie übersichtlich direkt darunter ausgegeben werden.\n`;
             }
             if (includeState) {
                 prompt += `${reqCounter++}. **JSON Export/Import:** Biete Funktionen an, um den gesamten Arbeitsfortschritt der Präsentation (Notizen, Settings, ggf. eingegebene Inhalte) als JSON-Datei herunterzuladen und wieder hochzuladen, um später weiterarbeiten zu können.\n`;
@@ -774,7 +773,9 @@
                     
                     if (embedCode) {
                         prompt += `--- ANLEITUNG (${funcName}.md) ---\n${data.md}\n\n`;
-                        prompt += `--- JAVASCRIPT (${funcName}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
+                        if (data.js) {
+                            prompt += `--- JAVASCRIPT (${funcName}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
+                        }
                         if (data.html) {
                             prompt += `--- HTML TEMPLATE (${funcName}.html) ---\n\`\`\`html\n${data.html}\n\`\`\`\n\n`;
                         }
@@ -782,9 +783,11 @@
                             prompt += `--- CSS STYLES (${funcName}.css) ---\n\`\`\`css\n${data.css}\n\`\`\`\n\n`;
                         }
                     } else {
-                        prompt += `Die KI soll die Anleitung, das Skript, ggf. das Template und das CSS direkt aus dem Repository lesen und verarbeiten:\n`;
+                        prompt += `Die KI soll die Anleitung und ggf. Skripte, Templates und CSS direkt aus dem Repository lesen und verarbeiten:\n`;
                         prompt += `- Anleitung (.md): ${data.urls.md}\n`;
-                        prompt += `- JavaScript (.js): ${data.urls.js}\n`;
+                        if (data.urls.js) {
+                            prompt += `- JavaScript (.js): ${data.urls.js}\n`;
+                        }
                         if (data.urls.html) {
                             prompt += `- HTML Template (.html): ${data.urls.html}\n`;
                         }
