@@ -1,43 +1,31 @@
 :root {
-    /* Typografie & Farben */
+    --app-bg: #333333;
     --font-family: Arial, sans-serif;
-    --primary: #E3000F; /* DATAGROUP Rot */
-    --primary-hover: #cc000e;
-    --primary-soft: #fde5e6;
+    
+    /* Layout Farben */
     --bg-color: #ffffff;
-    --surface: #f9f9f9;
+    --header-bg: #ffffff;
+    --surface: #f9f9f9; /* Karten leicht grau abgesetzt */
+    
+    /* Text & Akzente */
+    --primary: #E3000F; /* DATAGROUP Rot */
+    --primary-soft: #fde5e6;
     --border: #cccccc;
     --text: #333333;
+    --header-text: #000000;
     --text-secondary: #666666;
     
-    /* Status-Farben */
-    --danger: #E3000F; --danger-bg: #fde5e6; /* Gleicht dem Rot */
+    /* Tabellen */
+    --table-header-bg: #E3000F; /* Tabellenköpfe im Corporate Rot */
+    --table-header-text: #ffffff;
+    
+    /* Status */
+    --danger: #E3000F; --danger-bg: #fde5e6;
     --warning: #f08700; --warning-bg: #fef3e5;
     --success: #008a00; --success-bg: #e5f3e5;
     
-    /* Formen & Effekte (CORBOX = Würfel = 0px Radius) */
+    /* Formen (Würfel / Corbox = 0px) */
     --radius: 0px;
     --radius-sm: 0px;
     --shadow: none;
-    --modal-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    
-    /* Glassmorphism deaktiviert (Flat Design) */
-    --glass-bg: #ffffff;
-    --glass-filter: none;
-    --modal-backdrop: rgba(0,0,0,0.6);
-    
-    /* Spezifische UI */
-    --header-bg-color: #E3000F;
-    --header-text-color: #ffffff;
-    --table-bg: #ffffff;
-    
-    /* Z-Indizes */
-    --z-index-header: 1000;
-    --z-index-ui: 1100;
-    --z-index-modal: 2000;
-}
-
-/* Datagroup-Spezifische Anpassung für noch mehr Strenge */
-th, .header-customer {
-    letter-spacing: 0.05em;
 }

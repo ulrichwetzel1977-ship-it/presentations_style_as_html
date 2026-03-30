@@ -3,260 +3,876 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presentation Architect | Ultimate Master Edition</title>
+    <title>AI Presentation Prompt Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Base Themes */
         :root {
-            --apple-bg: #f5f5f7;
-            --apple-card: #ffffff;
-            --apple-text: #1d1d1f;
-            --apple-secondary: #86868b;
-            --apple-blue: #0071e3;
-            --apple-blue-hover: #0077ed;
-            --apple-border: #d2d2d7;
-            --radius-lg: 20px;
-            --radius-md: 12px;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --bg-color: #f5f5f7;
+            --container-bg: #ffffff;
+            --text-main: #1d1d1f;
+            --text-muted: #86868b;
+            --accent: #0066cc;
+            --accent-hover: #004499;
+            --border: #d2d2d7;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; background-color: var(--apple-bg); color: var(--apple-text); line-height: 1.6; padding: 40px 20px; }
-        .container { max-width: 850px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 50px; }
-        header h1 { font-size: 40px; font-weight: 700; letter-spacing: -1.2px; margin-bottom: 8px; }
-        header p { color: var(--apple-secondary); font-size: 19px; }
+        /* Datagroup SE Theme Override */
+        [data-theme="datagroup"] {
+            --bg-color: #e6edf2;
+            --container-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --accent: #004b87; /* Corporate Blue */
+            --accent-hover: #003366;
+            --border: #cccccc;
+            --radius: 0px; /* Sharper edges for corporate look */
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --font-family: "Arial", sans-serif;
+        }
 
-        .section-card { background: var(--apple-card); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); }
-        .section-header { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--apple-secondary); margin-bottom: 24px; display: flex; align-items: center; gap: 8px; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            transition: all 0.3s ease;
+        }
 
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #333; }
-        input[type="text"], select, textarea { width: 100%; padding: 14px; border: 1px solid var(--apple-border); border-radius: var(--radius-md); font-size: 16px; outline: none; background: #fdfdfd; transition: all 0.2s ease; }
-        input:focus, select:focus, textarea:focus { border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1); background: #fff; }
+        .card {
+            background-color: var(--container-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
 
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        
-        .module-selection { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-        .module-card { background: #f5f5f7; border-radius: var(--radius-md); padding: 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; border: 1px solid transparent; transition: all 0.2s; }
-        .module-card.active { background: white; border-color: var(--apple-blue); box-shadow: 0 4px 12px rgba(0, 113, 227, 0.08); }
-        .module-card input { display: none; }
-        .check-icon { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--apple-border); display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; }
-        .module-card.active .check-icon { background: var(--apple-blue); border-color: var(--apple-blue); }
-        .module-card.mandatory { cursor: default; opacity: 0.7; }
+        .input-field {
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) / 2);
+            padding: 0.5rem 0.75rem;
+            width: 100%;
+            transition: border-color 0.2s;
+            background-color: #fafafa;
+        }
 
-        .mode-switch { display: flex; background: #eeeef0; padding: 4px; border-radius: 12px; margin-bottom: 20px; }
-        .mode-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; background: transparent; transition: all 0.2s; }
-        .mode-btn.active { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+        }
 
-        .btn-generate { width: 100%; padding: 22px; background: var(--apple-blue); color: white; border: none; border-radius: var(--radius-lg); font-size: 18px; font-weight: 600; cursor: pointer; margin-top: 20px; transition: 0.2s; }
-        .btn-generate:hover { background: var(--apple-blue-hover); transform: translateY(-1px); }
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border-radius: calc(var(--radius) / 2);
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
 
-        #result-box { margin-top: 40px; display: none; }
-        #prompt-text { background: #1c1c1e; color: #d1d1d6; padding: 30px; border-radius: var(--radius-lg); font-family: "SF Mono", monospace; font-size: 13px; white-space: pre-wrap; line-height: 1.6; }
-        .copy-btn { background: var(--apple-text); color: white; padding: 10px 24px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; border: none; }
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: calc(var(--radius) / 2);
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        /* Hide scrollbar for clean UI but keep functionality */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
     </style>
 </head>
-<body>
+<body class="p-6 md:p-12 min-h-screen flex justify-center">
 
-<div class="container">
-    <header>
-        <h1>Presentation Architect</h1>
-        <p>Premium Generator inkl. Live-Settings & Backup-Logik</p>
-    </header>
-
-    <div class="section-card">
-        <div class="section-header"><span>🏢</span> Projekt & Branding</div>
-        <div class="input-group">
-            <label>GitHub Repository URL (Public)</label>
-            <input type="text" id="repoUrl" placeholder="https://github.com/name/repo" oninput="save()">
-        </div>
-        <div class="grid-2">
-            <div class="input-group">
-                <label>Design-Theme</label>
-                <select id="theme">
-                    <option value="apple">Apple Style (Glassmorphism)</option>
-                    <option value="datagroup">Datagroup (Corporate Red)</option>
-                </select>
+    <div class="max-w-5xl w-full space-y-8">
+        <!-- Header & Theme Toggle -->
+        <div class="flex flex-col md:flex-row justify-between items-center card p-6">
+            <div>
+                <h1 class="text-3xl font-bold">Präsentations-Prompt Generator</h1>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Erstelle KI-Prompts für Single-File HTML Präsentationen</p>
             </div>
-            <div class="input-group">
-                <label>Engine</label>
-                <select id="engine">
-                    <option value="app">App-Style Engine (Interaktiv)</option>
-                    <option value="reveal">Reveal.js Engine (Klassisch)</option>
+            <div class="mt-4 md:mt-0 flex items-center space-x-4">
+                <label class="text-sm font-medium">Generator UI Style:</label>
+                <select id="uiThemeSelector" class="input-field w-auto" onchange="changeUITheme()">
+                    <option value="apple">Apple (Schlicht)</option>
+                    <option value="datagroup">Datagroup SE</option>
                 </select>
             </div>
         </div>
-        <div class="input-group">
-            <label>Präsentationstitel (Standard)</label>
-            <input type="text" id="title" placeholder="z.B. Strategieworkshop Cloud">
-        </div>
-        <div class="grid-2">
-            <div class="input-group"><label>Kunde (Standard)</label><input type="text" id="customer" placeholder="Musterkunde SE"></div>
-            <div class="input-group"><label>Datum (Standard)</label><input type="text" id="date" placeholder="28. März 2026"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Left Column: Settings -->
+            <div class="space-y-6">
+                
+                <!-- Global GitHub Settings -->
+                <div class="card p-6 space-y-4 bg-blue-50/30">
+                    <h2 class="text-xl font-semibold border-b border-[var(--border)] pb-2"><i class="fa-brands fa-github mr-2"></i>0. GitHub Konfiguration</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium mb-1">GitHub Owner</label>
+                            <input type="text" id="ghOwner" class="input-field text-sm" value="ulrichwetzel1977-ship-it">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium mb-1">Repository</label>
+                            <input type="text" id="ghRepo" class="input-field text-sm" value="presentations_style_as_html">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium mb-1">Ordner für CSS-Themes</label>
+                            <input type="text" id="ghCssFolder" class="input-field text-sm" value="css">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium mb-1">Ordner für JS-Funktionen</label>
+                            <input type="text" id="ghFolder" class="input-field text-sm" value="js/lib">
+                        </div>
+                    </div>
+                    <button onclick="fetchAllGitHubData()" id="githubLoadAllBtn" class="btn-primary w-full text-sm"><i class="fa-solid fa-cloud-arrow-down mr-2"></i> Repository-Daten laden (Themes & Funktionen)</button>
+                </div>
+
+                <!-- General Settings -->
+                <div class="card p-6 space-y-4">
+                    <h2 class="text-xl font-semibold border-b border-[var(--border)] pb-2"><i class="fa-solid fa-sliders mr-2"></i>1. Allgemeine Einstellungen</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Titel der Präsentation</label>
+                            <input type="text" id="presTitle" class="input-field" placeholder="z.B. Q3 Roadmap">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Kundenname</label>
+                            <input type="text" id="presCustomer" class="input-field" placeholder="z.B. Muster GmbH">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Datum</label>
+                            <input type="date" id="presDate" class="input-field">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Design-Vorlage (Ziel-HTML)</label>
+                            <select id="presDesign" class="input-field">
+                                <option value="">Bitte erst GitHub laden...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1 border-b border-[var(--border)] pb-1 mb-2">Agenda</label>
+                        <div class="flex space-x-4 mb-2">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="agendaMode" value="text" checked onchange="toggleAgendaMode()" class="w-4 h-4 text-blue-600">
+                                <span class="text-sm">Einfacher Text</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="agendaMode" value="detailed" onchange="toggleAgendaMode()" class="w-4 h-4 text-blue-600">
+                                <span class="text-sm">Uhrzeit & Thema</span>
+                            </label>
+                        </div>
+                        <div id="agendaTextSection">
+                            <input type="text" id="presAgendaText" class="input-field" placeholder="Einleitung, Analyse, Lösung, Diskussion">
+                        </div>
+                        <div id="agendaDetailSection" class="hidden space-y-2">
+                            <div id="agendaItemsContainer" class="space-y-2">
+                                <!-- Dynamically added agenda items go here -->
+                            </div>
+                            <button onclick="addAgendaItem()" class="btn-secondary text-sm w-full"><i class="fa-solid fa-plus mr-1"></i> Agenda-Punkt hinzufügen</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generation Mode -->
+                <div class="card p-6 space-y-4">
+                    <h2 class="text-xl font-semibold border-b border-[var(--border)] pb-2"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>2. Generierungs-Modus</h2>
+                    
+                    <div class="flex space-x-4 mb-4">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="genMode" value="ai" checked onchange="toggleMode()" class="w-4 h-4 text-blue-600">
+                            <span>Voll-KI Modus</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="genMode" value="manual" onchange="toggleMode()" class="w-4 h-4 text-blue-600">
+                            <span>Manuelle Inhalte</span>
+                        </label>
+                    </div>
+
+                    <div id="aiModeSection" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Recherche-Auftrag / Thema</label>
+                            <textarea id="aiTopic" class="input-field h-24" placeholder="Erstelle eine Präsentation über die Auswirkungen von KI in der Logistik..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Anzahl gewünschter Folien</label>
+                            <input type="number" id="aiSlideCount" class="input-field w-1/3" value="5" min="1" max="20">
+                        </div>
+                    </div>
+
+                    <div id="manualModeSection" class="space-y-4 hidden">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Generelles Thema</label>
+                            <input type="text" id="manualTopic" class="input-field" placeholder="Projekt Kick-Off">
+                        </div>
+                        <div id="manualSlidesContainer" class="space-y-3">
+                            <!-- Dynamically added slide inputs go here -->
+                        </div>
+                        <button onclick="addManualSlide()" class="btn-secondary text-sm w-full"><i class="fa-solid fa-plus mr-1"></i> Folie hinzufügen</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Functions & Output -->
+            <div class="space-y-6">
+
+                <!-- Dynamic Functions -->
+                <div class="card p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-[var(--border)] pb-2">
+                        <h2 class="text-xl font-semibold"><i class="fa-solid fa-code mr-2"></i>3. Funktionen einbinden</h2>
+                    </div>
+                    
+                    <p class="text-xs text-[var(--text-muted)]">
+                        Wähle die Funktionen aus, die in der Präsentation genutzt werden sollen. Die verfügbaren Funktionen werden aus dem definierten GitHub JS-Ordner geladen.
+                    </p>
+
+                    <div id="functionsList" class="space-y-2 max-h-60 overflow-y-auto p-2 bg-gray-50 rounded border border-[var(--border)]">
+                        <div class="text-sm text-gray-500 italic text-center py-4" id="noFunctionsMsg">
+                            Bitte lade zuerst die GitHub-Daten (Schritt 0).
+                        </div>
+                        <!-- Checkboxes will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Standard Functions -->
+                <div class="card p-6 space-y-4">
+                    <h2 class="text-xl font-semibold border-b border-[var(--border)] pb-2"><i class="fa-solid fa-layer-group mr-2"></i>4. Standard-Funktionen</h2>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="chkFeatureSettings" checked class="w-4 h-4 text-blue-600 rounded">
+                            <span class="text-sm">Einstellungsmenü (Titel, Datum, Agenda nachträglich editierbar)</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="chkFeatureProtocol" checked class="w-4 h-4 text-blue-600 rounded">
+                            <span class="text-sm">Protokoll-Funktion (Notizen pro Folie inkl. PDF/Text-Export)</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="chkFeatureState" checked class="w-4 h-4 text-blue-600 rounded">
+                            <span class="text-sm">Speichern/Laden (Arbeitsfortschritt als JSON Im-/Export)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Action & Export -->
+                <div class="card p-6 space-y-4 bg-gray-50">
+                    <h2 class="text-xl font-semibold border-b border-[var(--border)] pb-2"><i class="fa-solid fa-terminal mr-2"></i>5. Generierung & Export</h2>
+                    
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="generatePrompt()" class="btn-primary flex-grow"><i class="fa-solid fa-bolt mr-2"></i>Prompt erstellen</button>
+                        <button onclick="exportStateAsJSON()" class="btn-secondary" title="Konfiguration speichern"><i class="fa-solid fa-download"></i></button>
+                        <label class="btn-secondary cursor-pointer" title="Konfiguration laden">
+                            <i class="fa-solid fa-upload"></i>
+                            <input type="file" accept=".json" class="hidden" onchange="importStateFromJSON(event)">
+                        </label>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-sm font-medium">Dein Prompt (Kopieren & in KI einfügen)</label>
+                            <button onclick="copyPrompt()" class="text-[var(--accent)] hover:underline text-sm"><i class="fa-regular fa-copy mr-1"></i>Kopieren</button>
+                        </div>
+                        <textarea id="finalPrompt" class="input-field h-64 font-mono text-sm resize-none bg-white" readonly placeholder="Dein generierter Prompt erscheint hier..."></textarea>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 
-    <div class="section-card">
-        <div class="section-header"><span>🚀</span> Arbeitsmodus & Strategie</div>
-        <div class="mode-switch">
-            <button class="mode-btn active" id="btn-consultant" onclick="setMode('consultant')">KI-Consultant Modus</button>
-            <button class="mode-btn" id="btn-structured" onclick="setMode('structured')">Strukturierte Vorgabe</button>
-        </div>
-        <div class="input-group" id="goal-group">
-            <label>Hauptziel der Präsentation</label>
-            <input type="text" id="goal" placeholder="z.B. IT-Leitung von RISE überzeugen">
-        </div>
-    </div>
+    <script>
+        // --- Global State ---
+        let loadedFunctions = {}; // Format: { "FunctionName": { js: "...", md: "...", html: "..." } }
+        let loadedThemes = {}; // Format: { "theme-xxx.css": "/* raw css content */" }
+        let manualSlideCount = 0;
+        let agendaItemCount = 0;
 
-    <div class="section-card">
-        <div class="section-header"><span>🧩</span> Komponenten & Kernfunktionen</div>
-        <div class="module-selection">
-            <div class="module-card mandatory active">
-                <div class="check-icon">✓</div>
-                <span>Live-Settings (Name/Agenda)</span>
-            </div>
-            <div class="module-card mandatory active">
-                <div class="check-icon">✓</div>
-                <span>Protokoll (inkl. PDF-Export)</span>
-            </div>
-            <div class="module-card mandatory active">
-                <div class="check-icon">✓</div>
-                <span>Backup (JSON Export/Import)</span>
-            </div>
-            <div class="module-card" onclick="toggleModule(this)">
-                <input type="checkbox" class="lib-mod" value="fue-calculator">
-                <div class="check-icon">✓</div>
-                <span>FUE, TCO & ROI Rechner</span>
-            </div>
-            <div class="module-card" onclick="toggleModule(this)">
-                <input type="checkbox" class="lib-mod" value="kanban">
-                <div class="check-icon">✓</div>
-                <span>Kanban & Card-Sorting</span>
-            </div>
-            <div class="module-card" onclick="toggleModule(this)">
-                <input type="checkbox" class="lib-mod" value="job-profile">
-                <div class="check-icon">✓</div>
-                <span>Job Profiles (PDF Druck)</span>
-            </div>
-            <div class="module-card" onclick="toggleModule(this)">
-                <input type="checkbox" class="lib-mod" value="checklist">
-                <div class="check-icon">✓</div>
-                <span>Interaktive Checklisten</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="section-card">
-        <div class="section-header"><span>📅</span> Ablauf & Briefing</div>
-        <div class="input-group">
-            <label>Zeitplan (z.B. 09:00 - 10:00 Intro & Strategie)</label>
-            <textarea id="agenda-input" placeholder="Wird in die interaktive Agenda-Folie übernommen..."></textarea>
-        </div>
-        <div class="input-group">
-            <label id="content-label">Zusätzliche inhaltliche Wünsche</label>
-            <textarea id="content" placeholder="Was soll die KI vorbereiten oder welche Folien zwingend bauen?"></textarea>
-        </div>
-        <div style="display:flex; align-items:center; gap:12px;">
-            <input type="checkbox" id="auto-chapter" checked style="width:20px; height:20px; accent-color:var(--apple-blue);">
-            <label for="auto-chapter" style="margin:0; font-size:14px; font-weight:500;">KI-Kapitel-Analyse & Zwischenfolien aktivieren</label>
-        </div>
-    </div>
-
-    <button class="btn-generate" onclick="generate()">Master-Prompt generieren</button>
-
-    <div id="result-box">
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center">
-            <span style="font-weight:700; color:var(--apple-secondary)">MASTER PROMPT KOPIEREN</span>
-            <button class="copy-btn" onclick="copy()">Kopieren</button>
-        </div>
-        <pre id="prompt-text"></pre>
-    </div>
-</div>
-
-<script>
-    let currentMode = 'consultant';
-
-    // Speichert Repo-URL lokal
-    function save() { localStorage.setItem('savedRepo', document.getElementById('repoUrl').value); }
-    window.onload = () => { 
-        if(localStorage.getItem('savedRepo')) document.getElementById('repoUrl').value = localStorage.getItem('savedRepo');
-    };
-
-    // UI Toggle für Arbeitsmodus
-    function setMode(mode) {
-        currentMode = mode;
-        document.getElementById('btn-consultant').classList.toggle('active', mode === 'consultant');
-        document.getElementById('btn-structured').classList.toggle('active', mode === 'structured');
-        document.getElementById('goal-group').style.display = (mode === 'consultant') ? 'block' : 'none';
-        document.getElementById('content-label').innerText = (mode === 'consultant') ? "Besondere Wünsche (Optional)" : "Genaue Folienreihenfolge";
-    }
-
-    // Custom Checkbox Cards
-    function toggleModule(el) {
-        const cb = el.querySelector('input');
-        cb.checked = !cb.checked;
-        el.classList.toggle('active', cb.checked);
-    }
-
-    // Prompt Generation
-    function generate() {
-        const repo = document.getElementById('repoUrl').value.replace(/\/$/, "");
-        const raw = repo.replace("github.com", "raw.githubusercontent.com") + "/main/";
-        const title = document.getElementById('title').value || "Workshop Präsentation";
-        const customer = document.getElementById('customer').value || "[Kundenname]";
-        const dateStr = document.getElementById('date').value || "2026";
-        const theme = document.getElementById('theme').value;
-        const engine = document.getElementById('engine').value;
-        const goal = document.getElementById('goal').value || "Ergebnissicherung";
-        const agendaInput = document.getElementById('agenda-input').value;
-        const userContent = document.getElementById('content').value;
-        const autoChapter = document.getElementById('auto-chapter').checked;
-
-        // Module erfassen (Settings und Protocol immer rein)
-        let modules = ['settings', 'protocol'];
-        document.querySelectorAll('.lib-mod:checked').forEach(cb => modules.push(cb.value));
-
-        let moduleInstructions = "";
-        modules.forEach(mod => {
-            let detail = (mod === 'fue-calculator') ? "KOMBINIERTER FUE/TCO RECHNER." : "Funktions-Modul.";
-            moduleInstructions += `\nMODUL: ${mod.toUpperCase()}\n- Info: ${detail}\n- Quellen: JS=${raw}js/lib/${mod}/${mod}.js | MD=${raw}js/lib/${mod}/${mod}.md | HTML=${raw}js/lib/${mod}/${mod}.html\n- ANWEISUNG: Binde JS voll funktionsfähig ein. Falls das .html-Template gefunden wird, nutze dessen UI-Struktur exakt.`;
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('presDate').valueAsDate = new Date();
+            addAgendaItem(); // Add first agenda item
+            addManualSlide(); // Add first slide input for manual mode
+            fetchAllGitHubData(); // Auto-load themes and functions from GitHub on startup
         });
 
-        // Prompt zusammensetzen
-        const masterPrompt = `Agiere als Senior SAP-Consultant und UI-Entwickler. Erstelle eine **einzelne, eigenständige Standalone-HTML-Datei** (Inlined) für: "${title}".
+        // --- UI Interactions ---
+        function changeUITheme() {
+            const theme = document.getElementById('uiThemeSelector').value;
+            if (theme === 'datagroup') {
+                document.documentElement.setAttribute('data-theme', 'datagroup');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        }
 
-**1. ZWINGENDE KERN-FUNKTIONEN (WIEDERVERWENDBARKEIT):**
-- **Live-Settings:** Implementiere das Settings-Modal (Zahnrad-Icon). Titel, Kundenname, Datum und Agenda MÜSSEN im Browser editierbar sein.
-- **IDs & Variablen:** Setze die Startwerte auf Kunde="${customer}", Titel="${title}", Datum="${dateStr}". Binde sie über die IDs 'display-title', 'display-customer', 'display-date' und 'display-agenda-list' ein.
-- **Daten-Backup (WICHTIG):** Implementiere einen "Export"-Button (erzeugt eine .json Datei aller Settings und Notizen) und einen "Import"-Button (lädt die .json Datei wieder ein).
-- **Protokoll & PDF:** Jede Inhaltsfolie hat eine Textarea (ID 'protocolInput'). Implementiere den Button, um alle gesammelten Notizen als formatiertes PDF oder TXT zu exportieren.
+        function toggleMode() {
+            const mode = document.querySelector('input[name="genMode"]:checked').value;
+            if (mode === 'ai') {
+                document.getElementById('aiModeSection').classList.remove('hidden');
+                document.getElementById('manualModeSection').classList.add('hidden');
+            } else {
+                document.getElementById('aiModeSection').classList.add('hidden');
+                document.getElementById('manualModeSection').classList.remove('hidden');
+            }
+        }
 
-**2. DESIGN-GESETZ (PIXEL-PERFECT):**
-- **Inlining:** Kopiere den VOLLSTÄNDIGEN Textinhalt aller CSS und JS Dateien aus meinem Repository in die HTML-Datei. Keine externen Links (außer Chart.js CDN)!
-- **CSS:** Nutze NUR base.css Variablen. Struktur jeder Folie: .slide-header, .slide-body, .slide-notes-box.
-- **Branding:** ${theme === 'apple' ? 'High-End Apple Style (Clean & Glass)' : 'Datagroup SE Style'}.
+        function toggleAgendaMode() {
+            const mode = document.querySelector('input[name="agendaMode"]:checked').value;
+            if (mode === 'text') {
+                document.getElementById('agendaTextSection').classList.remove('hidden');
+                document.getElementById('agendaDetailSection').classList.add('hidden');
+            } else {
+                document.getElementById('agendaTextSection').classList.add('hidden');
+                document.getElementById('agendaDetailSection').classList.remove('hidden');
+            }
+        }
 
-**3. QUELLEN (GITHUB):**
-- Base: ${raw}css/base.css | Engine: ${raw}css/engine-${engine}.css
-- Theme: ${raw}css/theme-${theme}.css | Logic: ${raw}js/engines/${engine}-init.js
-${moduleInstructions}
+        function addAgendaItem(time = '', topic = '') {
+            agendaItemCount++;
+            const container = document.getElementById('agendaItemsContainer');
+            const div = document.createElement('div');
+            div.className = "flex space-x-2";
+            div.innerHTML = `
+                <input type="time" class="input-field w-1/3 agenda-time" value="${time}">
+                <input type="text" class="input-field w-2/3 agenda-topic" placeholder="Thema..." value="${topic}">
+            `;
+            container.appendChild(div);
+        }
 
-**4. STORYLINE & INHALT:**
-- Folie 1: Cover (mit den Live-Metadaten)
-- Folie 2: Dynamische Agenda (Plan: ${agendaInput || "Schlage Zeiten vor"})
-${currentMode === 'consultant' ? `- Strategie-Modus: Erstelle eine überzeugende Storyline für das Ziel: "${goal}".` : `- Struktur-Vorgabe: Erstelle exakt diese Folien: ${userContent}`}
-${autoChapter ? "- Kapitel: Gruppiere inhaltliche Folien thematisch und nutze zwingend Zwischen-Folien (.slide-section) als Divider." : ""}
+        function clearAgendaItems() {
+            document.getElementById('agendaItemsContainer').innerHTML = '';
+            agendaItemCount = 0;
+        }
 
-GIB NUR DEN VOLLSTÄNDIGEN HTML-CODE AUS. STELLE SICHER, DASS JSON-EXPORT UND IMPORT VOLL FUNKTIONIEREN.`;
+        function addManualSlide(content = '', selectedFunc = '') {
+            manualSlideCount++;
+            const container = document.getElementById('manualSlidesContainer');
+            const div = document.createElement('div');
+            div.className = "flex space-x-2";
+            
+            let functionOptions = '<option value="">-- Keine Zusatzfunktion anbinden --</option>';
+            Object.keys(loadedFunctions).forEach(func => {
+                functionOptions += `<option value="${func}" ${selectedFunc === func ? 'selected' : ''}>${func}</option>`;
+            });
 
-        document.getElementById('prompt-text').innerText = masterPrompt;
-        document.getElementById('result-box').style.display = 'block';
-        document.getElementById('result-box').scrollIntoView({ behavior: 'smooth' });
-    }
+            div.innerHTML = `
+                <span class="font-bold text-sm w-16 pt-2">Folie ${manualSlideCount}:</span>
+                <div class="flex-grow space-y-2">
+                    <textarea class="input-field h-16 manual-slide-input" placeholder="Inhalt für Folie ${manualSlideCount}...">${content}</textarea>
+                    <select class="input-field text-xs slide-function-select bg-gray-50">
+                        ${functionOptions}
+                    </select>
+                </div>
+            `;
+            container.appendChild(div);
+        }
 
-    function copy() { 
-        navigator.clipboard.writeText(document.getElementById('prompt-text').innerText).then(() => alert("Master-Prompt kopiert!")); 
-    }
-</script>
+        function clearManualSlides() {
+            document.getElementById('manualSlidesContainer').innerHTML = '';
+            manualSlideCount = 0;
+        }
 
+        function updateAllSlideFunctionSelectors() {
+            document.querySelectorAll('.slide-function-select').forEach(select => {
+                const currentVal = select.value;
+                let functionOptions = '<option value="">-- Keine Zusatzfunktion anbinden --</option>';
+                Object.keys(loadedFunctions).forEach(func => {
+                    functionOptions += `<option value="${func}" ${currentVal === func ? 'selected' : ''}>${func}</option>`;
+                });
+                select.innerHTML = functionOptions;
+            });
+        }
+
+        // --- File System Logic (Reading from GitHub API) ---
+        async function fetchAllGitHubData() {
+            const btn = document.getElementById('githubLoadAllBtn');
+            const originalBtnHtml = btn.innerHTML;
+            const listContainer = document.getElementById('functionsList');
+            const designSelect = document.getElementById('presDesign');
+
+            // Set global loading states
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Lade Daten...';
+            btn.disabled = true;
+            listContainer.innerHTML = '<p class="text-sm text-blue-500 text-center py-4"><i class="fa-solid fa-spinner fa-spin mb-2 text-2xl"></i><br>Lese Repository-Struktur...</p>';
+            designSelect.innerHTML = '<option value="">Lade Themes...</option>';
+            
+            if (document.getElementById('noFunctionsMsg')) {
+                document.getElementById('noFunctionsMsg').style.display = 'none';
+            }
+
+            try {
+                // Führe beide Fetch-Aufrufe parallel aus
+                await Promise.all([
+                    fetchThemesFromGitHub(),
+                    fetchFunctionsFromGitHub()
+                ]);
+            } catch (error) {
+                console.error("Globaler Fetch Fehler:", error);
+                alert("Fehler beim Laden der GitHub-Daten: " + error.message);
+            } finally {
+                // Restore button state
+                btn.innerHTML = originalBtnHtml;
+                btn.disabled = false;
+            }
+        }
+
+        async function fetchThemesFromGitHub() {
+            loadedThemes = {};
+            const repoOwner = document.getElementById('ghOwner').value.trim();
+            const repoName = document.getElementById('ghRepo').value.trim();
+            const folderPath = document.getElementById('ghCssFolder').value.trim();
+
+            if (!repoOwner || !repoName || !folderPath) return;
+
+            try {
+                const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`CSS-Ordner Fehler: ${response.status}`);
+                }
+                
+                const files = await response.json();
+                
+                // Lade den rohen CSS Inhalt der Theme-Dateien
+                const fetchPromises = files.map(async (file) => {
+                    if (file.type === 'file' && file.name.endsWith('.css') && file.name.startsWith('theme-')) {
+                        const res = await fetch(file.download_url);
+                        if (res.ok) {
+                            loadedThemes[file.name] = await res.text();
+                        }
+                    }
+                });
+
+                await Promise.all(fetchPromises);
+                renderThemeDropdown();
+
+            } catch (error) {
+                console.warn("Themes konnten nicht geladen werden:", error);
+                renderThemeDropdown(); // Baut zumindest die Fallbacks auf
+            }
+        }
+
+        function renderThemeDropdown() {
+            const selectEl = document.getElementById('presDesign');
+            const themeNames = Object.keys(loadedThemes);
+            let themeOptions = '';
+            
+            themeNames.forEach(name => {
+                // Mache den Namen hübsch (z.B. "theme-datagroup.css" -> "Datagroup")
+                const niceName = name.replace('theme-', '').replace('.css', '');
+                const displayName = niceName.charAt(0).toUpperCase() + niceName.slice(1) + ' Style';
+                themeOptions += `<option value="${name}">${displayName} (${name})</option>`;
+            });
+            
+            if (themeOptions === '') {
+                themeOptions = '<option value="Custom Apple Design">Custom Apple Design (Fallback)</option>';
+                themeOptions += '<option value="Simple Reveal.js Design">Simple Reveal.js Design (Fallback)</option>';
+            } else {
+                themeOptions += '<option value="Custom Apple Design">Custom Apple Design (Fallback)</option>';
+            }
+            selectEl.innerHTML = themeOptions;
+        }
+
+        async function fetchFunctionsFromGitHub() {
+            const listContainer = document.getElementById('functionsList');
+            loadedFunctions = {}; // Reset
+
+            const repoOwner = document.getElementById('ghOwner').value.trim();
+            const repoName = document.getElementById('ghRepo').value.trim();
+            const folderPath = document.getElementById('ghFolder').value.trim();
+
+            if (!repoOwner || !repoName || !folderPath) {
+                 listContainer.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">Bitte Repository-Daten ausfüllen.</p>';
+                 return;
+            }
+
+            try {
+                // 1. Hole den Default-Branch (meist main oder master)
+                const repoRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`);
+                if (!repoRes.ok) throw new Error(`Repository Fehler: ${repoRes.status}`);
+                const repoData = await repoRes.json();
+                const defaultBranch = repoData.default_branch;
+
+                // 2. Hole den gesamten Verzeichnisbaum rekursiv
+                const treeRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/git/trees/${defaultBranch}?recursive=1`);
+                if (!treeRes.ok) throw new Error("Konnte Dateibaum nicht lesen.");
+                const treeData = await treeRes.json();
+
+                // 3. Filtere Dateien im Zielordner und bereite Download vor
+                const prefix = folderPath.endsWith('/') ? folderPath : folderPath + '/';
+                const filesToFetch = [];
+
+                treeData.tree.forEach(item => {
+                    if (item.type === 'blob' && item.path.startsWith(prefix)) {
+                        const relativePath = item.path.substring(prefix.length);
+                        const parts = relativePath.split('/');
+                        
+                        if (parts.length >= 2) {
+                            const funcName = parts[parts.length - 2]; 
+                            const fileName = parts[parts.length - 1];
+                            const ext = fileName.split('.').pop().toLowerCase();
+                            
+                            if (['js', 'md', 'html'].includes(ext)) {
+                                if (!loadedFunctions[funcName]) {
+                                    loadedFunctions[funcName] = { js: null, md: null, html: null };
+                                }
+                                const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${defaultBranch}/${item.path}`;
+                                filesToFetch.push({ funcName, ext, rawUrl });
+                            }
+                        }
+                    }
+                });
+
+                if (filesToFetch.length === 0) {
+                    listContainer.innerHTML = `<p class="text-sm text-orange-500 p-2 text-center bg-orange-50 rounded border border-orange-200">Keine Funktionen in '${folderPath}' gefunden.</p>`;
+                    return;
+                }
+
+                // 4. Lade alle relevanten JS/MD Dateien parallel herunter
+                const fetchPromises = filesToFetch.map(async (fileData) => {
+                    const res = await fetch(fileData.rawUrl);
+                    if (res.ok) {
+                        loadedFunctions[fileData.funcName][fileData.ext] = await res.text();
+                    }
+                });
+
+                await Promise.all(fetchPromises);
+                
+                renderFunctionCheckboxes();
+                updateAllSlideFunctionSelectors();
+
+            } catch (error) {
+                console.error("Fehler beim Laden der Funktionen:", error);
+                listContainer.innerHTML = `<p class="text-sm text-red-500 p-2 text-center bg-red-50 rounded border border-red-200"><i class="fa-solid fa-triangle-exclamation mb-1"></i><br>${error.message}</p>`;
+            }
+        }
+
+        function renderFunctionCheckboxes() {
+            const listContainer = document.getElementById('functionsList');
+            listContainer.innerHTML = '';
+            
+            const functionNames = Object.keys(loadedFunctions);
+            
+            if (functionNames.length === 0) {
+                listContainer.innerHTML = '<p class="text-sm text-gray-500 text-center">Keine gültigen Funktionen im Ordner gefunden.</p>';
+                return;
+            }
+
+            functionNames.forEach(funcName => {
+                const data = loadedFunctions[funcName];
+                const hasJS = !!data.js;
+                const hasMD = !!data.md;
+                const hasHTML = !!data.html;
+
+                if (hasJS && hasMD) {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between p-2 hover:bg-white rounded border border-transparent hover:border-[var(--border)] transition-colors";
+                    
+                    let badges = `<span class="text-[10px] bg-blue-100 text-blue-800 px-1 rounded ml-2">JS</span>
+                                  <span class="text-[10px] bg-green-100 text-green-800 px-1 rounded ml-1">MD</span>`;
+                    if (hasHTML) badges += `<span class="text-[10px] bg-orange-100 text-orange-800 px-1 rounded ml-1">HTML</span>`;
+
+                    div.innerHTML = `
+                        <label class="flex items-center space-x-2 cursor-pointer w-full">
+                            <input type="checkbox" value="${funcName}" class="function-checkbox w-4 h-4 text-blue-600 rounded">
+                            <span class="font-medium text-sm">${funcName} ${badges}</span>
+                        </label>
+                    `;
+                    listContainer.appendChild(div);
+                }
+            });
+        }
+
+        // --- Prompt Generation Logic ---
+        function generatePrompt() {
+            const title = document.getElementById('presTitle').value || "Ohne Titel";
+            const customer = document.getElementById('presCustomer').value || "Kein Kunde";
+            const date = document.getElementById('presDate').value || "Kein Datum";
+            const design = document.getElementById('presDesign').value;
+            
+            let agenda = "";
+            const agendaMode = document.querySelector('input[name="agendaMode"]:checked').value;
+            if(agendaMode === 'text') {
+                agenda = document.getElementById('presAgendaText').value || "Keine Agenda vorgegeben";
+            } else {
+                const times = document.querySelectorAll('.agenda-time');
+                const topics = document.querySelectorAll('.agenda-topic');
+                let agendaItems = [];
+                times.forEach((t, i) => {
+                    if(topics[i].value.trim() !== "") {
+                        agendaItems.push(`${t.value} Uhr: ${topics[i].value.trim()}`);
+                    }
+                });
+                agenda = agendaItems.length > 0 ? agendaItems.join('\n') : "Keine Agenda vorgegeben";
+            }
+            
+            const mode = document.querySelector('input[name="genMode"]:checked').value;
+            
+            // Collect selected functions
+            const selectedFunctions = new Set();
+            document.querySelectorAll('.function-checkbox:checked').forEach(cb => {
+                selectedFunctions.add(cb.value);
+            });
+
+            // Build Prompt String
+            let prompt = `Act as an Expert Frontend Developer and Presentation Designer.\n\n`;
+            prompt += `AUFGABE: Erstelle eine interaktive Präsentation als **EINE EINZIGE HTML-DATEI** (Single-File). Das bedeutet: Sämtliches CSS und JavaScript muss direkt im <style> und <script> Block der HTML Datei integriert sein. Keine externen lokalen Dateien referenzieren (außer standard CDNs).\n\n`;
+            
+            prompt += `### GLOBALE PRÄSENTATIONS-DATEN\n`;
+            prompt += `- Titel: ${title}\n`;
+            prompt += `- Kunde: ${customer}\n`;
+            prompt += `- Datum: ${date}\n`;
+            prompt += `- Agenda/Kapitel:\n${agenda}\n`;
+            
+            // Design Integration
+            if (design.startsWith('theme-') && loadedThemes[design]) {
+                prompt += `- Design/Styleguide: Verwende das untenstehende CSS-Theme (betreffende CSS-Variablen und Stile). Füge diesen CSS-Code in den <style> Block der Datei ein:\n`;
+                prompt += `\n--- CSS THEME (${design}) ---\n\`\`\`css\n${loadedThemes[design]}\n\`\`\`\n\n`;
+            } else {
+                prompt += `- Design/Styleguide: Verwende ein ${design}.\n\n`;
+            }
+
+            const includeSettings = document.getElementById('chkFeatureSettings').checked;
+            const includeProtocol = document.getElementById('chkFeatureProtocol').checked;
+            const includeState = document.getElementById('chkFeatureState').checked;
+
+            prompt += `### GENERELLE PFLICHT-FUNKTIONEN (Immer einbauen)\n`;
+            let reqCounter = 1;
+            prompt += `${reqCounter++}. **Navigation:** Die Folien müssen per Tastatur (Pfeiltaste Links/Rechts) navigierbar sein (z.B. durch ein / Ausblenden von <section> Elementen).\n`;
+            
+            if (includeSettings) {
+                prompt += `${reqCounter++}. **Einstellungsbereich:** Es muss eine sichtbare UI geben (z.B. in einem ausklappbaren Sidebar-Menü), in der der Nutzer Agenda, Titel, Kundenname und Datum nachträglich ändern kann. Diese Änderungen müssen im DOM sichtbar werden.\n`;
+            }
+            if (includeProtocol) {
+                prompt += `${reqCounter++}. **Protokoll/Notizen-Funktion:** Integriere zu JEDER Folie einen Bereich (z.B. am Rand oder als Overlay), in dem der Nutzer Notizen/Protokolle für den Kunden oder Workshop erfassen kann. Implementiere einen Button, der die erfassten Folien-Notizen als PDF und als einfachen Text exportiert (Nutze dafür html2pdf.js über CDN: https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js).\n`;
+            }
+            if (includeState) {
+                prompt += `${reqCounter++}. **JSON Export/Import:** Biete Funktionen an, um den gesamten Arbeitsfortschritt der Präsentation (Notizen, Settings, ggf. eingegebene Inhalte) als JSON-Datei herunterzuladen und wieder hochzuladen, um später weiterarbeiten zu können.\n`;
+            }
+            prompt += `\n`;
+
+            prompt += `### INHALTE & STRUKTUR\n`;
+            if (mode === 'ai') {
+                const topic = document.getElementById('aiTopic').value;
+                const count = document.getElementById('aiSlideCount').value;
+                prompt += `MODUS: Voll-KI Generierung.\n`;
+                prompt += `Recherchiere und erstelle den Inhalt für genau ${count} Folien basierend auf folgendem Auftrag:\n"${topic}"\n`;
+                prompt += `Teile die Inhalte logisch auf die Agenda-Punkte auf.\n\n`;
+            } else {
+                const topic = document.getElementById('manualTopic').value;
+                prompt += `MODUS: Manuelle Inhalte + KI Strukturierung.\n`;
+                prompt += `Generelles Thema: "${topic}".\n`;
+                prompt += `Erstelle das Layout und verknüpfe die folgenden von mir exakt vorgegebenen Inhalte auf die jeweiligen Folien:\n`;
+                
+                const slideInputs = document.querySelectorAll('.manual-slide-input');
+                const slideFuncs = document.querySelectorAll('.slide-function-select');
+                slideInputs.forEach((input, index) => {
+                    const contentVal = input.value.trim();
+                    const funcVal = slideFuncs[index].value;
+                    if(contentVal !== "" || funcVal !== "") {
+                        prompt += `\n[Folie ${index + 1}]:\n${contentVal}\n`;
+                        if(funcVal !== "") {
+                            prompt += `-> WICHTIG: Auf dieser Folie muss die Zusatzfunktion "${funcVal}" eingebunden werden!\n`;
+                            selectedFunctions.add(funcVal);
+                        }
+                    }
+                });
+                prompt += `\n`;
+            }
+
+            if (selectedFunctions.size > 0) {
+                prompt += `\n### ZUSATZFUNKTIONEN (CUSTOM MODULE)\n`;
+                prompt += `Ich habe spezielle Zusatzfunktionen entwickelt. Binde die folgenden ausgewählten Funktionen exakt so in das HTML/JS Konstrukt ein, wie in den Markdown (.md) Beschreibungen gefordert. Wenn eine HTML-Datei dabei ist, NUTZE DIESES HTML-GERÜST exakt so auf einer passenden Folie und erfinde kein eigenes dafür.\n\n`;
+                
+                selectedFunctions.forEach(funcName => {
+                    const data = loadedFunctions[funcName];
+                    prompt += `==== FUNKTION: ${funcName} ====\n`;
+                    prompt += `--- ANLEITUNG (${funcName}.md) ---\n${data.md}\n\n`;
+                    prompt += `--- JAVASCRIPT (${funcName}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
+                    
+                    if (data.html) {
+                        prompt += `--- HTML TEMPLATE (${funcName}.html) ---\n\`\`\`html\n${data.html}\n\`\`\`\n\n`;
+                    }
+                });
+            } else {
+                prompt += `\n(Keine spezifischen Zusatzfunktionen geladen. Nutze Standard-Bordmittel).\n`;
+            }
+
+            prompt += `\nGebe mir NUR den validen, vollständigen HTML Quellcode zurück, der direkt im Browser geöffnet und getestet werden kann.`;
+
+            document.getElementById('finalPrompt').value = prompt;
+        }
+
+        function copyPrompt() {
+            const promptEl = document.getElementById('finalPrompt');
+            promptEl.select();
+            document.execCommand('copy');
+            alert('Prompt in die Zwischenablage kopiert!');
+        }
+
+        // --- JSON Export / Import ---
+        function exportStateAsJSON() {
+            const agendaItems = [];
+            document.querySelectorAll('.agenda-time').forEach((ti, idx) => {
+                agendaItems.push({ time: ti.value, topic: document.querySelectorAll('.agenda-topic')[idx].value });
+            });
+
+            const manualSlides = [];
+            const slideFuncs = document.querySelectorAll('.slide-function-select');
+            document.querySelectorAll('.manual-slide-input').forEach((input, index) => {
+                manualSlides.push({
+                    content: input.value,
+                    func: slideFuncs[index].value
+                });
+            });
+
+            const state = {
+                generatorSettings: {
+                    theme: document.getElementById('uiThemeSelector').value,
+                    title: document.getElementById('presTitle').value,
+                    customer: document.getElementById('presCustomer').value,
+                    date: document.getElementById('presDate').value,
+                    design: document.getElementById('presDesign').value,
+                    agendaMode: document.querySelector('input[name="agendaMode"]:checked').value,
+                    agendaText: document.getElementById('presAgendaText').value,
+                    agendaItems: agendaItems,
+                    mode: document.querySelector('input[name="genMode"]:checked').value,
+                    aiTopic: document.getElementById('aiTopic').value,
+                    aiSlideCount: document.getElementById('aiSlideCount').value,
+                    manualTopic: document.getElementById('manualTopic').value,
+                    manualSlides: manualSlides,
+                    ghOwner: document.getElementById('ghOwner').value,
+                    ghRepo: document.getElementById('ghRepo').value,
+                    ghCssFolder: document.getElementById('ghCssFolder').value,
+                    ghFolder: document.getElementById('ghFolder').value,
+                    chkFeatureSettings: document.getElementById('chkFeatureSettings').checked,
+                    chkFeatureProtocol: document.getElementById('chkFeatureProtocol').checked,
+                    chkFeatureState: document.getElementById('chkFeatureState').checked
+                },
+                loadedFunctions: loadedFunctions, 
+                loadedThemes: loadedThemes,
+                generatedPrompt: document.getElementById('finalPrompt').value
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "prompt_generator_state.json");
+            document.body.appendChild(downloadAnchorNode); 
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importStateFromJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const state = JSON.parse(e.target.result);
+                    const s = state.generatorSettings;
+
+                    // Restore Settings
+                    document.getElementById('uiThemeSelector').value = s.theme || 'apple';
+                    changeUITheme();
+
+                    document.getElementById('ghOwner').value = s.ghOwner || 'ulrichwetzel1977-ship-it';
+                    document.getElementById('ghRepo').value = s.ghRepo || 'presentations_style_as_html';
+                    document.getElementById('ghCssFolder').value = s.ghCssFolder || 'CSS';
+                    document.getElementById('ghFolder').value = s.ghFolder || 'js/lib';
+
+                    document.getElementById('presTitle').value = s.title || '';
+                    document.getElementById('presCustomer').value = s.customer || '';
+                    document.getElementById('presDate').value = s.date || '';
+                    
+                    if(s.agendaMode === 'detailed') {
+                        document.querySelector('input[name="agendaMode"][value="detailed"]').checked = true;
+                    } else {
+                        document.querySelector('input[name="agendaMode"][value="text"]').checked = true;
+                    }
+                    toggleAgendaMode();
+                    
+                    document.getElementById('presAgendaText').value = s.agendaText || '';
+                    if (s.agendaItems && s.agendaItems.length > 0) {
+                        clearAgendaItems();
+                        s.agendaItems.forEach(item => addAgendaItem(item.time, item.topic));
+                    }
+                    
+                    if(s.mode === 'ai') {
+                        document.querySelector('input[name="genMode"][value="ai"]').checked = true;
+                    } else {
+                        document.querySelector('input[name="genMode"][value="manual"]').checked = true;
+                    }
+                    toggleMode();
+
+                    document.getElementById('aiTopic').value = s.aiTopic || '';
+                    document.getElementById('aiSlideCount').value = s.aiSlideCount || '5';
+                    document.getElementById('manualTopic').value = s.manualTopic || '';
+
+                    if (s.chkFeatureSettings !== undefined) document.getElementById('chkFeatureSettings').checked = s.chkFeatureSettings;
+                    if (s.chkFeatureProtocol !== undefined) document.getElementById('chkFeatureProtocol').checked = s.chkFeatureProtocol;
+                    if (s.chkFeatureState !== undefined) document.getElementById('chkFeatureState').checked = s.chkFeatureState;
+
+                    // Restore cached GitHub Data
+                    if (state.loadedThemes) {
+                        loadedThemes = state.loadedThemes;
+                        renderThemeDropdown();
+                        document.getElementById('presDesign').value = s.design || '';
+                    }
+                    
+                    if (state.loadedFunctions) {
+                        loadedFunctions = state.loadedFunctions;
+                        renderFunctionCheckboxes();
+                    }
+
+                    // Restore Manual Slides
+                    if (s.manualSlides && s.manualSlides.length > 0) {
+                        clearManualSlides();
+                        s.manualSlides.forEach(slide => {
+                            if (typeof slide === 'string') {
+                                addManualSlide(slide, '');
+                            } else {
+                                addManualSlide(slide.content, slide.func);
+                            }
+                        });
+                    }
+
+                    // Restore Prompt
+                    if (state.generatedPrompt) {
+                        document.getElementById('finalPrompt').value = state.generatedPrompt;
+                    }
+
+                    alert('Einstellungen erfolgreich geladen!');
+                } catch (error) {
+                    console.error(error);
+                    alert('Fehler beim Laden der JSON-Datei. Ist das Format korrekt?');
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
 </body>
 </html>
