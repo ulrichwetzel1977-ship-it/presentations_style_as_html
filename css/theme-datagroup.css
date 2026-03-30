@@ -35,6 +35,9 @@
     /* Glassmorphism deaktiviert für striktes Flat Design */
     --glass-bg: #ffffff;
     --glass-filter: none;
+
+    /* Diese Variable wird vom Generator befüllt */
+    --gh-raw-base: "";
 }
 
 /* --- LOGO OBEN RECHTS --- */
@@ -44,7 +47,7 @@
     right: 40px;
     width: 200px;
     height: 60px;
-    background-image: url('../images/datagroup_logo.svg'); /* Pfad anpassen */
+    background-image: var(--gh-raw-base) + '../assets/images/Datagroup_design/header/logo.png'; /* Pfad anpassen */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: right top;
