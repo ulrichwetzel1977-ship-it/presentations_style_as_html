@@ -1,0 +1,38 @@
+:root {
+    /* Typografie & Farben */
+    --font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --primary: #4A4A4A;
+    --primary-hover: #333333;
+    --primary-soft: #f0f0f0;
+    --bg-color: #ffffff;
+    --surface: #ffffff;
+    --border: #dddddd;
+    --text: #333333;
+    --text-secondary: #666666;
+    
+    /* Status-Farben */
+    --danger: #dc3545; --danger-bg: #f8d7da;
+    --warning: #ffc107; --warning-bg: #fff3cd;
+    --success: #28a745; --success-bg: #d4edda;
+    
+    /* Formen & Effekte */
+    --radius: 4px;
+    --radius-sm: 2px;
+    --shadow: none;
+    --modal-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    
+    /* Glassmorphism deaktiviert (Schlichtes Design) */
+    --glass-bg: #ffffff;
+    --glass-filter: none;
+    --modal-backdrop: rgba(0,0,0,0.5);
+    
+    /* Spezifische UI */
+    --header-bg-color: #f8f9fa;
+    --header-text-color: #333333;
+    --table-bg: #ffffff;
+    
+    /* Z-Indizes */
+    --z-index-header: 1000;
+    --z-index-ui: 1100;
+    --z-index-modal: 2000;
+}

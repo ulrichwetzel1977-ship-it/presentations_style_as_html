@@ -1,36 +1,16 @@
 /* ==========================================
-   BASE.CSS - Globales Layout & UI Framework
+   LAYOUT.CSS - Globales Layout & UI Framework
    ========================================== */
-
-:root {
-    --primary: #0071e3;
-    --accent-hover: #0077ed;
-    --accent-soft: #e8f0fe;
-    --bg-color: #f5f5f7;
-    --surface: #ffffff;
-    --border: #d2d2d7;
-    --text: #1d1d1f;
-    --text-secondary: #6e6e73;
-    --danger: #ff3b30;
-    --warning: #ff9500;
-    --success: #34c759;
-    --radius: 14px;
-    --radius-sm: 8px;
-    --shadow: 0 2px 20px rgba(0,0,0,0.08);
-    --z-index-header: 1000;
-    --z-index-ui: 1100;
-    --z-index-modal: 2000;
-}
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body, html {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--font-family);
     background-color: var(--bg-color);
     color: var(--text);
     height: 100vh;
     width: 100vw;
-    overflow: hidden;
+    overflow: hidden; /* Behält deinen App-Charakter bei */
     -webkit-font-smoothing: antialiased;
 }
 
@@ -41,9 +21,9 @@ body, html {
     left: 0;
     width: 100%;
     height: 70px;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-filter);
+    -webkit-backdrop-filter: var(--glass-filter);
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
@@ -52,10 +32,7 @@ body, html {
     z-index: var(--z-index-header);
 }
 
-.header-meta {
-    display: flex;
-    flex-direction: column;
-}
+.header-meta { display: flex; flex-direction: column; }
 
 .header-customer {
     font-size: 11px;
@@ -65,10 +42,7 @@ body, html {
     letter-spacing: 0.1em;
 }
 
-.header-title {
-    font-size: 16px;
-    font-weight: 600;
-}
+.header-title { font-size: 16px; font-weight: 600; }
 
 /* --- CONTAINER & CARDS --- */
 .glass-card {
@@ -91,18 +65,18 @@ body, html {
     border-left: 4px solid var(--primary);
     display: flex;
     gap: 14px;
-    background: var(--accent-soft);
+    background: var(--primary-soft);
 }
-.callout.warning { border-color: var(--warning); background: #fff8f0; }
-.callout.danger { border-color: var(--danger); background: #fff1f0; }
-.callout.success { border-color: var(--success); background: #f0fff4; }
+.callout.warning { border-color: var(--warning); background: var(--warning-bg); }
+.callout.danger { border-color: var(--danger); background: var(--danger-bg); }
+.callout.success { border-color: var(--success); background: var(--success-bg); }
 
-/* --- MODALS (Settings & Protocol) --- */
+/* --- MODALS --- */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(10px);
+    background: var(--modal-backdrop);
+    backdrop-filter: var(--glass-filter);
     z-index: var(--z-index-modal);
     display: none;
     align-items: center;
@@ -111,21 +85,22 @@ body, html {
 .modal-overlay.open { display: flex; }
 
 .modal-content {
-    background: white;
+    background: var(--surface);
     width: 700px;
     max-width: 95vw;
     max-height: 85vh;
-    border-radius: 20px;
+    border-radius: var(--radius);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    box-shadow: var(--modal-shadow);
+    border: 1px solid var(--border);
 }
 
 .modal-header {
     padding: 20px 25px;
-    background: var(--text);
-    color: white;
+    background: var(--header-bg-color);
+    color: var(--header-text-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -135,38 +110,49 @@ body, html {
 
 /* --- FORMULAR ELEMENTE --- */
 .input-group { margin-bottom: 15px; }
-.input-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
+.input-group label { 
+    display: block; 
+    font-size: 11px; 
+    font-weight: 700; 
+    color: var(--text-secondary); 
+    text-transform: uppercase; 
+    margin-bottom: 5px; 
+}
 input, select, textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-family: inherit;
     font-size: 14px;
+    background: var(--surface);
+    color: var(--text);
 }
 
 /* --- BUTTONS --- */
 .btn {
     padding: 10px 20px;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     border: none;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    font-family: inherit;
 }
-.btn-primary { background: var(--primary); color: white; }
+.btn-primary { background: var(--primary); color: #ffffff; }
+.btn-primary:hover { background: var(--primary-hover); }
 .btn-secondary { background: var(--bg-color); color: var(--text); border: 1px solid var(--border); }
 .btn:active { transform: scale(0.98); }
 
-/* --- NAVIGATION BAR (Unten) --- */
+/* --- NAVIGATION BAR --- */
 .nav-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     height: 60px;
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(15px);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-filter);
     border-top: 1px solid var(--border);
     display: flex;
     align-items: center;
@@ -175,7 +161,7 @@ input, select, textarea {
     z-index: var(--z-index-ui);
 }
 
-/* TCO & FUE Analyzer Styles */
+/* --- TCO & FUE WIDGETS --- */
 .fue-analyzer-grid {
     display: grid;
     grid-template-columns: 320px 1fr 300px;
@@ -188,22 +174,25 @@ input, select, textarea {
     border-collapse: collapse;
     font-size: 11px;
     margin-top: 15px;
-    background: rgba(255,255,255,0.5);
-    border-radius: 8px;
+    background: var(--table-bg);
+    border-radius: var(--radius-sm);
     overflow: hidden;
 }
 
-.tshirt-table th, .tshirt-table td { padding: 6px 10px; border: 1px solid var(--border); }
+.tshirt-table th, .tshirt-table td { 
+    padding: 6px 10px; 
+    border: 1px solid var(--border); 
+}
 
 tr.active-tier {
-    background: var(--accent) !important;
-    color: white !important;
+    background: var(--primary) !important;
+    color: #ffffff !important;
     font-weight: 700;
 }
 
 .kpi-badge {
-    background: var(--accent);
-    color: white;
+    background: var(--primary);
+    color: #ffffff;
     padding: 2px 8px;
     border-radius: 10px;
     font-size: 10px;
