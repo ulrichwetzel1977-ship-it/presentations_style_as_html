@@ -144,7 +144,13 @@
                             <input type="text" id="ghFolder" class="input-field text-sm" value="js/lib">
                         </div>
                     </div>
-                    <button onclick="fetchAllGitHubData()" id="githubLoadAllBtn" class="btn-primary w-full text-sm"><i class="fa-solid fa-cloud-arrow-down mr-2"></i> Repository-Daten laden (Themes & Funktionen)</button>
+                    <div class="mt-4 pt-4 border-t border-[var(--border)]">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="chkEmbedCode" class="w-4 h-4 text-blue-600 rounded">
+                            <span class="text-sm font-medium">Vollständigen Code in den Prompt einbetten (Standard: Nur Repository-URLs übergeben)</span>
+                        </label>
+                    </div>
+                    <button onclick="fetchAllGitHubData()" id="githubLoadAllBtn" class="btn-primary w-full text-sm mt-4"><i class="fa-solid fa-cloud-arrow-down mr-2"></i> Repository-Daten laden (Themes & Funktionen)</button>
                 </div>
 
                 <!-- General Settings -->
@@ -239,7 +245,7 @@
             <div class="space-y-6">
 
                 <!-- Dynamic Functions -->
-                <div class="card p-6 space-y-4">
+                <div id="step3FunctionsSection" class="card p-6 space-y-4">
                     <div class="flex justify-between items-center border-b border-[var(--border)] pb-2">
                         <h2 class="text-xl font-semibold"><i class="fa-solid fa-code mr-2"></i>3. Funktionen einbinden</h2>
                     </div>
@@ -309,7 +315,9 @@
         // --- Global State ---
         let loadedFunctions = {}; // Format: { "FunctionName": { js: "...", md: "...", html: "..." } }
         let loadedThemes = {}; // Format: { "theme-xxx.css": "/* raw css content */" }
+        let loadedThemesUrls = {}; // Speichert die direkten URLs zu den Themes
         let baseLayoutCss = ""; // Format: "/* raw layout css */"
+        let baseLayoutCssUrl = ""; // Speichert die direkte URL zum Base Layout
         let manualSlideCount = 0;
         let agendaItemCount = 0;
 
@@ -336,9 +344,11 @@
             if (mode === 'ai') {
                 document.getElementById('aiModeSection').classList.remove('hidden');
                 document.getElementById('manualModeSection').classList.add('hidden');
+                document.getElementById('step3FunctionsSection').classList.remove('hidden');
             } else {
                 document.getElementById('aiModeSection').classList.add('hidden');
                 document.getElementById('manualModeSection').classList.remove('hidden');
+                document.getElementById('step3FunctionsSection').classList.add('hidden');
             }
         }
 
@@ -463,11 +473,13 @@
                 // Lade den rohen CSS Inhalt der Theme-Dateien und der layout.css
                 const fetchPromises = files.map(async (file) => {
                     if (file.type === 'file' && file.name === 'layout.css') {
+                        baseLayoutCssUrl = file.download_url;
                         const res = await fetch(file.download_url);
                         if (res.ok) {
                             baseLayoutCss = await res.text();
                         }
                     } else if (file.type === 'file' && file.name.endsWith('.css') && file.name.startsWith('theme-')) {
+                        loadedThemesUrls[file.name] = file.download_url;
                         const res = await fetch(file.download_url);
                         if (res.ok) {
                             loadedThemes[file.name] = await res.text();
@@ -544,11 +556,12 @@
                             const fileName = parts[parts.length - 1];
                             const ext = fileName.split('.').pop().toLowerCase();
                             
-                            if (['js', 'md', 'html'].includes(ext)) {
+                            if (['js', 'md', 'html', 'css'].includes(ext)) {
                                 if (!loadedFunctions[funcName]) {
-                                    loadedFunctions[funcName] = { js: null, md: null, html: null };
+                                    loadedFunctions[funcName] = { js: null, md: null, html: null, css: null, urls: { js: null, md: null, html: null, css: null } };
                                 }
                                 const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${defaultBranch}/${item.path}`;
+                                loadedFunctions[funcName].urls[ext] = rawUrl;
                                 filesToFetch.push({ funcName, ext, rawUrl });
                             }
                         }
@@ -595,6 +608,7 @@
                 const hasJS = !!data.js;
                 const hasMD = !!data.md;
                 const hasHTML = !!data.html;
+                const hasCSS = !!data.css;
 
                 if (hasJS && hasMD) {
                     const div = document.createElement('div');
@@ -603,6 +617,7 @@
                     let badges = `<span class="text-[10px] bg-blue-100 text-blue-800 px-1 rounded ml-2">JS</span>
                                   <span class="text-[10px] bg-green-100 text-green-800 px-1 rounded ml-1">MD</span>`;
                     if (hasHTML) badges += `<span class="text-[10px] bg-orange-100 text-orange-800 px-1 rounded ml-1">HTML</span>`;
+                    if (hasCSS) badges += `<span class="text-[10px] bg-purple-100 text-purple-800 px-1 rounded ml-1">CSS</span>`;
 
                     div.innerHTML = `
                         <label class="flex items-center space-x-2 cursor-pointer w-full">
@@ -656,16 +671,26 @@
             prompt += `- Datum: ${date}\n`;
             prompt += `- Agenda/Kapitel:\n${agenda}\n`;
             
+            const embedCode = document.getElementById('chkEmbedCode').checked;
+
             // Base Layout Integration
-            if (baseLayoutCss) {
-                prompt += `- Basis-Layout: Verwende das untenstehende Basis-Layout CSS für die grundsätzliche Struktur der Präsentation. Füge diesen CSS-Code in den <style> Block der Datei ein:\n`;
-                prompt += `\n--- CSS BASIS-LAYOUT (layout.css) ---\n\`\`\`css\n${baseLayoutCss}\n\`\`\`\n\n`;
+            if (baseLayoutCssUrl) {
+                if (embedCode && baseLayoutCss) {
+                    prompt += `- Basis-Layout: Verwende das untenstehende Basis-Layout CSS für die grundsätzliche Struktur der Präsentation. Füge diesen CSS-Code in den <style> Block der Datei ein:\n`;
+                    prompt += `\n--- CSS BASIS-LAYOUT (layout.css) ---\n\`\`\`css\n${baseLayoutCss}\n\`\`\`\n\n`;
+                } else {
+                    prompt += `- Basis-Layout: Die KI soll das Basis-Layout CSS für die grundsätzliche Struktur von dieser URL lesen und in den <style> Block einfügen: ${baseLayoutCssUrl}\n`;
+                }
             }
 
             // Design Integration
-            if (design.startsWith('theme-') && loadedThemes[design]) {
-                prompt += `- Design/Styleguide: Verwende zusätzlich zum Basis-Layout das untenstehende CSS-Theme für Farben und spezifische Anpassungen. Füge diesen CSS-Code EBENFALLS in den <style> Block der Datei ein:\n`;
-                prompt += `\n--- CSS THEME (${design}) ---\n\`\`\`css\n${loadedThemes[design]}\n\`\`\`\n\n`;
+            if (design.startsWith('theme-') && loadedThemesUrls[design]) {
+                if (embedCode && loadedThemes[design]) {
+                    prompt += `- Design/Styleguide: Verwende zusätzlich zum Basis-Layout das untenstehende CSS-Theme für Farben und spezifische Anpassungen. Füge diesen CSS-Code EBENFALLS in den <style> Block der Datei ein:\n`;
+                    prompt += `\n--- CSS THEME (${design}) ---\n\`\`\`css\n${loadedThemes[design]}\n\`\`\`\n\n`;
+                } else {
+                    prompt += `- Design/Styleguide: Die KI soll das CSS-Theme für Farben und spezifische Anpassungen von dieser URL lesen und EBENFALLS in den <style> Block einfügen: ${loadedThemesUrls[design]}\n\n`;
+                }
             } else {
                 prompt += `- Design/Styleguide: Verwende ein ${design} aufbauend auf dem Basis-Layout.\n\n`;
             }
@@ -734,11 +759,27 @@
                 selectedFunctions.forEach(funcName => {
                     const data = loadedFunctions[funcName];
                     prompt += `==== FUNKTION: ${funcName} ====\n`;
-                    prompt += `--- ANLEITUNG (${funcName}.md) ---\n${data.md}\n\n`;
-                    prompt += `--- JAVASCRIPT (${funcName}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
                     
-                    if (data.html) {
-                        prompt += `--- HTML TEMPLATE (${funcName}.html) ---\n\`\`\`html\n${data.html}\n\`\`\`\n\n`;
+                    if (embedCode) {
+                        prompt += `--- ANLEITUNG (${funcName}.md) ---\n${data.md}\n\n`;
+                        prompt += `--- JAVASCRIPT (${funcName}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
+                        if (data.html) {
+                            prompt += `--- HTML TEMPLATE (${funcName}.html) ---\n\`\`\`html\n${data.html}\n\`\`\`\n\n`;
+                        }
+                        if (data.css) {
+                            prompt += `--- CSS STYLES (${funcName}.css) ---\n\`\`\`css\n${data.css}\n\`\`\`\n\n`;
+                        }
+                    } else {
+                        prompt += `Die KI soll die Anleitung, das Skript, ggf. das Template und das CSS direkt aus dem Repository lesen und verarbeiten:\n`;
+                        prompt += `- Anleitung (.md): ${data.urls.md}\n`;
+                        prompt += `- JavaScript (.js): ${data.urls.js}\n`;
+                        if (data.urls.html) {
+                            prompt += `- HTML Template (.html): ${data.urls.html}\n`;
+                        }
+                        if (data.urls.css) {
+                            prompt += `- CSS Styles (.css): ${data.urls.css}\n`;
+                        }
+                        prompt += `\n`;
                     }
                 });
             } else {
@@ -795,11 +836,14 @@
                     chkFeatureSettings: document.getElementById('chkFeatureSettings').checked,
                     chkFeatureProtocol: document.getElementById('chkFeatureProtocol').checked,
                     chkFeatureState: document.getElementById('chkFeatureState').checked,
-                    chkFeatureChapters: document.getElementById('chkFeatureChapters').checked
+                    chkFeatureChapters: document.getElementById('chkFeatureChapters').checked,
+                    chkEmbedCode: document.getElementById('chkEmbedCode').checked
                 },
                 loadedFunctions: loadedFunctions, 
                 loadedThemes: loadedThemes,
+                loadedThemesUrls: loadedThemesUrls,
                 baseLayoutCss: baseLayoutCss,
+                baseLayoutCssUrl: baseLayoutCssUrl,
                 generatedPrompt: document.getElementById('finalPrompt').value
             };
 
@@ -863,14 +907,16 @@
                     if (s.chkFeatureProtocol !== undefined) document.getElementById('chkFeatureProtocol').checked = s.chkFeatureProtocol;
                     if (s.chkFeatureState !== undefined) document.getElementById('chkFeatureState').checked = s.chkFeatureState;
                     if (s.chkFeatureChapters !== undefined) document.getElementById('chkFeatureChapters').checked = s.chkFeatureChapters;
+                    if (s.chkEmbedCode !== undefined) document.getElementById('chkEmbedCode').checked = s.chkEmbedCode;
 
                     // Restore cached GitHub Data
-                    if (state.baseLayoutCss) {
-                        baseLayoutCss = state.baseLayoutCss;
-                    }
+                    if (state.baseLayoutCss) baseLayoutCss = state.baseLayoutCss;
+                    if (state.baseLayoutCssUrl) baseLayoutCssUrl = state.baseLayoutCssUrl;
                     
+                    if (state.loadedThemes) loadedThemes = state.loadedThemes;
+                    if (state.loadedThemesUrls) loadedThemesUrls = state.loadedThemesUrls;
+
                     if (state.loadedThemes) {
-                        loadedThemes = state.loadedThemes;
                         renderThemeDropdown();
                         document.getElementById('presDesign').value = s.design || '';
                     }
