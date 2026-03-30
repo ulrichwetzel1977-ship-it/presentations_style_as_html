@@ -318,6 +318,7 @@
         let loadedThemesUrls = {}; // Speichert die direkten URLs zu den Themes
         let baseLayoutCss = ""; // Format: "/* raw layout css */"
         let baseLayoutCssUrl = ""; // Speichert die direkte URL zum Base Layout
+        let defaultBranchName = "main";
         let manualSlideCount = 0;
         let agendaItemCount = 0;
 
@@ -535,7 +536,8 @@
                 const repoRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`);
                 if (!repoRes.ok) throw new Error(`Repository Fehler: ${repoRes.status}`);
                 const repoData = await repoRes.json();
-                const defaultBranch = repoData.default_branch;
+                defaultBranchName = repoData.default_branch;
+                const defaultBranch = defaultBranchName; // Damit der restliche Code der Funktion weiterläuft
 
                 // 2. Hole den gesamten Verzeichnisbaum rekursiv
                 const treeRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/git/trees/${defaultBranch}?recursive=1`);
@@ -640,7 +642,7 @@
             let agenda = "";
             const agendaMode = document.querySelector('input[name="agendaMode"]:checked').value;
             if(agendaMode === 'text') {
-                agenda = document.getElementById('presAgendaText').value || "Keine Agenda vorgegeben";
+                agenda = document.getElementById('presAgendaText').value || "Erzeuge eine Agenda basierend auf den Ergebnissen deiner Recherche, bilde entsprechende Kapitel und unterteile die präsentation. Zu jedem kapitel soll es eine Trennfolie im Foliensatz geben. deine Agenda startet immer um 09:00 Uhr.";
             } else {
                 const times = document.querySelectorAll('.agenda-time');
                 const topics = document.querySelectorAll('.agenda-topic');
@@ -650,7 +652,7 @@
                         agendaItems.push(`${t.value} Uhr: ${topics[i].value.trim()}`);
                     }
                 });
-                agenda = agendaItems.length > 0 ? agendaItems.join('\n') : "Keine Agenda vorgegeben";
+                agenda = agendaItems.length > 0 ? agendaItems.join('\n') : "Erzeuge eine Agenda basierend auf den Ergebnissen deiner Recherche, bilde entsprechende Kapitel und unterteile die präsentation. Zu jedem kapitel soll es eine Trennfolie im Foliensatz geben. deine Agenda startet immer um 09:00 Uhr.";
             }
             
             const mode = document.querySelector('input[name="genMode"]:checked').value;
@@ -683,13 +685,23 @@
                 }
             }
 
+
+            // Ergänzung um die pfade für die Logos und bilder sauber zu finden
+            const repoOwner = document.getElementById('ghOwner').value.trim();
+            const repoName = document.getElementById('ghRepo').value.trim();
+            const rawBaseUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${defaultBranchName}/`;
+
             // Design Integration
             if (design.startsWith('theme-') && loadedThemesUrls[design]) {
                 if (embedCode && loadedThemes[design]) {
+                    // HIER IST DER TRICK: Wir ersetzen den Platzhalter durch die berechnete URL
+                    let themeCssReady = loadedThemes[design].replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);
+
                     prompt += `- Design/Styleguide: Verwende zusätzlich zum Basis-Layout das untenstehende CSS-Theme für Farben und spezifische Anpassungen. Füge diesen CSS-Code EBENFALLS in den <style> Block der Datei ein:\n`;
                     prompt += `\n--- CSS THEME (${design}) ---\n\`\`\`css\n${loadedThemes[design]}\n\`\`\`\n\n`;
                 } else {
                     prompt += `- Design/Styleguide: Die KI soll das CSS-Theme für Farben und spezifische Anpassungen von dieser URL lesen und EBENFALLS in den <style> Block einfügen: ${loadedThemesUrls[design]}\n\n`;
+                    prompt += `- WICHTIG: Ersetze im CSS-Code alle Vorkommen von '{{GH_RAW_BASE}}' durch '${rawBaseUrl}' bevor du es einfügst!\n\n`;
                 }
             } else {
                 prompt += `- Design/Styleguide: Verwende ein ${design} aufbauend auf dem Basis-Layout.\n\n`;
@@ -702,10 +714,10 @@
 
             prompt += `### GENERELLE PFLICHT-FUNKTIONEN (Immer einbauen)\n`;
             let reqCounter = 1;
-            prompt += `${reqCounter++}. **Navigation:** Die Folien müssen per Tastatur (Pfeiltaste Links/Rechts) navigierbar sein (z.B. durch ein / Ausblenden von <section> Elementen).\n`;
+            prompt += `${reqCounter++}. **Navigation:** Die Folien müssen per Tastatur (Pfeiltaste Links/Rechts) und buttons unten rechts am bildrand navigierbar sein (z.B. durch ein / Ausblenden von <section> Elementen).\n`;
             
             if (includeSettings) {
-                prompt += `${reqCounter++}. **Einstellungsbereich:** Es muss eine sichtbare UI geben (z.B. in einem ausklappbaren Sidebar-Menü), in der der Nutzer Agenda, Titel, Kundenname und Datum nachträglich ändern kann. Diese Änderungen müssen im DOM sichtbar werden.\n`;
+                prompt += `${reqCounter++}. **Einstellungsbereich:** Es muss eine sichtbare UI geben (z.B. in einem ausklappbaren Sidebar-Menü), in der der Nutzer Agenda, Titel, Kundenname und Datum nachträglich ändern kann. Die Folien sollen nummeriert sein. Diese Änderungen müssen im DOM sichtbar werden.\n`;
             }
             if (includeProtocol) {
                 prompt += `${reqCounter++}. **Protokoll/Notizen-Funktion:** Integriere zu JEDER Folie einen Bereich (z.B. am Rand oder als Overlay), in dem der Nutzer Notizen/Protokolle für den Kunden oder Workshop erfassen kann. Implementiere einen Button, der die erfassten Folien-Notizen als PDF und als einfachen Text exportiert (Nutze dafür html2pdf.js über CDN: https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js).\n`;

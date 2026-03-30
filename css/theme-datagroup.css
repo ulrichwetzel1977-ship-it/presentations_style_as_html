@@ -47,7 +47,7 @@
     right: 40px;
     width: 200px;
     height: 60px;
-    background-image: var(--gh-raw-base) + '../assets/images/Datagroup_design/header/logo.png'; /* Pfad anpassen */
+    background-image: url('{{GH_RAW_BASE}}assets/images/Datagroup_design/header/logo.png'); /* Pfad anpassen */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: right top;
