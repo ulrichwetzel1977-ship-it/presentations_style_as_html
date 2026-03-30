@@ -68,6 +68,9 @@ body, html {
     letter-spacing: -0.01em;
 }
 
+/*===========================================
+   SLIDE TEMPLATE: Inhaltsbereich
+   ========================================== */
 /* --- FOLIE: INHALTSBEREICH --- */
 .slide-body {
     padding: 40px 60px 80px;
@@ -126,3 +129,364 @@ td {
     vertical-align: top;
 }
 tr:last-child td { border-bottom: none; }
+
+/* ==========================================
+   SLIDE TEMPLATES (Spezifische Folien-Typen)
+   ========================================== */
+
+/*============================================
+   SLIDE TEMPLATE: AGENDA
+  ========================================== */
+   /* --- AGENDA FOLIE --- */
+.slide-agenda .agenda-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.slide-agenda .agenda-item {
+    display: grid;
+    grid-template-columns: 120px 1fr; /* Feste Breite für die Uhrzeit */
+    gap: 20px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+}
+
+.slide-agenda .agenda-time {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary); /* Nutzt die Theme-Farbe */
+}
+
+.slide-agenda .agenda-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.slide-agenda .agenda-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* Modifier für Pausen (grau und kursiv) */
+.slide-agenda .agenda-item.is-break {
+    opacity: 0.6;
+    font-style: italic;
+    background-color: var(--surface);
+    padding-left: 10px;
+    border-radius: var(--radius-sm);
+}
+
+/* --- KANBAN BOARD FOLIE --- */
+.slide-kanban .kanban-board {
+    display: flex;
+    gap: 24px;
+    height: 100%;
+    align-items: stretch;
+}
+
+.slide-kanban .kanban-col {
+    flex: 1;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.slide-kanban .kanban-col-header {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+.slide-kanban .kanban-card {
+    background-color: var(--bg-color);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    box-shadow: var(--shadow);
+    cursor: grab;
+    font-size: 14px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.slide-kanban .kanban-card:active {
+    cursor: grabbing;
+    transform: scale(0.98);
+}
+
+.slide-kanban .kanban-card:hover {
+    border-color: var(--primary);
+}
+
+/* ==========================================
+   SLIDE TEMPLATE: CHECKLISTE
+   ========================================== */
+
+.slide-checklist .checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Das einzelne Listen-Element (Dein JS-Ziel) */
+.slide-checklist .checklist-item {
+    display: flex;
+    align-items: center; /* Zentriert Haken und Text vertikal */
+    gap: 16px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none; /* Verhindert das Markieren von Text beim schnellen Klicken */
+}
+
+/* Hover-Effekt (Nutzt die Theme-Farbe) */
+.slide-checklist .checklist-item:hover {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+}
+
+/* Die visuelle Checkbox (Viereck oder Kreis) */
+.slide-checklist .checklist-check {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 4px; /* Für runde Apple-Haken z.B. 50% im Theme-File definieren */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent; /* Versteckt das ✓ Zeichen im Standardzustand */
+    transition: all 0.2s;
+    flex-shrink: 0;
+    font-size: 14px;
+}
+
+/* Typografie */
+.slide-checklist .checklist-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    transition: all 0.2s;
+}
+
+.slide-checklist .checklist-subtext {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+/* --- ZUSTAND: ABGEHAKT (Gesteuert durch dein JS: .checked) --- */
+.slide-checklist .checklist-item.checked {
+    opacity: 0.6;
+    background: var(--bg-color); /* Hebt sich weniger ab */
+    border-color: var(--border);
+}
+
+/* Der Haken wird Theme-basiert grün (Success) */
+.slide-checklist .checklist-item.checked .checklist-check {
+    background-color: var(--success);
+    border-color: var(--success);
+    color: white; /* Zeigt das ✓ Zeichen an */
+}
+
+/* Text wird durchgestrichen */
+.slide-checklist .checklist-item.checked .checklist-text {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}
+/*===========================================
+   SLIDE TEMPLATE: EINGABETABELLE
+   ========================================== */
+/* --- EINGABETABELLEN FOLIE --- */
+.slide-input-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.slide-input-table th {
+    background: var(--table-header-bg);
+    color: var(--table-header-text);
+    padding: 14px;
+    text-align: left;
+}
+
+.slide-input-table td {
+    border: 1px solid var(--border);
+    padding: 0; /* Padding auf 0, damit das Input-Feld die Zelle füllt */
+    position: relative;
+}
+
+/* Das Input-Feld macht sich in der Zelle breit */
+.slide-input-table td input[type="text"],
+.slide-input-table td input[type="number"] {
+    width: 100%;
+    height: 100%;
+    padding: 14px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+/* Hervorhebung der aktuellen Zelle beim Tippen */
+.slide-input-table td input:focus {
+    background: var(--primary-soft);
+    box-shadow: inset 0 0 0 2px var(--primary); /* Innerer Rand, verändert das Layout nicht */
+}
+
+/* Styling für Dropdowns und Inputs in der Tabelle */
+.slide-input-table .table-input,
+.slide-input-table .table-select {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    padding: 10px;
+    color: var(--text);
+}
+
+.slide-input-table .table-select {
+    cursor: pointer;
+    text-align-last: center; /* Zentriert den Text im Dropdown */
+}
+
+/* Der Löschen Button in der Tabelle */
+.slide-input-table .btn-delete-row {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.slide-input-table .btn-delete-row:hover {
+    color: var(--danger);
+}
+
+/* ==========================================
+   MODAL TEMPLATE: JOB PROFILE & DRUCK
+   ========================================== */
+
+.job-pdf-view { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 14px; 
+}
+
+.job-pdf-view h3 { 
+    font-size: 13px; 
+    font-weight: 700; 
+    color: var(--primary); /* Holt die Farbe aus dem Theme */
+    border-bottom: 2px solid var(--primary-soft); 
+    padding-bottom: 6px; 
+    margin-top: 10px;
+}
+
+.job-pdf-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    font-size: 13px; 
+}
+
+.job-pdf-table th { 
+    background: var(--surface); 
+    padding: 9px 12px; 
+    text-align: left; 
+    font-weight: 600; 
+    font-size: 12px; 
+    color: var(--text-secondary); 
+    white-space: nowrap; 
+    border: 1px solid var(--border); 
+    width: 190px; 
+    vertical-align: top; 
+}
+
+.job-pdf-table td { 
+    padding: 4px 6px; 
+    border: 1px solid var(--border); 
+    vertical-align: top; 
+    background: var(--bg-color);
+}
+
+/* Die Textfelder, die wie normaler Text aussehen sollen */
+.job-edit-field { 
+    width: 100%; 
+    border: none; 
+    outline: none; 
+    resize: vertical; 
+    font-family: inherit; 
+    font-size: 13px; 
+    line-height: 1.6; 
+    min-height: 34px; 
+    background: transparent; 
+    padding: 4px 6px; 
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    transition: background-color 0.2s;
+}
+
+.job-edit-field:focus { 
+    background: var(--primary-soft); 
+}
+
+/* --- PRINT MEDIA QUERY (Aus deiner HTML übernommen & optimiert) --- */
+@media print {
+    body > *:not(#jobProfileModal) { display: none !important; }
+    #jobProfileModal { display: block !important; position: static !important; overflow: visible !important; }
+    
+    #jobProfileModal .modal { 
+        max-height: none !important; 
+        box-shadow: none !important; 
+        border-radius: 0 !important; 
+        width: 100% !important; 
+        overflow: visible !important; 
+        border: none !important;
+    }
+    
+    /* Der Modal-Header wird zum Dokumenten-Kopf */
+    #jobProfileModal .modal-header {
+        background: transparent !important;
+        color: black !important;
+        border-bottom: 2px solid black !important;
+        padding-left: 0 !important;
+    }
+    #jobProfileModal .modal-header h2,
+    #jobProfileModal .modal-header p { 
+        color: black !important; 
+    }
+    
+    /* Versteckt Buttons beim Drucken */
+    #jobProfileModal .modal-footer, 
+    #jobProfileModal .modal-close { 
+        display: none !important; 
+    }
+    
+    .modal-overlay#jobProfileModal { 
+        display: block !important; 
+        background: transparent !important; 
+    }
+}

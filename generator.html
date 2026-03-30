@@ -137,7 +137,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium mb-1">Ordner für CSS-Themes</label>
-                            <input type="text" id="ghCssFolder" class="input-field text-sm" value="css">
+                            <input type="text" id="ghCssFolder" class="input-field text-sm" value="CSS">
                         </div>
                         <div>
                             <label class="block text-xs font-medium mb-1">Ordner für JS-Funktionen</label>
@@ -272,6 +272,10 @@
                             <input type="checkbox" id="chkFeatureState" checked class="w-4 h-4 text-blue-600 rounded">
                             <span class="text-sm">Speichern/Laden (Arbeitsfortschritt als JSON Im-/Export)</span>
                         </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="chkFeatureChapters" checked class="w-4 h-4 text-blue-600 rounded">
+                            <span class="text-sm">Kapitelfolien (Trennerfolien für jedes Kapitel einfügen)</span>
+                        </label>
                     </div>
                 </div>
 
@@ -305,6 +309,7 @@
         // --- Global State ---
         let loadedFunctions = {}; // Format: { "FunctionName": { js: "...", md: "...", html: "..." } }
         let loadedThemes = {}; // Format: { "theme-xxx.css": "/* raw css content */" }
+        let baseLayoutCss = ""; // Format: "/* raw layout css */"
         let manualSlideCount = 0;
         let agendaItemCount = 0;
 
@@ -455,9 +460,14 @@
                 
                 const files = await response.json();
                 
-                // Lade den rohen CSS Inhalt der Theme-Dateien
+                // Lade den rohen CSS Inhalt der Theme-Dateien und der layout.css
                 const fetchPromises = files.map(async (file) => {
-                    if (file.type === 'file' && file.name.endsWith('.css') && file.name.startsWith('theme-')) {
+                    if (file.type === 'file' && file.name === 'layout.css') {
+                        const res = await fetch(file.download_url);
+                        if (res.ok) {
+                            baseLayoutCss = await res.text();
+                        }
+                    } else if (file.type === 'file' && file.name.endsWith('.css') && file.name.startsWith('theme-')) {
                         const res = await fetch(file.download_url);
                         if (res.ok) {
                             loadedThemes[file.name] = await res.text();
@@ -646,17 +656,24 @@
             prompt += `- Datum: ${date}\n`;
             prompt += `- Agenda/Kapitel:\n${agenda}\n`;
             
+            // Base Layout Integration
+            if (baseLayoutCss) {
+                prompt += `- Basis-Layout: Verwende das untenstehende Basis-Layout CSS für die grundsätzliche Struktur der Präsentation. Füge diesen CSS-Code in den <style> Block der Datei ein:\n`;
+                prompt += `\n--- CSS BASIS-LAYOUT (layout.css) ---\n\`\`\`css\n${baseLayoutCss}\n\`\`\`\n\n`;
+            }
+
             // Design Integration
             if (design.startsWith('theme-') && loadedThemes[design]) {
-                prompt += `- Design/Styleguide: Verwende das untenstehende CSS-Theme (betreffende CSS-Variablen und Stile). Füge diesen CSS-Code in den <style> Block der Datei ein:\n`;
+                prompt += `- Design/Styleguide: Verwende zusätzlich zum Basis-Layout das untenstehende CSS-Theme für Farben und spezifische Anpassungen. Füge diesen CSS-Code EBENFALLS in den <style> Block der Datei ein:\n`;
                 prompt += `\n--- CSS THEME (${design}) ---\n\`\`\`css\n${loadedThemes[design]}\n\`\`\`\n\n`;
             } else {
-                prompt += `- Design/Styleguide: Verwende ein ${design}.\n\n`;
+                prompt += `- Design/Styleguide: Verwende ein ${design} aufbauend auf dem Basis-Layout.\n\n`;
             }
 
             const includeSettings = document.getElementById('chkFeatureSettings').checked;
             const includeProtocol = document.getElementById('chkFeatureProtocol').checked;
             const includeState = document.getElementById('chkFeatureState').checked;
+            const includeChapters = document.getElementById('chkFeatureChapters').checked;
 
             prompt += `### GENERELLE PFLICHT-FUNKTIONEN (Immer einbauen)\n`;
             let reqCounter = 1;
@@ -674,6 +691,14 @@
             prompt += `\n`;
 
             prompt += `### INHALTE & STRUKTUR\n`;
+            prompt += `WICHTIGE STRUKTUR-REGELN:\n`;
+            prompt += `- Folie 1: MUSS immer die Titelfolie sein.\n`;
+            prompt += `- Folie 2: MUSS zwingend die Agenda (Inhaltsverzeichnis) sein.\n`;
+            if (includeChapters) {
+                prompt += `- Kapitelfolien: Füge vor Beginn jedes neuen Kapitels/Agendapunkts eine eigene Trennerfolie (Kapitelfolie) ein, die den Titel des kommenden Kapitels groß darstellt.\n`;
+            }
+            prompt += `\n`;
+
             if (mode === 'ai') {
                 const topic = document.getElementById('aiTopic').value;
                 const count = document.getElementById('aiSlideCount').value;
@@ -769,10 +794,12 @@
                     ghFolder: document.getElementById('ghFolder').value,
                     chkFeatureSettings: document.getElementById('chkFeatureSettings').checked,
                     chkFeatureProtocol: document.getElementById('chkFeatureProtocol').checked,
-                    chkFeatureState: document.getElementById('chkFeatureState').checked
+                    chkFeatureState: document.getElementById('chkFeatureState').checked,
+                    chkFeatureChapters: document.getElementById('chkFeatureChapters').checked
                 },
                 loadedFunctions: loadedFunctions, 
                 loadedThemes: loadedThemes,
+                baseLayoutCss: baseLayoutCss,
                 generatedPrompt: document.getElementById('finalPrompt').value
             };
 
@@ -835,8 +862,13 @@
                     if (s.chkFeatureSettings !== undefined) document.getElementById('chkFeatureSettings').checked = s.chkFeatureSettings;
                     if (s.chkFeatureProtocol !== undefined) document.getElementById('chkFeatureProtocol').checked = s.chkFeatureProtocol;
                     if (s.chkFeatureState !== undefined) document.getElementById('chkFeatureState').checked = s.chkFeatureState;
+                    if (s.chkFeatureChapters !== undefined) document.getElementById('chkFeatureChapters').checked = s.chkFeatureChapters;
 
                     // Restore cached GitHub Data
+                    if (state.baseLayoutCss) {
+                        baseLayoutCss = state.baseLayoutCss;
+                    }
+                    
                     if (state.loadedThemes) {
                         loadedThemes = state.loadedThemes;
                         renderThemeDropdown();

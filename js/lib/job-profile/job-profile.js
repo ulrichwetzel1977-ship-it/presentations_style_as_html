@@ -1,6 +1,6 @@
 /**
  * MODULE: JOB-PROFILE (Stellenausschreibungs-Editor)
- * Übernommen aus SAP-Workshop-Vorlage.
+ * Angepasst an die Theme-Architektur. Nutzt CSS-Print-Queries.
  */
 const JobModule = {
     // Feld-Mapping für den Text-Export
@@ -14,58 +14,79 @@ const JobModule = {
         ['jp-kpis-q','KPIs quant.'], ['jp-kpis-ql','KPIs qual.']
     ],
 
-    // Öffnet das Profil und befüllt alle Felder (analog zu RISE-Vorlage)
+    /**
+     * Öffnet das Profil-Modal und befüllt ALLE Felder.
+     */
     open: function(data = {}) {
         const modal = document.getElementById('jobProfileModal');
         if (!modal) return;
 
-        // Setze Standardwerte oder übergebene Daten
         const sv = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
         
         sv('jp-title', data.title || 'Neue Rolle');
         sv('jp-dept', data.dept || 'IT / SAP Basis & Cloud Operations');
+        sv('jp-grade', data.grade || 'Entgeltband / AT');
+        sv('jp-holder', data.holder || '');
+        sv('jp-date', data.date || new Date().toLocaleDateString('de-DE'));
+        
         sv('jp-mission', data.mission || '');
+        sv('jp-reports', data.reports || 'Head of IT Operations');
+        sv('jp-reports-to', data.reportsTo || 'Keine / Fachliche Führung externer Provider');
+        sv('jp-deputy', data.deputy || 'Durch Rollen-Peer');
+        
         sv('jp-tasks', data.tasks || '');
-        // ... (KI ergänzt hier alle weiteren Felder aus dem md-Blueprint)
+        sv('jp-special', data.special || 'Mitwirkung bei Cloud-Transformationen, Upgrades und Release-Zyklen.');
+        sv('jp-admin', data.admin || 'Dokumentation, ITSM-Ticketpflege (z.B. SAP Cloud ALM), Reporting.');
+        
+        sv('jp-budget', data.budget || 'Keine eigenständige Budgetverantwortung');
+        sv('jp-personal', data.personal || 'Keine disziplinarische Führung');
+        sv('jp-auth', data.auth || '');
+        
+        sv('jp-intern', data.intern || 'Fachbereiche, SAP-Entwicklung, Security-Team, IT-Leitung.');
+        sv('jp-extern', data.extern || 'SAP ECS Team, Hosting-Partner, Dienstleister.');
+        
+        sv('jp-edu', data.edu || 'Studium / Ausbildung in IT, mind. 3–5 Jahre SAP-Umfeld.');
+        sv('jp-exp', data.exp || 'Erfahrung mit SAP Basis, Cloud-Betrieb und ITSM-Prozessen.');
+        sv('jp-methods', data.methods || 'ITIL v4, SAP Cloud ALM, RACI-Modell.');
+        sv('jp-skills', data.skills || '');
+        sv('jp-social', data.social || 'Kommunikationsstärke, Konfliktfähigkeit, Belastbarkeit.');
+        
+        sv('jp-kpis-q', data.kpis_q || '');
+        sv('jp-kpis-ql', data.kpis_ql || 'Kundenzufriedenheit Fachbereiche, Audit-Readiness, Prozessqualität.');
         
         modal.classList.add('open');
     },
 
-    // Generiert ein hochauflösendes HTML-Template für den PDF-Druck
+    /**
+     * Druckt das Profil als PDF.
+     * Da die layout.css eine @media print Regel hat, reicht der simple Aufruf.
+     */
     printPDF: function() {
-        const title = document.getElementById('jp-title').value;
-        const today = new Date().toLocaleDateString('de-DE');
-        
-        let html = `<html><head><title>Stellenausschreibung ${title}</title>
-            <style>
-                body { font-family: sans-serif; padding: 40px; color: #1d1d1f; }
-                .hdr { background: linear-gradient(135deg, #0071e3, #005bb5); color: white; padding: 30px; border-radius: 12px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                th { text-align: left; background: #f5f5f7; padding: 10px; border: 1px solid #d2d2d7; width: 30%; }
-                td { padding: 10px; border: 1px solid #d2d2d7; }
-                h3 { color: #0071e3; border-bottom: 2px solid #e8f0fe; padding-bottom: 5px; margin-top: 25px; }
-            </style></head><body><div class="hdr"><h1>${title}</h1><p>Stand: ${today}</p></div>`;
-
-        // Baue Sektionen dynamisch aus den Textareas zusammen
-        document.querySelectorAll('.job-edit-field').forEach(field => {
-            const label = field.previousElementSibling?.innerText || "Details";
-            html += `<h3>${label}</h3><p>${field.value.replace(/\n/g, '<br>')}</p>`;
-        });
-
-        html += `</body></html>`;
-        
-        const win = window.open('', '_blank');
-        win.document.write(html);
-        win.document.close();
-        setTimeout(() => { win.print(); }, 500);
+        // Der Browser öffnet den Druckdialog. Die CSS-Media-Query sorgt dafür,
+        // dass nur das Modal mit den Theme-Variablen gedruckt wird.
+        window.print();
     },
 
+    /**
+     * Kopiert den Inhalt sauber formatiert in die Zwischenablage.
+     */
     copyToClipboard: function() {
-        let out = "STELLENAUSSCHREIBUNG\n" + "=".repeat(30) + "\n";
+        const title = document.getElementById('jp-title')?.value || 'Neue Rolle';
+        let out = `STELLENAUSSCHREIBUNG: ${title}\n`;
+        out += "=".repeat(50) + "\n\n";
+        
         this.fieldLabels.forEach(p => {
             const el = document.getElementById(p[0]);
-            if (el) out += `${p[1]}:\n${el.value}\n\n`;
+            // Überspringe leere Felder für ein sauberes Clipboard-Ergebnis
+            if (el && el.value.trim() !== '') {
+                out += `${p[1]}:\n${el.value.trim()}\n\n`;
+            }
         });
-        navigator.clipboard.writeText(out).then(() => alert("Text kopiert!"));
+        
+        navigator.clipboard.writeText(out).then(() => {
+            // Wenn du das Toast-System aus der HTML nutzt, könnte man das hier einbinden:
+            if (window.showToast) window.showToast("Stellenausschreibung kopiert!");
+            else alert("Text kopiert!");
+        });
     }
 };
