@@ -490,3 +490,23 @@ tr:last-child td { border-bottom: none; }
         background: transparent !important; 
     }
 }
+
+/* ==========================================
+   BRANDING & SPEZIELLE ELEMENTE (z.B. Logo, Claim)
+   ========================================== */
+   /* Standardmäßig versteckt */
+.slide-disclaimer {
+    display: none !important;
+}
+
+/* Spezifisches Styling für Disclaimer-Text */
+.disclaimer-text {
+    font-size: 11px; /* Kleinerer, juristischer Schriftsatz */
+    line-height: 1.5;
+    color: var(--text-secondary);
+    text-align: justify; /* Blocksatz für professionelle Optik */
+}
+
+.disclaimer-text p {
+    margin-bottom: 12px;
+}
