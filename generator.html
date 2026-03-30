@@ -730,9 +730,40 @@
             prompt += `WICHTIGE STRUKTUR-REGELN:\n`;
             prompt += `- Folie 1: MUSS immer die Titelfolie sein.\n`;
             prompt += `- Folie 2: MUSS zwingend die Agenda (Inhaltsverzeichnis) sein.\n`;
+            
             if (includeChapters) {
                 prompt += `- Kapitelfolien: Füge vor Beginn jedes neuen Kapitels/Agendapunkts eine eigene Trennerfolie (Kapitelfolie) ein, die den Titel des kommenden Kapitels groß darstellt.\n`;
             }
+
+            prompt += 'füge dann den entsprechend von dir recherchierten Inhalt aufbereitet als Folien hinzu\n\n';
+
+            prompt += `### ABSOLUTE SYSTEM-REGELN FÜR DIE KI (STRIKT BEFOLGEN!)\n`;
+            prompt += `1. **KEINE EIGENE KREATIVITÄT BEIM DESIGN:** Du darfst absolut KEIN eigenes CSS erfinden, keine neuen Klassen ausdenken und absolut KEINE Inline-Styles (style="...") verwenden! Nutze ausschließlich die Klassen aus dem bereitgestellten CSS.\n`;
+            prompt += `2. **FULL-SCREEN LAYOUT:** Die Folien dürfen NICHT wie kleine Karten aussehen. Sie müssen den gesamten Bildschirm füllen. Ändere nichts an der .slide Klasse.\n`;
+            prompt += `3. **BRANDING (EXTREM WICHTIG):** JEDE einzelne Folie (<div class="slide">) MUSS als allererste Kind-Elemente die Divs für Logo und Claim enthalten. Lässt du diese weg, ist die Präsentation unbrauchbar!\n\n`;
+
+            prompt += `### ZWINGENDES HTML-BOILERPLATE FÜR JEDE FOLIE:\n`;
+            prompt += `Du musst JEDE Folie exakt nach diesem HTML-Gerüst aufbauen. Weiche nicht davon ab:\n`;
+            prompt += `\`\`\`html\n`;
+            prompt += `<div class="slide [ggf. Modifier wie slide-cover]" data-slide="[Nummer]" data-title="[Titel]">\n`;
+            prompt += `  \n  \n`;
+            prompt += `  <div class="branding-logo"></div>\n`;
+            prompt += `  <div class="branding-claim"></div>\n\n`;
+            prompt += `  \n`;
+            prompt += `  <div class="slide-header">\n`;
+            prompt += `    <div>\n`;
+            prompt += `      <div class="slide-module-tag">[Kategorie/Tag]</div>\n`;
+            prompt += `      <div class="slide-title">[Titel der Folie]</div>\n`;
+            prompt += `    </div>\n`;
+            prompt += `    \n`;
+            prompt += `  </div>\n\n`;
+            prompt += `  \n`;
+            prompt += `  <div class="slide-body">\n`;
+            prompt += `    \n`;
+            prompt += `  </div>\n`;
+            prompt += `</div>\n`;
+            prompt += `\`\`\`\n\n`;
+            
             prompt += `\n`;
 
             if (mode === 'ai') {
