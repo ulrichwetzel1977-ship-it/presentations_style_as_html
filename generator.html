@@ -675,35 +675,45 @@
             
             const embedCode = document.getElementById('chkEmbedCode').checked;
 
-            // Base Layout Integration
-            if (baseLayoutCssUrl) {
-                if (embedCode && baseLayoutCss) {
-                    prompt += `- Basis-Layout: Verwende das untenstehende Basis-Layout CSS für die grundsätzliche Struktur der Präsentation. Füge diesen CSS-Code in den <style> Block der Datei ein:\n`;
-                    prompt += `\n--- CSS BASIS-LAYOUT (layout.css) ---\n\`\`\`css\n${baseLayoutCss}\n\`\`\`\n\n`;
-                } else {
-                    prompt += `- Basis-Layout: Die KI soll das Basis-Layout CSS für die grundsätzliche Struktur von dieser URL lesen und in den <style> Block einfügen: ${baseLayoutCssUrl}\n`;
-                }
-            }
-
-            // Ergänzung um die pfade für die Logos und bilder sauber zu finden
+            // Ergänzung um die Pfade für die Logos und Bilder sauber zu finden
             const repoOwner = document.getElementById('ghOwner').value.trim();
             const repoName = document.getElementById('ghRepo').value.trim();
             const rawBaseUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${defaultBranchName}/`;
 
-            // Design Integration
-            if (design.startsWith('theme-') && loadedThemesUrls[design]) {
-                if (embedCode && loadedThemes[design]) {
-                    // HIER IST DER TRICK: Wir ersetzen den Platzhalter durch die berechnete URL
-                    let themeCssReady = loadedThemes[design].replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);
+            const isCustomTheme = design.startsWith('theme-') && loadedThemesUrls[design];
 
-                    prompt += `- Design/Styleguide: Verwende zusätzlich zum Basis-Layout das untenstehende CSS-Theme für Farben und spezifische Anpassungen. Füge diesen CSS-Code EBENFALLS in den <style> Block der Datei ein:\n`;
-                    prompt += `\n--- CSS THEME (${design}) ---\n\`\`\`css\n${loadedThemes[design]}\n\`\`\`\n\n`;
-                } else {
-                    prompt += `- Design/Styleguide: Die KI soll das CSS-Theme für Farben und spezifische Anpassungen von dieser URL lesen und EBENFALLS in den <style> Block einfügen: ${loadedThemesUrls[design]}\n\n`;
-                    prompt += `- WICHTIG: Ersetze im CSS-Code alle Vorkommen von '{{GH_RAW_BASE}}' durch '${rawBaseUrl}' bevor du es einfügst!\n\n`;
+            if (embedCode) {
+                // --- FALL 1: CSS CODE WIRD DIREKT EINGEBETTET (Sicherste Methode) ---
+                prompt += `\n### ABSOLUTE SYSTEM-REGEL: CSS & DESIGN (STRIKT BEFOLGEN!)\n`;
+                prompt += `Du darfst absolut KEIN eigenes CSS erfinden, keine neuen Klassen ausdenken und absolut KEINE Inline-Styles verwenden! Nutze AUSSCHLIESSLICH den exakten CSS-Code, der dir hier zur Verfügung gestellt wird. Kombiniere das Basis-Layout und das Theme im <style> Block der Datei.\n\n`;
+
+                if (baseLayoutCssUrl && baseLayoutCss) {
+                    prompt += `--- CSS BASIS-LAYOUT (layout.css) ---\n\`\`\`css\n${baseLayoutCss}\n\`\`\`\n\n`;
                 }
+
+                if (isCustomTheme && loadedThemes[design]) {
+                    // TRICK: Platzhalter direkt im JavaScript ersetzen, bevor es in den Prompt geht
+                    const themeCssReady = loadedThemes[design].replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);
+                    prompt += `--- CSS THEME (${design}) ---\n\`\`\`css\n${themeCssReady}\n\`\`\`\n\n`;
+                } else if (!isCustomTheme) {
+                    prompt += `- Design/Styleguide: Verwende ein ${design} aufbauend auf dem Basis-Layout.\n\n`;
+                }
+
             } else {
-                prompt += `- Design/Styleguide: Verwende ein ${design} aufbauend auf dem Basis-Layout.\n\n`;
+                // --- FALL 2: URLs WERDEN ÜBERGEBEN (KI muss suchen) ---
+                prompt += `\n### ABSOLUTE SYSTEM-REGEL: CSS & DESIGN (STRIKT BEFOLGEN!)\n`;
+                prompt += `Bevor du den HTML-Code generierst, MUSST du zwingend dein Web-Search-Tool nutzen, um den reinen Text-Inhalt der folgenden URLs abzurufen. Verwende für den <style>-Block AUSSCHLIESSLICH den Code, den du unter diesen URLs findest, und erfinde kein eigenes CSS! \n`;
+                prompt += `WICHTIG: Ersetze im abgerufenen CSS-Code alle Vorkommen von '{{GH_RAW_BASE}}' exakt durch '${rawBaseUrl}' bevor du es in das HTML einfügst!\n\n`;
+
+                if (baseLayoutCssUrl) {
+                    prompt += `- URL Basis-Layout: ${baseLayoutCssUrl}\n`;
+                }
+
+                if (isCustomTheme) {
+                    prompt += `- URL Theme/Styleguide: ${loadedThemesUrls[design]}\n\n`;
+                } else {
+                    prompt += `- Design/Styleguide: Verwende ein ${design} aufbauend auf dem Basis-Layout.\n\n`;
+                }
             }
 
             const includeSettings = document.getElementById('chkFeatureSettings').checked;
@@ -713,13 +723,13 @@
 
             prompt += `### GENERELLE PFLICHT-FUNKTIONEN (Immer einbauen)\n`;
             let reqCounter = 1;
-            prompt += `${reqCounter++}. **Navigation:** Die Folien müssen per Tastatur (Pfeiltaste Links/Rechts) navigierbar sein (z.B. durch ein / Ausblenden von <section> Elementen).\n`;
+            prompt += `${reqCounter++}. **Navigation:** Die Folien müssen per Tastatur (Pfeiltaste Links/Rechts) und mit vor-/ zurück buttons auf der seite navigierbar sein (z.B. durch ein / Ausblenden von <section> Elementen).\n`;
             
             if (includeSettings) {
-                prompt += `${reqCounter++}. **Einstellungsbereich:** Es muss eine sichtbare UI geben (z.B. in einem ausklappbaren Sidebar-Menü), in der der Nutzer Agenda, Titel, Kundenname und Datum nachträglich ändern kann. Die Folien sollen nummeriert sein. Diese Änderungen müssen im DOM sichtbar werden.\n`;
+                prompt += `${reqCounter++}. **Einstellungsbereich:** Es muss eine sichtbare UI geben (z.B. zahnradsymbol auf der Titelseite), in der der Nutzer Agenda, Titel, Kundenname und Datum nachträglich ändern kann. Die Folien sollen nummeriert sein. Diese Änderungen müssen im DOM sichtbar werden.\n`;
             }
             if (includeProtocol) {
-                prompt += `${reqCounter++}. **Protokoll/Notizen-Funktion:** Integriere zu JEDER Folie einen Bereich (z.B. am Rand oder als Overlay), in dem der Nutzer Notizen/Protokolle für den Kunden oder Workshop erfassen kann. Implementiere einen Button, der die erfassten Folien-Notizen als PDF und als einfachen Text exportiert (Nutze dafür html2pdf.js über CDN: https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js). WICHTIG FÜR DEN PDF-EXPORT: Das erzeugte PDF muss so formatiert sein, dass die aktuelle Folie als Bild passend auf die Seite skaliert wird und die erfassten Notizen/Protokolle zu dieser Folie übersichtlich direkt darunter ausgegeben werden.\n`;
+                prompt += `${reqCounter++}. **Protokoll/Notizen-Funktion:** Integriere zu JEDER Folie einen anderen Bereich als die Einstellungen Bereich (z.B. am Rand oder als Overlay oder in einem ausklappbaren Sidebar-Menü), in dem der Nutzer Notizen/Protokolle für den Kunden oder Workshop erfassen kann. Implementiere einen Button, der die erfassten Folien-Notizen als PDF und als einfachen Text exportiert (Nutze dafür html2pdf.js über CDN: https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js). WICHTIG FÜR DEN PDF-EXPORT: Das erzeugte PDF muss so formatiert sein, dass die aktuelle Folie als Bild passend auf die Seite skaliert wird und die erfassten Notizen/Protokolle zu dieser Folie übersichtlich direkt darunter ausgegeben werden.\n`;
             }
             if (includeState) {
                 prompt += `${reqCounter++}. **JSON Export/Import:** Biete Funktionen an, um den gesamten Arbeitsfortschritt der Präsentation (Notizen, Settings, ggf. eingegebene Inhalte) als JSON-Datei herunterzuladen und wieder hochzuladen, um später weiterarbeiten zu können.\n`;
