@@ -2117,6 +2117,7 @@ function applySettings() {
 
   const lines = agendaRaw.trim().split('\n').filter(l => l.trim());
   const agendaList = document.getElementById('agendaList');
+  var agendaData = [];
   agendaList.innerHTML = '';
   lines.forEach(line => {
     const parts = line.split('|').map(p => p.trim());
@@ -2125,13 +2126,15 @@ function applySettings() {
     const desc = parts[2] || '';
     const isBreak = agTitle.toLowerCase().includes('pause');
     const li = document.createElement('li');
+    agendaData = [
+          { time: parts[0], title:parts[1], desc: parts[2], isBreak: isBreak ? true : false }
+  ]
     li.className = 'agenda-item' + (isBreak ? ' is-break' : '');
     li.innerHTML = `<span class="agenda-time">${time}</span><div><div class="agenda-title">${agTitle}</div>${desc ? `<div class="agenda-desc">${desc}</div>` : ''}</div>`;
     agendaList.appendChild(li);
   });
   closeSettings();
 }
-
 
 // RACI switch
 function switchRaciTab(id, btn) {
