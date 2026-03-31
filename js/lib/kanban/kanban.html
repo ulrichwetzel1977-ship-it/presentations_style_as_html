@@ -1,0 +1,21 @@
+<div class="slide slide-kanban" data-slide="{{SLIDE_NUM}}" data-title="{{SLIDE_TITLE}}">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">{{SLIDE_NUM}} / {{TOTAL_SLIDES}}</div>
+  
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">{{TAG}}</div>
+      <div class="slide-title">{{SLIDE_TITLE}}</div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="kanban-board">
+      <div class="kanban-col" id="{{COL_1_ID}}">
+        <div class="kanban-col-header">
+          {{COL_1_TITLE}} <button onclick="KanbanModule.addCard('{{COL_1_ID}}')">+</button>
+        </div>
+        </div>
+      </div>
+  </div>
+</div>

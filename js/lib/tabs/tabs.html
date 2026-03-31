@@ -1,0 +1,24 @@
+<div class="slide slide-tabs" data-slide="{{SLIDE_NUM}}" data-title="{{SLIDE_TITLE}}">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">{{SLIDE_NUM}} / {{TOTAL_SLIDES}}</div>
+  
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">{{TAG}}</div>
+      <div class="slide-title">{{SLIDE_TITLE}}</div>
+    </div>
+  </div>
+  <div class="slide-body" style="padding-top:16px">
+    <div id="{{UNIQUE_TAB_ID}}">
+      <div class="tabs-header">
+        <button class="tab-btn active" onclick="TabsModule.switchTab('{{UNIQUE_TAB_ID}}','tab-1',this)">{{TAB_1_NAME}}</button>
+        <button class="tab-btn" onclick="TabsModule.switchTab('{{UNIQUE_TAB_ID}}','tab-2',this)">{{TAB_2_NAME}}</button>
+      </div>
+      <div class="tab-panel active" id="tab-1">
+        </div>
+      <div class="tab-panel" id="tab-2">
+        </div>
+    </div>
+  </div>
+</div>

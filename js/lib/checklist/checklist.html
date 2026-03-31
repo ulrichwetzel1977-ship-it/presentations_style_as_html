@@ -1,0 +1,25 @@
+<div class="slide slide-checklist" data-slide="{{SLIDE_NUM}}" data-title="{{SLIDE_TITLE}}">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">{{SLIDE_NUM}} / {{TOTAL_SLIDES}}</div>
+  
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">{{TAG}}</div>
+      <div class="slide-title">{{SLIDE_TITLE}}</div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <ul class="checklist">
+        <li class="checklist-item" onclick="ChecklistModule.toggle(this)">
+          <div class="checklist-check">✓</div>
+          <div class="checklist-content">
+            <div class="checklist-text">{{TASK_TITLE}}</div>
+            <div class="checklist-subtext">{{TASK_DESCRIPTION}}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

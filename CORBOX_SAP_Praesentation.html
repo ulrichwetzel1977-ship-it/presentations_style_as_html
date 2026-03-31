@@ -1,0 +1,2380 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Von SAP bis Rechenzentrum – Business Transformation & CORBOX</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+/* ==========================================
+   THEME: DATAGROUP SE (Corporate Identity)
+   ========================================== */
+:root {
+    --primary: #E3000F;
+    --primary-hover: #cc000e;
+    --primary-soft: #fde5e6;
+    --bg-color: #ffffff;
+    --surface: #ffffff;
+    --surface-alt: #E6E6E6;
+    --border: #cccccc;
+    --text: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --claim-color: #E3000F;
+    --danger: #E3000F;
+    --warning: #ff9500;
+    --warning-bg: #fff3e0;
+    --success: #008a00;
+    --success-bg: #e8f5e9;
+    --danger-bg: #fde5e6;
+    --radius: 0px;
+    --radius-sm: 0px;
+    --shadow: none;
+    --font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    --glass-bg: #ffffff;
+    --glass-filter: none;
+    --header-bg: #E6E6E6;
+    --header-text: #1d1d1f;
+    --table-header-bg: #E3000F;
+    --table-header-text: #ffffff;
+    --app-bg: #333333;
+}
+
+/* ==========================================
+   LAYOUT.CSS
+   ========================================== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body, html {
+    font-family: var(--font-family);
+    background-color: var(--app-bg);
+    color: var(--text);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+.presentation {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-color);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.slide.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.slide-header {
+    background-color: var(--surface-alt) !important;
+    border-bottom: none;
+    padding: 20px 60px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.slide-module-tag {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+}
+
+.slide-title {
+    font-size: clamp(20px, 2.5vw, 32px);
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+}
+
+.slide-body {
+    padding: 30px 60px 70px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.card {
+    background: var(--primary);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+.card .card-title { color: #fff; font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+.card .card-text { color: rgba(255,255,255,0.88); font-size: 13px; line-height: 1.5; }
+
+.callout {
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--primary);
+    display: flex;
+    gap: 14px;
+    background: var(--primary-soft);
+    font-size: 14px;
+}
+.callout.warning { border-color: var(--warning); background: var(--warning-bg); }
+.callout.success { border-color: var(--success); background: var(--success-bg); }
+
+table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 0; overflow: hidden; border: none; }
+th { background-color: var(--primary) !important; color: #fff !important; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; padding: 11px 16px; text-align: left; border: 1px solid var(--primary); }
+td { padding: 10px 16px; border: 1px solid var(--border); vertical-align: top; background-color: #fff; font-size: 13px; }
+tr:nth-child(even) td { background-color: #f9f9f9; }
+
+/* ==========================================
+   BRANDING
+   ========================================== */
+.branding-logo {
+    position: absolute;
+    top: 18px;
+    right: 36px;
+    width: 180px;
+    height: 52px;
+    background-image: url('https://raw.githubusercontent.com/ulrichwetzel1977-ship-it/presentations_style_as_html/main/assets/images/Datagroup_design/header/logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right top;
+    z-index: 1000;
+}
+
+.branding-claim {
+    position: absolute;
+    bottom: 20px;
+    left: 36px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--claim-color);
+    z-index: 1000;
+}
+.branding-claim::after { content: "IT's that simple."; }
+
+/* ==========================================
+   SLIDE COUNTER & NAV
+   ========================================== */
+.slide-counter {
+    position: absolute;
+    bottom: 20px;
+    right: 36px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    z-index: 1000;
+}
+
+.nav-buttons {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 9000;
+}
+.nav-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 8px 22px;
+    font-size: 18px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+.nav-btn:hover { background: var(--primary-hover); }
+
+/* ==========================================
+   COVER SLIDE
+   ========================================== */
+.slide-cover {
+    background: #1d1d1f !important;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 60px;
+}
+.slide-cover .branding-claim::after { color: #E3000F; }
+.cover-content { margin-top: 60px; }
+.cover-eyebrow { font-size: 13px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 18px; }
+.cover-title { font-size: clamp(28px, 4vw, 52px); font-weight: 700; color: #fff; line-height: 1.15; margin-bottom: 20px; max-width: 780px; }
+.cover-subtitle { font-size: 18px; color: rgba(255,255,255,0.6); margin-bottom: 40px; }
+.cover-meta { display: flex; gap: 32px; }
+.cover-meta-item label { font-size: 11px; font-weight: 600; color: var(--primary); text-transform: uppercase; display: block; margin-bottom: 4px; }
+.cover-meta-item span { font-size: 15px; color: #fff; font-weight: 500; }
+
+/* CHAPTER SLIDE */
+.slide-chapter {
+    background: var(--primary) !important;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px 80px;
+}
+.chapter-number { font-size: 80px; font-weight: 900; color: rgba(255,255,255,0.12); line-height: 1; margin-bottom: -20px; }
+.chapter-title { font-size: clamp(28px, 4vw, 48px); font-weight: 700; color: #fff; margin-bottom: 16px; max-width: 700px; }
+.chapter-desc { font-size: 16px; color: rgba(255,255,255,0.75); max-width: 600px; }
+.slide-chapter .branding-logo { filter: brightness(10); }
+.slide-chapter .branding-claim { color: rgba(255,255,255,0.6); }
+.slide-chapter .branding-claim::after { color: rgba(255,255,255,0.6); }
+
+/* AGENDA */
+.slide-agenda .agenda-list { list-style: none; padding: 0; margin: 0; }
+.slide-agenda .agenda-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 20px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+}
+.slide-agenda .agenda-time { font-size: 14px; font-weight: 700; color: var(--primary); }
+.slide-agenda .agenda-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.slide-agenda .agenda-desc { font-size: 12px; color: var(--text-secondary); }
+.slide-agenda .agenda-item.is-break { opacity: 0.6; font-style: italic; background-color: var(--surface); padding-left: 10px; }
+
+/* CHECKLIST */
+.slide-checklist .checklist { list-style: none; padding: 0; margin: 0; }
+.slide-checklist .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 11px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+.slide-checklist .checklist-item:hover { border-color: var(--primary); background: var(--primary-soft); }
+.slide-checklist .checklist-check {
+    width: 22px; height: 22px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: transparent;
+    transition: all 0.2s; flex-shrink: 0; font-size: 13px;
+}
+.slide-checklist .checklist-text { font-size: 14px; font-weight: 500; color: var(--text); }
+.slide-checklist .checklist-subtext { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.slide-checklist .checklist-item.checked { opacity: 0.6; background: var(--bg-color); border-color: var(--border); }
+.slide-checklist .checklist-item.checked .checklist-check { background-color: var(--success); border-color: var(--success); color: white; }
+.slide-checklist .checklist-item.checked .checklist-text { text-decoration: line-through; color: var(--text-secondary); }
+
+/* KANBAN */
+.slide-kanban .kanban-board { display: flex; gap: 20px; height: calc(100% - 20px); align-items: stretch; }
+.slide-kanban .kanban-col {
+    flex: 1;
+    background-color: var(--surface-alt);
+    border: 1px solid var(--border);
+    padding: 14px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 300px;
+}
+.slide-kanban .kanban-col.drag-over { background: var(--primary-soft); border-color: var(--primary); }
+.slide-kanban .kanban-col-header {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    color: #fff;
+    background: var(--primary);
+    padding: 8px 12px;
+    margin: -14px -14px 8px -14px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.slide-kanban .kanban-col-header button {
+    background: rgba(255,255,255,0.25); border: none; color: #fff;
+    width: 22px; height: 22px; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+.slide-kanban .kanban-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    cursor: grab; font-size: 13px;
+    position: relative;
+}
+.slide-kanban .kanban-card:hover { border-color: var(--primary); }
+.slide-kanban .kanban-card .card-delete {
+    position: absolute; top: 6px; right: 8px;
+    background: none; border: none; cursor: pointer;
+    color: var(--text-secondary); font-size: 12px;
+}
+.slide-kanban .kanban-card .card-content { outline: none; min-height: 20px; }
+
+/* TABS */
+.slide-tabs .tabs-header {
+    display: flex; gap: 4px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 14px;
+    flex-shrink: 0; overflow-x: auto;
+}
+.slide-tabs .tab-btn {
+    background: transparent; border: none;
+    border-bottom: 3px solid transparent;
+    padding: 9px 14px;
+    font-family: inherit; font-size: 12px; font-weight: 600;
+    color: var(--text-secondary); cursor: pointer;
+    white-space: nowrap; transition: all 0.2s; margin-bottom: -2px;
+}
+.slide-tabs .tab-btn:hover { color: var(--primary); }
+.slide-tabs .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.slide-tabs .tab-panel { display: none; }
+.slide-tabs .tab-panel.active { display: block; }
+
+/* BADGES */
+.badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 9px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; white-space: nowrap;
+    border: 1px solid transparent;
+}
+.badge-success { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+.badge-warning { background: var(--warning-bg); color: var(--warning); border-color: var(--warning); }
+.badge-danger  { background: var(--danger-bg);  color: var(--danger);  border-color: var(--danger); }
+.badge-info    { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+
+/* DISCLAIMER */
+.slide-disclaimer {
+    display: flex !important;
+    background-color: var(--surface-alt) !important;
+}
+.disclaimer-text { font-size: 11px; line-height: 1.5; color: var(--text-secondary); text-align: justify; }
+.disclaimer-text p { margin-bottom: 10px; }
+
+/* ==========================================
+   SETTINGS PANEL
+   ========================================== */
+.settings-btn {
+    position: fixed; top: 16px; left: 16px;
+    background: rgba(0,0,0,0.5); color: #fff; border: none;
+    width: 38px; height: 38px; font-size: 18px; cursor: pointer;
+    z-index: 9999; display: flex; align-items: center; justify-content: center;
+}
+.settings-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 10000; display: none; align-items: center; justify-content: center;
+}
+.settings-overlay.open { display: flex; }
+.settings-panel {
+    background: #fff; width: 480px; max-width: 95vw;
+    padding: 28px; max-height: 80vh; overflow-y: auto;
+}
+.settings-panel h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--primary); }
+.settings-panel label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; display: block; margin-bottom: 4px; margin-top: 14px; }
+.settings-panel input, .settings-panel textarea {
+    width: 100%; border: 1px solid var(--border); padding: 9px 12px;
+    font-family: inherit; font-size: 14px; color: var(--text);
+}
+.settings-panel textarea { min-height: 100px; resize: vertical; }
+.btn-primary {
+    background: var(--primary); color: #fff; border: none;
+    padding: 10px 24px; font-family: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer; margin-top: 16px;
+}
+.btn-secondary {
+    background: var(--surface-alt); color: var(--text); border: 1px solid var(--border);
+    padding: 10px 24px; font-family: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer; margin-top: 16px; margin-left: 8px;
+}
+
+/* ==========================================
+   NOTES / PROTOCOL PANEL
+   ========================================== */
+.notes-toggle {
+    position: fixed; right: 0; top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary); color: #fff; border: none;
+    padding: 12px 6px; font-size: 11px; font-weight: 700;
+    writing-mode: vertical-lr; cursor: pointer; z-index: 9000;
+    letter-spacing: 0.08em;
+}
+.notes-sidebar {
+    position: fixed; right: -360px; top: 0; width: 360px; height: 100vh;
+    background: #fff; border-left: 3px solid var(--primary);
+    z-index: 9001; transition: right 0.3s ease;
+    display: flex; flex-direction: column;
+}
+.notes-sidebar.open { right: 0; }
+.notes-header {
+    background: var(--primary); color: #fff;
+    padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.notes-header h4 { font-size: 14px; font-weight: 700; }
+.notes-header button { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; }
+.notes-slide-info { padding: 10px 18px; background: var(--surface-alt); font-size: 12px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+.notes-textarea {
+    flex: 1; width: 100%; border: none; padding: 16px;
+    font-family: inherit; font-size: 13px; resize: none;
+    color: var(--text); line-height: 1.6;
+}
+.notes-textarea:focus { outline: none; }
+.notes-actions { padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
+.notes-actions button { flex: 1; padding: 8px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; border: none; min-width: 100px; }
+.btn-export-pdf { background: var(--primary); color: #fff; }
+.btn-export-txt { background: var(--surface-alt); color: var(--text); border: 1px solid var(--border) !important; }
+.btn-export-json { background: #1d1d1f; color: #fff; }
+.btn-import-json { background: var(--surface-alt); color: var(--text); border: 1px solid var(--border) !important; }
+
+/* ==========================================
+   FUE CALCULATOR embedded
+   ========================================== */
+.fue-wrapper { height: 100%; overflow-y: auto; }
+.fue-grid { display: grid; grid-template-columns: 300px 1fr 280px; gap: 16px; height: 100%; }
+.fue-card { background: var(--surface-alt); border: 1px solid var(--border); padding: 16px; }
+.fue-card h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--primary); margin-bottom: 12px; border-bottom: 2px solid var(--primary); padding-bottom: 6px; }
+.fue-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; display: block; margin-bottom: 4px; margin-top: 10px; }
+.fue-input {
+    width: 100%; border: 1px solid var(--border); padding: 8px 10px;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    background: #fff; color: var(--text);
+}
+.fue-input:focus { outline: 2px solid var(--primary); }
+.fue-kpi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.fue-kpi { background: var(--surface-alt); border: 1px solid var(--border); padding: 12px; }
+.fue-kpi .k-label { font-size: 11px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; }
+.fue-kpi .k-value { font-size: 22px; font-weight: 700; color: var(--primary); margin-top: 4px; }
+.fue-kpi.highlight { background: var(--primary); border-color: var(--primary); }
+.fue-kpi.highlight .k-label { color: rgba(255,255,255,0.7); }
+.fue-kpi.highlight .k-value { color: #fff; }
+.fue-tshirt table { font-size: 12px; }
+.fue-tshirt .active-tier td { background: var(--primary-soft) !important; font-weight: 700; color: var(--primary); }
+.chart-container { position: relative; height: 280px; }
+
+/* ==========================================
+   COMPARISON / PROCESS BLOCKS
+   ========================================== */
+.betriebsmodell-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+.bm-card {
+    border: 2px solid var(--border);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.bm-card-header {
+    background: var(--primary);
+    color: white;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    margin: -24px -24px 12px -24px;
+}
+.bm-card-header.onprem { background: #444; }
+.bm-card-header.grow { background: #007a3d; }
+.bm-card-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.bm-card ul { list-style: none; padding: 0; }
+.bm-card ul li { padding: 5px 0; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+.bm-card ul li:last-child { border-bottom: none; }
+.bm-card ul li::before { content: "✓"; color: var(--success); font-weight: 700; flex-shrink: 0; }
+.bm-card ul li.con::before { content: "✗"; color: var(--danger); }   
+   
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.info-block { background: var(--surface-alt); border: 1px solid var(--border); padding: 16px; }
+.info-block h4 { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+.info-block ul { padding-left: 16px; font-size: 13px; line-height: 1.7; }
+.info-block ul li { margin-bottom: 4px; }
+.pro-con { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pros { background: var(--success-bg); border: 1px solid var(--success); padding: 14px; }
+.cons { background: var(--danger-bg); border: 1px solid var(--danger); padding: 14px; }
+.pros h5, .cons h5 { font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+.pros h5 { color: var(--success); }
+.cons h5 { color: var(--danger); }
+.pros ul, .cons ul { padding-left: 14px; font-size: 12px; line-height: 1.7; }
+
+.highlight-box {
+    background: var(--primary);
+    color: #fff; padding: 16px 20px;
+    margin-bottom: 14px;
+    font-size: 14px; line-height: 1.6;
+}
+.highlight-box strong { display: block; font-size: 16px; margin-bottom: 6px; }
+
+.tag { display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 700; margin-right: 4px; }
+.tag-red { background: var(--primary); color: #fff; }
+.tag-grey { background: #999; color: #fff; }
+.tag-green { background: var(--success); color: #fff; }
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background-color: #ccc; }
+
+/* PDF export area */
+#pdf-notes-export { display: none; }
+
+/* === RACI TABELLE () === */
+  .raci-tab { background:none; border:none; border-bottom:3px solid transparent; padding:8px 14px; font-family:var(--font); font-size:12px; font-weight:600; color:var(--text-secondary); cursor:pointer; white-space:nowrap; transition:all .2s; margin-bottom:-2px; }
+  .raci-tab:hover { color:var(--accent); }
+  .raci-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+  .raci-panel { overflow-x:auto; }
+  .raci-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .raci-table thead tr { background:#1d1d1f; color:white; }
+  .raci-table th { padding:9px 12px; text-align:left; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
+  .raci-table td { padding:7px 12px; border-bottom:1px solid var(--border); vertical-align:middle; line-height:1.4; }
+  .raci-table tr:hover td { background:var(--surface2); }
+  .raci-table tr:last-child td { border-bottom:none; }
+  .raci-sap      { font-weight:700; color:#065f46; white-space:nowrap; }
+  .raci-customer { font-weight:700; color:#7c3aed; white-space:nowrap; }
+  .raci-shared   { font-weight:700; color:var(--accent); white-space:nowrap; }
+  .raci-cas      { font-weight:700; color:#92400e; white-space:nowrap; }
+  .cat-std       { background:#d1fae5; color:#065f46; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
+  .cat-cas, .cat-opt { background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
+  .cat-excluded  { background:#fee2e2; color:#991b1b; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
+  .cat-additional{ background:#ede9fe; color:#5b21b6; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<!-- ==========================================
+   NAV & UTILITY BUTTONS
+   ========================================== -->
+<button class="settings-btn" onclick="openSettings()" title="Einstellungen">⚙</button>
+<button class="notes-toggle" onclick="toggleNotes()">N O T I Z E N</button>
+
+<div class="nav-buttons">
+  <button class="nav-btn" onclick="navigate(-1)">&#8592;</button>
+  <button class="nav-btn" onclick="navigate(1)">&#8594;</button>
+</div>
+
+<!-- NOTES SIDEBAR -->
+<aside class="notes-sidebar" id="notesSidebar">
+  <div class="notes-header">
+    <h4>📝 Notizen / Protokoll</h4>
+    <button onclick="toggleNotes()">✕</button>
+  </div>
+  <div class="notes-slide-info" id="notesSlideInfo">Folie 1 – Titelfolie</div>
+  <textarea class="notes-textarea" id="notesTextarea" placeholder="Notizen zu dieser Folie eingeben..."></textarea>
+  <div class="notes-actions">
+    <button class="btn-export-pdf" onclick="exportNotesPDF()">PDF Export</button>
+    <button class="btn-export-txt" onclick="exportNotesTXT()">TXT Export</button>
+    <button class="btn-export-json" onclick="exportJSON()">JSON Speichern</button>
+    <button class="btn-import-json" onclick="importJSON()">JSON Laden</button>
+  </div>
+</aside>
+
+<!-- SETTINGS OVERLAY -->
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <h3>⚙ Präsentations-Einstellungen</h3>
+    <label>Titel</label>
+    <input type="text" id="set-title" value="Von SAP bis Rechenzentrum – Business Transformation &amp; CORBOX">
+    <label>Kundenname</label>
+    <input type="text" id="set-customer" value="Musterkunden">
+    <label>Datum</label>
+    <input type="text" id="set-date" value="30.03.2026">
+    <label>Agenda (je Zeile: HH:MM | Titel | Beschreibung)</label>
+    <textarea id="set-agenda">09:00 | Begrüßung &amp; Vorstellung | Eröffnung des Workshops
+09:30 | SAP Betriebsmodelle im Überblick | On-Premise, RISE, GROW
+10:30 | GROW with SAP | Public Cloud Einführung
+11:00 | RISE with SAP | Private Cloud Migration
+11:30 | Pause | Kaffeepause
+11:45 | Vergleich &amp; FUE-Kalkulation | Live-Sizing
+12:30 | Mittagspause |
+13:15 | ECC &amp; S/4HANA Schmerzpunkte | Erfahrungswerte
+14:00 | Clean Core Strategie | Ansätze &amp; Lösungen
+14:45 | Workshop: Offene Themen | Kanban Board
+15:15 | Next Steps &amp; Ausblick | Checkliste
+15:45 | Abschluss | Q&amp;A</textarea>
+    <button class="btn-primary" onclick="applySettings()">Übernehmen</button>
+    <button class="btn-secondary" onclick="closeSettings()">Schließen</button>
+  </div>
+</div>
+
+<!-- ==========================================
+   PRESENTATION
+   ========================================== -->
+<div class="presentation" id="presentation">
+
+<!-- ==========================================
+   FOLIE 1: TITELFOLIE
+   ========================================== -->
+<div class="slide slide-cover active" data-slide="1" data-title="Titelfolie">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">1 / 19</div>
+  <div class="cover-content">
+    <div class="cover-eyebrow">DATAGROUP SE · Workshop</div>
+    <div class="cover-title" id="cover-title">Von SAP bis Rechenzentrum –<br>Business Transformation &amp; CORBOX</div>
+    <div class="cover-subtitle">SAP Betriebsmodelle · RISE · GROW · Clean Core · Transformation Strategy</div>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><label>Kunde</label><span id="cover-customer">Musterkunden</span></div>
+      <div class="cover-meta-item"><label>Datum</label><span id="cover-date">30.03.2026</span></div>
+      <div class="cover-meta-item"><label>Presenter</label><span>DATAGROUP SE</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 2: AGENDA
+   ========================================== -->
+<div class="slide slide-agenda" data-slide="2" data-title="Agenda">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">2 / 19</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">DATAGROUP SE · Workshop</div>
+      <div class="slide-title">Agenda</div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <ul class="agenda-list" id="agendaList">
+      <li class="agenda-item"><span class="agenda-time">09:00</span><div><div class="agenda-title">Begrüßung &amp; Vorstellung</div><div class="agenda-desc">Eröffnung des Workshops, Vorstellungsrunde, Zielsetzung</div></div></li>
+      <li class="agenda-item"><span class="agenda-time">09:30</span><div><div class="agenda-title">SAP Betriebsmodelle im Überblick</div><div class="agenda-desc">On-Premise, RISE with SAP, GROW with SAP – Vergleich &amp; Entscheidungskriterien</div></div></li>
+      <li class="agenda-item"><span class="agenda-time">10:30</span><div><div class="agenda-title">GROW with SAP</div><div class="agenda-desc">Public Cloud, Standardprozesse, Vor- &amp; Nachteile, IT-Organisation</div></div></li>
+      <li class="agenda-item"><span class="agenda-time">11:00</span><div><div class="agenda-title">RISE with SAP</div><div class="agenda-desc">Private Cloud Migration, Komplexlandschaft, IT-Auswirkungen</div></div></li>
+      <li class="agenda-item is-break"><span class="agenda-time">11:30</span><div><div class="agenda-title">Pause</div></div></li>
+      <li class="agenda-item"><span class="agenda-time">11:45</span><div><div class="agenda-title">Vergleich &amp; FUE-Kalkulation</div><div class="agenda-desc">Tabellarischer Vergleich, Live-Sizing-Rechner, TCO &amp; ROI</div></div></li>
+      <li class="agenda-item is-break"><span class="agenda-time">12:30</span><div><div class="agenda-title">Mittagspause</div></div></li>
+      <li class="agenda-item"><span class="agenda-time">13:15</span><div><div class="agenda-title">ECC &amp; S/4HANA Schmerzpunkte</div><div class="agenda-desc">Erfahrungswerte aus Migration &amp; Release-Wechsel</div></div></li>
+      <li class="agenda-item"><span class="agenda-time">14:00</span><div><div class="agenda-title">Clean Core Strategie</div><div class="agenda-desc">Technische Schuld abbauen, Roadmap, Transformationsvergleich</div></div></li>
+      <li class="agenda-item"><span class="agenda-time">14:45</span><div><div class="agenda-title">Workshop: Offene Themen</div><div class="agenda-desc">Kanban Board – Offen · In Klärung · Entscheidung</div></div></li>
+      <li class="agenda-item"><span class="agenda-time">15:15</span><div><div class="agenda-title">Next Steps &amp; Ausblick</div><div class="agenda-desc">Interaktive Checkliste, konkrete Maßnahmen</div></div></li>
+      <li class="agenda-item"><span class="agenda-time">15:45</span><div><div class="agenda-title">Abschluss &amp; Q&amp;A</div></div></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 3: KAPITEL – SAP BETRIEBSMODELLE
+   ========================================== -->
+<div class="slide slide-chapter" data-slide="3" data-title="Kapitel: SAP Betriebsmodelle">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">3 / 19</div>
+  <div class="chapter-number">01</div>
+  <div class="chapter-title">SAP Betriebsmodelle im Überblick</div>
+  <div class="chapter-desc">On-Premise, RISE with SAP (Private Cloud) und GROW with SAP (Public Cloud) – die drei strategischen Optionen für SAP S/4HANA in 2026</div>
+</div>
+
+<!-- ==========================================
+   FOLIE 4: BETRIEBSMODELLE DETAILS
+   ========================================== -->
+<div class="slide" data-slide="4" data-title="SAP Betriebsmodelle – Vergleich">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">4 / 19</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Kapitel 1 - Grundlagen und SAP Strategie 2026</div>
+      <div class="slide-title">SAP S/4HANA Betriebsmodelle</div>
+    </div>
+  </div>
+  <div class="slide-body">
+	<div class="betriebsmodell-grid">
+            <!-- ON-PREMISE -->
+            <div class="bm-card">
+                <div class="bm-card-header onprem">🏢 On-Premise (OnPrem)</div>
+                <div class="bm-card-title">Klassischer Eigenbetrieb</div>
+                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">Eigene Infrastruktur im eigenen oder externen Rechenzentrum. Volle Kontrolle, volle Verantwortung.</p>
+                <ul>
+                    <li>Maximale Anpassbarkeit (Code, Prozesse, Add-Ons)</li>
+                    <li>Volle Datenkontrolle &amp; Datensouveränität</li>
+                    <li>Eigene Update-Hoheit (zeitliche Flexibilität)</li>
+                    <li>Ideale Basis für hochkomplexe Branchenlösungen</li>
+					<li>Brown- &amp; Greenfield-Ansatz möglich</li>
+                    <li>Kein Vendor-Lock-in beim Betriebsmodell</li>
+					<li>Vollständige Eigenverantwortung für Betrieb, Sicherheit, Patching</li>
+                    <li class="con">Hoher CapEx (Hardware, Lizenzen, RZ)</li>
+                    <li class="con">Voller IT-Personalbedarf (Basis, Security, DBA)</li>
+                    <li class="con">Wartungsaufwand &amp; Upgrade-Druck ab 2027</li>
+                </ul>
+            </div>
+            <!-- RISE -->
+            <div class="bm-card">
+                <div class="bm-card-header">☁️ RISE with SAP (Private Cloud)</div>
+                <div class="bm-card-title">Business Transformation as a Service</div>
+                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">Vollständiges Bundle: S/4HANA Private Cloud + BTP + Business Network. Abo-Modell bei Hyperscaler.</p>
+                <ul>
+                    <li>Hohe Individualität vergleichbar mit OnPrem</li>
+                    <li>SAP übernimmt Infrastruktur &amp; Basisbetrieb</li>
+                    <li>Predictive Subscription-Kosten (OpEx statt CapEx)</li>
+                    <li>BTP, Business AI (Joule), Signavio inklusive</li>
+                    <li>Compliance &amp; SLA durch SAP garantiert</li>
+                    <li>Hyperscaler-Wahl: AWS, Azure, GCP</li>
+                    <li class="con">Vertragsbindung 3–5 Jahre (Pflicht-Upgrades)</li>
+					<li class="con">flicht-Upgrade 1× in 5 Jahren</li>
+                    <li class="con">Migrations-Investition (Brownfield/Conversion)</li>
+                </ul>
+            </div>
+            <!-- GROW -->
+            <div class="bm-card">
+                <div class="bm-card-header grow">🌱 GROW with SAP (Public Cloud)</div>
+                <div class="bm-card-title">Standardisierung als Wachstumsbeschleuniger</div>
+                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">SAP S/4HANA Cloud Public Edition. Multi-Tenant, vollständig von SAP betrieben. Für Standard-Prozesse.</p>
+                <ul>
+                    <li>Schnellste Einführung (Wochen statt Monate)</li>
+					<li>SaaS-Modell – sofort einsatzbereit</li>
+                    <li>Niedrigste TCO durch geteilte Infrastruktur</li>
+                    <li>Kontinuierliche Innovation (4 Releases/Jahr)</li>
+                    <li>Best-Practice-Prozesse sofort aktivierbar</li>
+					<li>Activation Services: bis 75 Scope Items, Go-Live in 4 Wochen</li>
+                    <li>Ideal für Neukunden &amp; Greenfield-Projekte</li>
+                    <li class="con">Stark begrenzte Individualanpassungen</li>
+                    <li class="con">Kein Zugriff auf SAP-Kerntabellen</li>
+                    <li class="con">Alle Mandanten teilen eine Infrastruktur</li>
+                </ul>
+            </div>
+        </div>
+	
+	<div class="callout success" style="margin-top:16px;">
+            <div>💡 <strong>DATAGROUP Empfehlung:</strong> Die Wahl des Betriebsmodells ist strategisch – sie bestimmt IT-Architektur, Personalstrategie und Budget für die nächsten 5–10 Jahre. Kein Modell ist per se besser; die Entscheidung hängt von Ihrem Individualisierungsgrad, Budget und Transformationsbereitschaft ab.</div>
+    </div>
+    <div class="callout warning">
+      <div>⚠️ <strong>Wartungsende:</strong> SAP ECC Mainstream-Support endet Ende 2027, optionale erweiterte Wartung bis max. 2030. Ab 2025 reduziert sich der Lizenz-Anrechnungsfaktor jährlich um 10 %. Wer heute nicht plant, zahlt morgen den vollen Preis.</div>
+    </div>
+    <div class="callout">
+      <div>📊 <strong>Marktrealit&auml;t 2026:</strong> Laut DSAG betreiben 78 % der Mitglieder hybride Systemlandschaften. Der Wechsel in die Public Cloud bleibt bei Bestandskunden ein Randphänomen (&lt;1 %). Die Mehrheit setzt auf Private Cloud (RISE) oder erweiterten On-Premise-Betrieb.</div>
+    </div>
+  </div>
+</div>
+<!-- ===================== KAPITELFOLIE 2 ===================== -->
+<div class="slide slide-chapter" data-slide="5" data-title="Kapitel 2 – Zukunft OnPrem">
+    <div class="branding-logo" style="filter:brightness(0) invert(1); opacity:0.7;"></div>
+    <div class="branding-claim"></div>
+	  <div class="slide-counter">5 / 21</div>
+    <div class="chapter-content">
+        <div class="chapter-number">02</div>
+        <div class="chapter-title">Die Zukunft der<br>SAP Betriebsmodelle</div>
+        <div class="chapter-desc">Wartungsfristen, strategische Optionen und was der Weiterbetrieb von SAP-Systemen bedeutet.</div>
+    </div>
+</div>
+
+<!-- ===================== FOLIE 4: ZUKUNFT ONPREM ===================== -->
+<div class="slide" data-slide="6" data-title="Zukunft On-Premise Betrieb">
+    <div class="branding-logo"></div>
+    <div class="branding-claim"></div>
+	  <div class="slide-counter">6 / 21</div>
+    <div class="slide-header">
+        <div>
+            <div class="slide-module-tag">Kapitel 2 · On-Premise</div>
+            <div class="slide-title">Zukunft des On-Premise SAP-Betriebs</div>
+        </div>
+    </div>
+    <div class="slide-body">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:20px;">
+            <div>
+                <h3 style="font-size:14px; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px;">⚠️ Kritische Fristen</h3>
+                <table style="font-size:13px;">
+                    <thead><tr><th>System / Release</th><th>Mainstream-Support Ende</th><th>Extended Maint.</th></tr></thead>
+                    <tbody>
+                        <tr><td>SAP ECC 6.0</td><td style="color:var(--danger); font-weight:700;">31.12.2027</td><td>2030 (kostenpflichtig)</td></tr>
+                        <tr><td>SAP S/4HANA 1909</td><td style="color:var(--warning); font-weight:700;">30.09.2027</td><td>2030</td></tr>
+                        <tr><td>SAP S/4HANA 2020</td><td>30.09.2028</td><td>2031</td></tr>
+                        <tr><td>SAP S/4HANA 2021</td><td>31.12.2029</td><td>2032</td></tr>
+                        <tr><td>SAP S/4HANA 2023+</td><td>aktuelle Version</td><td>laufend</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h3 style="font-size:14px; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px;">📋 Strategische Optionen</h3>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div class="callout"><div><strong>Option A: Migration zu RISE/GROW</strong><br><span style="font-size:12px;">Transformationsprojekt planen. Brownfield (RISE) oder Greenfield (GROW). Empfohlen für strategische Neuausrichtung.</span></div></div>
+                    <div class="callout warning"><div><strong>Option B: S/4HANA On-Premise Update</strong><br><span style="font-size:12px;">Eigene Infrastruktur behalten, auf aktuelles Release aktualisieren. Voller CapEx-Aufwand bleibt erhalten.</span></div></div>
+                    <div class="callout danger"><div><strong>Option C: Extended Maintenance</strong><br><span style="font-size:12px;">Kostenpflichtiger Support bis 2030. Keine neue Funktionalität. Nur als Überbrückung empfohlen.</span></div></div>
+                </div>
+            </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;">
+            <div style="border:1px solid var(--border); padding:16px;">
+                <div style="font-size:24px; margin-bottom:8px;">🔒</div>
+                <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Datensouveränität</div>
+                <div style="font-size:12px; color:var(--text-secondary);">Volle Kontrolle über Daten und Systemzugriff. Besonders relevant für Regulierung und behördliche Anforderungen.</div>
+            </div>
+            <div style="border:1px solid var(--border); padding:16px;">
+                <div style="font-size:24px; margin-bottom:8px;">⚡</div>
+                <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Innovationsrückstand</div>
+                <div style="font-size:12px; color:var(--text-secondary);">Cloud-Features (Business AI, Joule, Signavio) stehen OnPrem-Kunden nicht oder verzögert zur Verfügung.</div>
+            </div>
+            <div style="border:1px solid var(--border); padding:16px;">
+                <div style="font-size:24px; margin-bottom:8px;">💰</div>
+                <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Kostenentwicklung</div>
+                <div style="font-size:12px; color:var(--text-secondary);">Hardware-Refresh, steigende RZ-Kosten, IT-Fachkräftemangel: Der OnPrem-Betrieb wird mittelfristig teurer.</div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ==========================================
+   FOLIE 5: ON-PREMISE ZUKUNFT
+   ========================================== -->
+<div class="slide" data-slide="7" data-title="Zukunft On-Premise SAP">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">7 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Kapitel 2 · On-Premise</div>
+      <div class="slide-title">heutige Bewertung des On-Premise SAP-Betriebs</div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="two-col" style="margin-bottom:16px">
+      <div>
+        <div class="highlight-box">
+          <strong>Wartungszeitplan – Was ist zu tun?</strong>
+          SAP ECC: Mainstream-Support bis 31.12.2027 · Erweiterte Wartung bis 2030 (kostenpflichtig) · S/4HANA On-Premise: 5 Jahre Wartungslaufzeit pro Release · Kein aktives Release = Sicherheitsrisiko
+        </div>
+        <div class="info-block">
+          <h4>Wer bleibt on-premise?</h4>
+          <ul>
+            <li>Unternehmen mit strengen Datenschutz- / Compliance-Anforderungen</li>
+            <li>Kritische Infrastruktur (KRITIS-Regulierung)</li>
+            <li>Hochgradig individualisierte, branchenspezifische Systeme</li>
+            <li>Unternehmen mit bestehenden, wirtschaftlichen RZ-Verträgen</li>
+            <li>Öffentlicher Sektor – Datensouveränität in EU-RZ gefordert</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h4>Herausforderungen im On-Premise-Betrieb 2026+</h4>
+          <ul>
+            <li><strong>Fachkräftemangel:</strong> SAP Basis-Spezialisten werden knapper und teurer</li>
+            <li><strong>Hardware-Zyklen:</strong> HANA-zertifizierte Server alle 5–7 Jahre erneuern</li>
+            <li><strong>Komplexität:</strong> Security-Patching, OS-Upgrades, SAP-Releases parallel</li>
+            <li><strong>Innovation-Gap:</strong> Neue KI-Features (Joule, Business AI) kommen zuerst in die Cloud</li>
+            <li><strong>Skalierbarkeit:</strong> Ressourcen-Peaks schwer abzufangen ohne Überkapazitäten</li>
+            <li><strong>Kompatibilit&auml;tsrisiko:</strong> Ende SAP S/4HANA Compatibility Scope ab 01.01.2026</li>
+          </ul>
+        </div>
+        <div class="info-block" style="margin-top:12px">
+          <h4>Die DATAGROUP CORBOX als Antwort</h4>
+          <ul>
+            <li>Managed SAP Basis Plus – CORBOX übernimmt Betrieb &amp; Monitoring</li>
+            <li>Hyperscaler-Anbindung für flexible Skalierung ohne eigene HW-Investition</li>
+            <li>Proaktives Patch- &amp; Release-Management</li>
+            <li>Dedicated Expert-Pool für SAP Basis, Security, Performance</li>
+            <li>Transformation Readiness Assessment inklusive</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 6: GROW WITH SAP
+   ========================================== -->
+<div class="slide" data-slide="8" data-title="GROW with SAP">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">8 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Kapitel 2 · SAP Cloud · Public Edition</div>
+      <div class="slide-title">GROW with SAP – Public Cloud im Detail</div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="two-col" style="margin-bottom:14px">
+      <div>
+        <div class="highlight-box">
+          <strong>Was ist GROW with SAP?</strong>
+          GROW ist SAPs Methodik für Neukunden und Greenfield-Einführungen. Kern ist SAP S/4HANA Cloud Public Edition (SaaS). Bis zu 75 vordefinierte Scope Items für verschiedene Branchen. Systembereitstellung innerhalb von 4 Wochen.
+        </div>
+        <div class="pro-con">
+          <div class="pros">
+            <h5>✅ Vorteile</h5>
+            <ul>
+              <li>Schnelle Einführung (4–12 Wochen)</li>
+              <li>Kontinuierliche SAP-Innovation (quartalsweise Updates)</li>
+              <li>Geringere Implementierungskosten</li>
+              <li>Immer auf aktuellem Release</li>
+              <li>Best-Practice-Prozesse ab Werk</li>
+              <li>Keine eigene HW-Infrastruktur</li>
+              <li>Integrierte KI (Joule, BTP)</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <h5>❌ Nachteile</h5>
+            <ul>
+              <li>Kaum Individualisierung möglich</li>
+              <li>Standardprozesse ggf. nicht passend</li>
+              <li>Quartalsweise Updates verpflichtend</li>
+              <li>Wenig Kontrolle über Release-Timing</li>
+              <li>Begrenzte Branchentiefe</li>
+              <li>Abhängigkeit von SAP-Rechenzentren</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h4>Was bedeutet GROW für die klassische IT-Organisation?</h4>
+          <ul>
+            <li><strong>SAP Basis entfällt weitgehend:</strong> System-Administration, Patching, Infrastruktur übernimmt SAP</li>
+            <li><strong>Neues Kompetenzprofil:</strong> Statt ABAP-Entwicklung → BTP-Extensions, Low-Code / No-Code</li>
+            <li><strong>Change-Management kritisch:</strong> Standardprozesse bedeuten Prozessanpassung, nicht Systemanpassung</li>
+            <li><strong>Kontinuierliches Testen:</strong> Jedes Quartal neue Features → Regressionstests werden Pflicht</li>
+            <li><strong>IT wird zum Business Enabler:</strong> Fokus verlagert sich auf Prozessoptimierung &amp; Datenanalyse</li>
+            <li><strong>Partner-Modell:</strong> Implementierungspartner wie DATAGROUP begleitet durchgehend</li>
+          </ul>
+        </div>
+        <div class="callout warning" style="margin-top:12px">
+          <div>💡 <strong>Empfehlung:</strong> GROW eignet sich, wenn 70–80 % der Geschäftsprozesse mit SAP-Standard abgedeckt werden können. Für stark individualisierte Prozesse ist RISE die bessere Wahl.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 7: RISE WITH SAP
+   ========================================== -->
+<div class="slide" data-slide="9" data-title="RISE with SAP">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">9 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Kapitel 2 · SAP Cloud · Private Edition</div>
+      <div class="slide-title">RISE with SAP – Private Cloud Migration</div>
+    </div>
+	      </div>
+  <div class="slide-body">
+    <div class="two-col" style="margin-bottom:14px">
+      <div>
+        <div class="highlight-box">
+          <strong>Was ist RISE with SAP?</strong>
+          Seit Anfang 2025 ist RISE die Methodik für Bestandskunden auf dem Weg von On-Premise in die SAP Business Suite. Kern: SAP S/4HANA Cloud Private Edition. Inklusive: SAP BTP, Business Process Intelligence, SAP Business Network. Subscription-Modell mit 1–5 Jahren Laufzeit.
+        </div>
+        <div class="pro-con">
+          <div class="pros">
+            <h5>✅ Vorteile</h5>
+            <ul>
+              <li>Voller S/4HANA-Funktionsumfang</li>
+              <li>Hohe Individualisierbarkeit bleibt</li>
+              <li>SAP verantwortet Infra &amp; Basis-Betrieb</li>
+              <li>SAP BTP Side-by-Side Extensions</li>
+              <li>Brownfield-Migration möglich</li>
+              <li>OpEx statt CapEx (Planbarkeit)</li>
+              <li>Zugang zu KI &amp; Innovationen</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <h5>❌ Risiken / Nachteile</h5>
+            <ul>
+              <li>Mindestens 1 Upgrade in 5 Jahren Pflicht</li>
+              <li>Hohe Migrationskosten (Projekt)</li>
+              <li>Vendor Lock-in (SAP + Hyperscaler)</li>
+              <li>Laufende Abokosten auch bei Migrationsproblemen</li>
+              <li>Komplexe Vertragsgestaltung (Contract Conversion)</li>
+              <li>"Leere-Wohnung-Risiko" bei Projektverzug</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h4>Auswirkungen auf die klassische IT-Organisation bei RISE</h4>
+          <ul>
+            <li><strong>SAP Basis transformiert sich:</strong> Wegfall von HW-Betrieb, RZ-Management, OS-Patching</li>
+            <li><strong>Neue Rollen entstehen:</strong> Cloud Integration Architect, BTP Developer, SAP Security Engineer</li>
+            <li><strong>Governance wird wichtiger:</strong> Clean Core, API-Management, Change-Management-Prozesse</li>
+            <li><strong>CORBOX als Brücke:</strong> DATAGROUP managed den Übergang und den laufenden Betrieb</li>
+            <li><strong>Retained Organization:</strong> Verbleibende IT fokussiert auf Geschäftsprozesse &amp; Anforderungsmanagement</li>
+            <li><strong>Know-how-Transfer:</strong> Kritisch, um nicht vollständig von SAP/Partner abhängig zu werden</li>
+          </ul>
+        </div>
+        <div class="callout success" style="margin-top:12px">
+          <div>🎯 <strong>DATAGROUP Vorteil:</strong> Als RISE-zertifizierter Partner begleitet DATAGROUP von der Assessment-Phase bis zum Go-Live und darüber hinaus im Managed Service (CORBOX).</div>
+        </div>
+      </div>
+    </div>
+	<!-- Basis Plus Stelle -->
+	<details style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 20px; overflow: hidden;">
+  	  <summary style="padding: 16px 20px; font-weight: 700; color: var(--primary); background: var(--surface-alt); border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px;">
+		<span>📋 Basis+ Ihre DATAGROUP Assurance</span>
+	  </summary>
+	<div class="callout info" style="margin-bottom:18px">
+        <div class="callout-icon">💡</div>
+        <div class="callout-content">
+          <h4>Was ist SAP Basis Plus?</h4>
+          <p>Der Service von DATAGROUP schließt die <strong>Assurance Gap</strong> im RISE-Standard: Er übernimmt alle applikationsnahen Basis-Tätigkeiten, die SAP ECS nicht abdeckt – mit persönlichem Ansprechpartner und End-to-End-Verantwortung.</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+        <div style="background:white;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:18px">
+          <div style="font-size:12px;font-weight:700;color:#cc0000;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">🔧 Leistungsumfang Operations</div>
+          <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--text-secondary)">
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Job- &amp; Transportmanagement (ext. Transporte, Add-ons, SAP Notes)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Schnittstellen &amp; Outputmanagement (Datenaustausch, E-Mail, Druck)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>IT-Security: Zertifikatsmanagement, Single Sign-On (SAML 2.0)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Support &amp; Störungsbehebung (Tickets, Systemöffnungen, Userbereitstellung)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>User- &amp; Berechtigungsmanagement (Rollen, Objektschlüssel)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Lizenzmanagement (Überwachung &amp; Optimierung)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Patchmanagement: Security Notes, OS-Patches alle 6 Monate</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>BTP-Instanz- &amp; CPI-Schnittstellenverwaltung</li>
+          </ul>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="background:white;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:16px">
+            <div style="font-size:12px;font-weight:700;color:#cc0000;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">🧩 Verantwortlichkeits-Matrix (RACI)</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.7">
+              <div style="display:grid;grid-template-columns:1fr 60px 80px 60px;gap:4px;font-size:11px;margin-bottom:4px">
+                <div style="font-weight:600;color:var(--text)">Aufgabe</div>
+                <div style="font-weight:600;text-align:center;color:orange">Kunde</div>
+                <div style="font-weight:600;text-align:center;color:#cc0000">DATAGROUP</div>
+                <div style="font-weight:600;text-align:center;color:#005bb5">SAP</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 60px 80px 60px;gap:2px;font-size:11px;border-top:1px solid var(--border);padding-top:4px">
+                <div>Incident Management (App)</div><div style="text-align:center">R</div><div style="text-align:center;color:#cc0000;font-weight:600">A</div><div style="text-align:center">I</div>
+                <div style="border-top:1px solid var(--border);padding-top:3px">Security Notes</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">A</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#cc0000;font-weight:600">R</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">I</div>
+                <div style="border-top:1px solid var(--border);padding-top:3px">Transport Management</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">A</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#cc0000;font-weight:600">R</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div>
+                <div style="border-top:1px solid var(--border);padding-top:3px">OS-Patching (Infra)</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#005bb5;font-weight:600">R</div>
+                <div style="border-top:1px solid var(--border);padding-top:3px">IAM / Berechtigungen</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">A</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#cc0000;font-weight:600">R</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:white;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:16px">
+            <div style="font-size:12px;font-weight:700;color:#cc0000;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">⏱ Servicezeiten &amp; SLAs</div>
+            <div style="font-size:13px;color:var(--text-secondary);display:flex;flex-direction:column;gap:5px">
+              <div>📅 Service <strong>Mo–Fr, 08:00–18:00 Uhr</strong> · Rufbereitschaft optional</div>
+              <div>🔴 P1 Incident: <strong>2 Stunden</strong> Reaktionszeit</div>
+              <div>🟡 P2 Incident: <strong>4 Stunden</strong> Reaktionszeit</div>
+              <div>🟢 P3 Incident: <strong>2 Arbeitstage</strong> Reaktionszeit</div>
+              <div>👤 Persönlicher Service Lead + Service Koordinator</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="callout success" style="margin-bottom:0">
+        <div class="callout-icon">🤝</div>
+        <div class="callout-content">
+          <h4>Ergänzende Services: Managed BTP + Managed Cloud ALM</h4>
+          <p>Neben SAP Basis Plus bietet DATAGROUP auch <strong>Managed SAP BTP</strong> (Global Account Management, Connectivity, IAM, Integration Suite) und <strong>Managed Cloud ALM</strong> (Monitoring, Alert Management, Systemlandscape) als vollständig gebuchte Managed Services an.</p>
+        </div>
+      </div>
+	  </br>
+	</details>
+	<details style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 20px; overflow: hidden;">
+  	  <summary style="padding: 16px 20px; font-weight: 700; color: var(--primary); background: var(--surface-alt); border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px;">
+		<span>📋 Detaillierte RACI-Matrix & Aufgabenverteilung einblenden</span>
+	  </summary>
+	<!-- Legend -->
+
+      
+	  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);margin-right:2px">Legende:</span>
+        <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#d1fae5;color:#065f46;border:1px solid #6ee7b7">✅ Standard SAP</span>
+        <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#fef3c7;color:#92400e;border:1px solid #fcd34d">💛 Optional / CAS (+Kosten)</span>
+        <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5">🚫 Excluded (Kunde)</span>
+        <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#e0e7ff;color:#3730a3;border:1px solid #a5b4fc">👤 Kunde</span>
+        <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#f3e8ff;color:#6b21a8;border:1px solid #d8b4fe">🤝 Geteilt</span>
+		<span style="font-size:10px;background:#e8f0fe;color:#0071e3;padding:4px 10px;border-radius:20px;font-weight:600;flex-shrink:0">Quelle: SAP R&amp;R Dokument v.7-2025 (DE) · 1.000+ Aufgaben</span>
+      </div>
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:2px;border-bottom:2px solid var(--border);flex-shrink:0">
+        <button class="raci-tab active" onclick="switchRaciTab('infra',this);event.stopPropagation()">🖥 Infrastruktur</button>
+        <button class="raci-tab" onclick="switchRaciTab('basis',this);event.stopPropagation()">⚙️ SAP Basis</button>
+        <button class="raci-tab" onclick="switchRaciTab('security',this);event.stopPropagation()">🔐 Security</button>
+        <button class="raci-tab" onclick="switchRaciTab('monitoring',this);event.stopPropagation()">📊 Monitoring</button>
+        <button class="raci-tab" onclick="switchRaciTab('change',this);event.stopPropagation()">🔄 Change &amp; Release</button>
+        <button class="raci-tab" onclick="switchRaciTab('iam',this);event.stopPropagation()">👤 IAM</button>
+        <button class="raci-tab" onclick="switchRaciTab('btp',this);event.stopPropagation()">☁️ BTP &amp; Integration</button>
+      </div>
+
+      <!-- Panel: Infrastruktur -->
+      <div id="raci-panel-infra" class="raci-panel">
+        <table class="raci-table">
+          <thead><tr><th style="width:38%">Aufgabe</th><th>Verantwortung</th><th>Kategorie</th><th>Hinweis</th></tr></thead>
+          <tbody>
+            <tr><td>Rechenzentrum / physische Sicherheit</td><td class="raci-sap">✅ SAP/Hyperscaler</td><td class="cat-std">Standard</td><td>Via AWS / Azure / GCP</td></tr>
+            <tr><td>Netzwerk-Infrastruktur (WAN/LAN)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Betrieb durch SAP ECS</td></tr>
+            <tr><td>Firewall-Konfiguration (SAP-seitig)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Grundkonfiguration durch SAP</td></tr>
+            <tr><td>Firewall-Regeln für Kundenanwendungen</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Change Request (CR) erforderlich</td></tr>
+            <tr><td>VM-Provisionierung (SAP-Systeme)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Laut vertraglicher Landschaft</td></tr>
+            <tr><td>VM-Sizing / Ressourcenplanung</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional</td><td>Empfehlung SAP + Freigabe Kunde</td></tr>
+            <tr><td>Backup &amp; Restore (Infrastruktur-Ebene)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Standard Retention bis 12 Monate</td></tr>
+            <tr><td>Backup-Retention &gt; 12 Monate</td><td class="raci-cas">💛 CAS</td><td class="cat-cas">Additional</td><td>Offline-Export, CR nötig, kostenpflichtig</td></tr>
+            <tr><td>OS-Patching (SAP-Systeme)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Security Patches mind. alle 6 Monate</td></tr>
+            <tr><td>OS-Patching (Nicht-SAP-Server)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>⚠️ NIS2-relevant! Kundenverantwortung</td></tr>
+            <tr><td>Storage Management (SAP-Systeme)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Laut vertraglichem Capacity Plan</td></tr>
+            <tr><td>Storage-Erweiterung</td><td class="raci-customer">👤 Kunde</td><td class="cat-additional">Additional</td><td>CR erforderlich, kostenpflichtig</td></tr>
+            <tr><td>High Availability / HANA System Replication</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Enthalten im RISE-Standard</td></tr>
+            <tr><td>Disaster Recovery (RTO/RPO-Planung)</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional/CAS</td><td>Planung Kunde, Ausführung SAP</td></tr>
+            <tr><td>Antivirus / Malware-Schutz (SAP-Systeme)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>AV-Pattern-Updates durch SAP</td></tr>
+            <tr><td>Antivirus (Nicht-SAP-Applikationsserver)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>⚠️ NIS2! MSP oder Eigenverantwortung</td></tr>
+          
+            <tr><td>DNS-Konfiguration (Ersteinrichtung / Onboarding)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Nur Ersteinrichtung; DNS-Forwarding auf DNS-Server; keine /etc/hosts-Einträge auf Einzelservern</td></tr>
+            <tr><td>DNS-Migration / Domänenwechsel (post-Übergabe)</td><td class="raci-cas">💛 Optional</td><td class="cat-opt">Optional</td><td>INFRA_1.2.11 verwenden; bei Org.-Änderung oder Wechsel zur Kundendomäne</td></tr>
+            <tr><td>Netzwerksegmentierung (bis 3 Segmente)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Standard bis 3 Netzwerksegmente; Kunde stellt Firewall-Steuerung für eigene Infrastruktur</td></tr>
+            <tr><td>Netzwerksegmentierung (über 3 Segmente)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Kunde verantwortlich für Segments über den Standardumfang</td></tr>
+            <tr><td>FWaaS – Firewall as a Service (Installation)</td><td class="raci-cas">💛 Optional</td><td class="cat-opt">Optional</td><td>Filtert Traffic innerhalb der SAP ECS Private Cloud; Kunde konfiguriert Zugriff auf eigener Seite</td></tr>
+            <tr><td>FWaaS – Regelwerk ändern / exportieren</td><td class="raci-cas">💛 Optional</td><td class="cat-opt">Optional</td><td>Regeln hinzufügen/entfernen oder bestehende Regeln ändern (FWAAS_1.1.02/03)</td></tr>
+            <tr><td>Brownfield-Migration: Cloud-Speicherzugriff</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>On-Premise-IPs whitelisten; Verbindung On-Premise ↔ SAP ECS Cloud-Speicher herstellen</td></tr>
+            <tr><td>SFTP-Server konfigurieren (bis 10 Benutzer)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Nur Linux; kein externer Eingang aus dem Internet; max. 10 Benutzer/Server</td></tr>
+            <tr><td>SFTP-Benutzer über 10 (Zusatzanforderungen)</td><td class="raci-cas">💛 Zusatz</td><td class="cat-additional">Additional</td><td>INFRA_1.11.02A; Anforderungen für Benutzer über INFRA_1.11.02_AE hinaus</td></tr>
+            <tr><td>SFTP-Dateien erstellen / löschen</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>INFRA_1.11.04/05; Dateimanagement auf SFTP-Shares ist Kundenaufgabe</td></tr>
+            <tr><td>CIFS-Shares (Netzlaufwerke) konfigurieren</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Im Rahmen vertraglicher Infrastrukturkapazität; nicht auf DB-Servern; Kunde sichert eigene Daten</td></tr>
+            <tr><td>Zeitzonenparameter-Änderungen (OS-Ebene)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Über OS-Parameter-Änderungen; wird für Zeitzonenaktualisierungen verwendet</td></tr>
+            </tbody>
+        </table>
+      </div>  
+      <!-- Panel: SAP Basis -->
+      <div id="raci-panel-basis" class="raci-panel" style="display:none">
+        <table class="raci-table">
+          <thead><tr><th style="width:38%">Aufgabe</th><th>Verantwortung</th><th>Kategorie</th><th>Hinweis</th></tr></thead>
+          <tbody>
+            <tr><td>SAP Kernel-Upgrades</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Service Request durch Kunde einreichen</td></tr>
+            <tr><td>ABAP-Stack Upgrades / SPS / FPS</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Planung + Downtime-Freigabe durch Kunde</td></tr>
+            <tr><td>SPDD / SPAU – Objektanpassung nach Upgrade</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Entwickler- und Fachbereichsverantwortung</td></tr>
+            <tr><td>Add-on Installation (SAP-Standard)</td><td class="raci-cas">💛 CAS</td><td class="cat-cas">CAS</td><td>Kostenpflichtiger Zusatzservice</td></tr>
+            <tr><td>Transportmanagement (CTS / tRFC)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Kernaufgabe bleibt beim Kunden / Partner</td></tr>
+            <tr><td>Transport-Import via Service Request</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional</td><td>SR erstellt Kunde, Ausführung durch SAP</td></tr>
+            <tr><td>Client-Verwaltung (Anlage / Löschung)</td><td class="raci-cas">💛 CAS</td><td class="cat-cas">CAS</td><td>Nur via Service Request an SAP ECS</td></tr>
+            <tr><td>Systemkopie / Client Copy</td><td class="raci-cas">💛 CAS</td><td class="cat-cas">CAS</td><td>Planung + Downtime-Fenster durch Kunde</td></tr>
+            <tr><td>RFC-Verbindungen konfigurieren</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Vollständige Kundenverantwortung</td></tr>
+            <tr><td>SMTP / E-Mail-Konfiguration</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Kundenverantwortung</td></tr>
+            <tr><td>SICF – ICF-Dienste aktivieren / deaktivieren</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Security-relevant! Vgl. SAP Note 3250501</td></tr>
+            <tr><td>Job Scheduling / Background Processing</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Prozessverantwortung beim Kunden</td></tr>
+            <tr><td>Spool- &amp; Druckerverwaltung / Output Mgmt</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Output Management = Kundenaufgabe</td></tr>
+            <tr><td>Security-Profilparameter (Basis-Hardening)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Mandatory Settings via SAP Note 3250501</td></tr>
+            <tr><td>Performance-Tuning (Applikationsebene)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>SQLM, ATC, SM50/SM66 – Kundenverantw.</td></tr>
+            <tr><td>ChaRM-Konfiguration (Solution Manager)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Empfehlung: Partner übernimmt Konfiguration</td></tr>
+            <tr><td>Webdispatcher-Verwaltung</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Routing-Konfiguration Kundenverantwortung</td></tr>
+            <tr><td>SAP-Lizenzmanagement (USMM / LAW)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>FUE-Überwachung = Kundenverantwortung</td></tr>
+          
+            <tr><td>SAP HANA Version-Upgrade &amp; DB-Client-Update</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Produktiv- und Nicht-Produktivsysteme; HANA MDC mit aktuellem SP-Level; Replikationsmodus CLR</td></tr>
+            <tr><td>SAP HANA Transportmanagement-Einrichtung</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Nur Einrichtung des TMS; laufender Betrieb des Transportmanagementsystems liegt beim Kunden</td></tr>
+            <tr><td>SAP HANA Cockpit aktivieren (Betrieb &amp; Monitoring)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Aktivierungsaufgaben für HANA Cockpit; Betrieb und Überwachung über Cockpit dann durch Kunde</td></tr>
+            <tr><td>HANA Benutzerverwaltung nicht-technische User (MDC)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>MDC Standard in HANA 2.0; Kunde verantwortlich via CUST_USER_ROLE_ADMIN; paketierter Service buchbar</td></tr>
+            <tr><td>Data Provisioning Agent – Standardinstallation</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>2 DP-Agents enthalten (je 1 für Prod und Non-Prod); BTP-Agent-Registrierung liegt beim Kunden</td></tr>
+            <tr><td>Data Provisioning Agent – Zusatz-Agents</td><td class="raci-cas">💛 Zusatz</td><td class="cat-additional">Additional</td><td>TO_HANA_SDI_1.1.02; für weitere Stufen oder HA-Einrichtung; BTP-Registrierung = Kunde</td></tr>
+            <tr><td>HANA Partitionierung – Basis-Anforderungen</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Standardanforderungen als Standardservice; weitere Partitionierung separat (HANA_1.1.35)</td></tr>
+            <tr><td>HANA Partitionierung – Anwendungsabhängigkeiten</td><td class="raci-cas">💛 Zusatz</td><td class="cat-additional">Additional</td><td>Manuelle Verschiebung von Tabellen/Partitionen; ausführende Partei wird vereinbart; Downtime nötig</td></tr>
+            <tr><td>HANA Hochverfügbarkeit via Pacemaker einrichten</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Umstrukturierung auf Pacemaker-HA; Kunde bestellt Infrastruktur und Pacemaker-Pakete (SBD, Cluster)</td></tr>
+            <tr><td>HANA Failover-Tests</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional</td><td>Werden NICHT regelmäßig pro System durchgeführt; auf Anfrage; Koordination mit Kunde</td></tr>
+            <tr><td>HANA Systemfehler beheben (blockierte Transakt.)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Blockierte Transaktionen und Systemfehler beheben; HANA wieder in betriebsbereiten Zustand versetzen</td></tr>
+            <tr><td>HANA NSE – Native Storage Extension</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>NSE ab HANA 2.0 SP04 aktiv; Kunde verantwortlich für Zusatzspeicher für Warm-Data (via CR)</td></tr>
+            <tr><td>Datensicherung &gt; 12 Monate (Offline-Export)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Als Offline-DB-Export; Aufbewahrung darf nicht nach Vertragsende liegen; CR für Extra-Storage</td></tr>
+            <tr><td>Sizing – Auswertungen &amp; KPI-Ermittlung</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Kunde führt Auswertungen durch; SAP berät; jede Kapazitätserweiterung via CR</td></tr>
+            </tbody>
+        </table>
+      </div>
+
+      <!-- Panel: Security -->
+      <div id="raci-panel-security" class="raci-panel" style="display:none">
+        <table class="raci-table">
+          <thead><tr><th style="width:38%">Aufgabe</th><th>Verantwortung</th><th>Kategorie</th><th>Hinweis</th></tr></thead>
+          <tbody>
+            <tr><td>OS-Level Security Hardening (SAP-Systeme)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Mandatory via SAP Note 3250501</td></tr>
+            <tr><td>Security Notes – Bewertung &amp; Priorisierung</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Risikobeurteilung = Kundenverantwortung</td></tr>
+            <tr><td>Security Notes – Einspielen (ABAP-Ebene)</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional</td><td>SR durch Kunde → Ausführung durch SAP</td></tr>
+            <tr><td>Zertifikatsmanagement (SSL/TLS)</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional</td><td>Erneuerung via Service Request</td></tr>
+            <tr><td>Single Sign-On (SSO) Setup</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>⚠️ Explicit Excluded Task im R&amp;R Dokument!</td></tr>
+            <tr><td>SAML 2.0 / OAuth 2.0 Konfiguration</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>IdP-Integration = Kundenverantwortung</td></tr>
+            <tr><td>Identity Provider (IdP / Azure AD / Entra ID)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Betrieb und Pflege = Kundenverantwortung</td></tr>
+            <tr><td>App-Level Threat Detection / SIEM-Integration</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>SAP ETD optional (nicht Standard)</td></tr>
+            <tr><td>SAP Enterprise Threat Detection (ETD)</td><td class="raci-cas">💛 CAS</td><td class="cat-cas">Optional/CAS</td><td>Kostenpflichtig, &lt; 50 IOC-Pattern</td></tr>
+            <tr><td>Vulnerability Management (App-Ebene)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Kontinuierlicher Prozess, Kundenaufgabe</td></tr>
+            <tr><td>Segregation of Duties (SoD) Monitoring</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>SAP GRC Access Control empfohlen</td></tr>
+            <tr><td>SOX / Audit Compliance (Applikationsebene)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>100 % Kundenverantwortung</td></tr>
+            <tr><td>Penetration Tests</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>In Abstimmung mit SAP durchzuführen</td></tr>
+            <tr><td>Datenschutz / DSGVO (Applikationsebene)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Dateneigentum liegt beim Kunden</td></tr>
+            <tr><td>Sicherheitsmonitoring (Infrastruktur-Ebene)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>SAP / Hyperscaler überwacht Infra-Layer</td></tr>
+            <tr><td>Security Incident Notification</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>SAP informiert Kunde bei Vorfällen</td></tr>
+          
+            <tr><td>NIS2-Compliance – Infrastruktur-Ebene</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>SAP/Hyperscaler übernimmt NIS2-relevante Infrastrukturabsicherung; Meldepflichten bei Vorfällen</td></tr>
+            <tr><td>NIS2-Compliance – Applikations- &amp; Prozessebene</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Anwendungssicherheit, Meldekette, Dokumentation und prozessuale NIS2-Anforderungen = Kunde</td></tr>
+            <tr><td>Custom Code Security (ABAP-Eigenentwicklungen)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Sicherheitsprüfung und -härtung von kundenspezifischem ABAP-Code; ATC empfohlen</td></tr>
+            <tr><td>Vulnerability Scans (Infrastruktur-Ebene)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Regelmäßige Scans auf Infrastruktur- und OS-Ebene durch SAP ECS</td></tr>
+            <tr><td>Vulnerability Scans (Applikations-Ebene / ABAP)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Applikationsseitige Scans, z.B. mit SAP Security Optimization Service oder Dritttools</td></tr>
+            <tr><td>Persönliche Datenschutzmaßnahmen (ILM / Blockierung)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Information Lifecycle Management, Datensperrung und -löschung gemäß DSGVO = Kundenaufgabe</td></tr>
+            </tbody>
+        </table>
+      </div>
+
+      <!-- Panel: Monitoring -->
+      <div id="raci-panel-monitoring" class="raci-panel" style="display:none">
+        <table class="raci-table">
+          <thead><tr><th style="width:38%">Aufgabe</th><th>Verantwortung</th><th>Kategorie</th><th>Hinweis</th></tr></thead>
+          <tbody>
+            <tr><td>System-Verfügbarkeitsmonitoring</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>24/7 Infrastruktur-Monitoring durch SAP ECS</td></tr>
+            <tr><td>HANA DB-Performance Monitoring (Basis)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Standard-Metriken im Paket enthalten</td></tr>
+            <tr><td>Applikations-Performancemonitoring</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>SQLM, SM50/SM66 = Kundenverantwortung</td></tr>
+            <tr><td>Business Process Monitoring (KPIs)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Via SAP Cloud ALM empfohlen</td></tr>
+            <tr><td>Alerting / Event Management</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional</td><td>Infra-Alerts SAP – App-Alerts Kunde</td></tr>
+            <tr><td>EarlyWatch Alert (EWA)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Regelmäßige Reports durch SAP ECS</td></tr>
+            <tr><td>Kapazitätsplanung (Ressourcen)</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional</td><td>EWA-Grundlage + Kundenentscheidung</td></tr>
+            <tr><td>OS-Monitoring (SAP-Systeme)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Systemlogs und Dateisysteme überwacht</td></tr>
+            <tr><td>OS-Monitoring (Nicht-SAP-Appserver)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>⚠️ Excluded Task – MSP oder Eigenverantw.</td></tr>
+            <tr><td>Log-Zugriff (OS / DB / Netzwerk)</td><td class="raci-cas">💛 CAS</td><td class="cat-cas">CAS (LogServe)</td><td>Premium-Option LogServe, kostenpflichtig</td></tr>
+            <tr><td>SIEM-Integration</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Integration in Kunden-SIEM Eigenleistung</td></tr>
+            <tr><td>Ticket Tracking &amp; ITSM-Reporting</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional</td><td>Via SAP for Me Portal + Cloud ALM</td></tr>
+            <tr><td>SLA-Reporting</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Monatliche Berichte durch SAP ECS</td></tr>
+          
+            <tr><td>Datenwachstum-Überwachung &amp; Empfehlungen</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Speicherkapazität laut Servicebeschreibung; Empfehlungen via SAP Enterprise Support; eine Tabelle/SID/Jahr inklusive</td></tr>
+            <tr><td>Ressourcennutzung überwachen &amp; Berichte erstellen</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Automatisierte Überwachung und Berichterstellung zur Ressourcennutzung</td></tr>
+            <tr><td>Workload-Capture / SQL Workload Analyzer</td><td class="raci-cas">💛 Optional</td><td class="cat-opt">Optional</td><td>Kunde stellt ausreichend Speicherkapazität sicher; Kapazitätserweiterung via CR</td></tr>
+            <tr><td>Proaktive Systemzustands-Checks (Health Check)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Regelmäßige proaktive Prüfungen des Systemzustands durch SAP ECS</td></tr>
+            <tr><td>Überwachung von Sicherungs-Jobs (Backup Monitoring)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Automatische Überwachung und Warnmeldungen bei Sicherungsfehlern</td></tr>
+            </tbody>
+        </table>
+      </div>
+
+      <!-- Panel: Change & Release -->
+      <div id="raci-panel-change" class="raci-panel" style="display:none">
+        <table class="raci-table">
+          <thead><tr><th style="width:38%">Aufgabe</th><th>Verantwortung</th><th>Kategorie</th><th>Hinweis</th></tr></thead>
+          <tbody>
+            <tr><td>Release Upgrade (Major Version)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Ausführung SAP, Planung gemeinsam</td></tr>
+            <tr><td>SPS / FPS Update (Quarterly Patches)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Downtime-Fenster durch Kunde vorzugeben</td></tr>
+            <tr><td>Upgrade-Planung &amp; Terminierung</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Fachbereich + IT koordinieren Zeitplan</td></tr>
+            <tr><td>Pre-Upgrade-Tests / Integrationstests</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>UAT, Regressionstests = Kundenaufgabe</td></tr>
+            <tr><td>SPDD / SPAU-Anpassungen nach Upgrade</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Entwickler-Verantwortung beim Kunden</td></tr>
+            <tr><td>Change Advisory Board (CAB) Leitung</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Change-Freigabe bleibt beim Kunden</td></tr>
+            <tr><td>Change-Dokumentation &amp; Protokoll</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional</td><td>Via SAP Cloud ALM empfohlen</td></tr>
+            <tr><td>Notfall-Änderungen (Emergency Changes)</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional</td><td>Eskalation Kunde → SAP ECS</td></tr>
+            <tr><td>Release-Kalender &amp; Upgrade-Kommunikation</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>SAP publiziert Roadmap und Termine</td></tr>
+            <tr><td>Fiori Launchpad Reaktivierung (post-Upgrade)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Technische Reaktivierung durch SAP ECS</td></tr>
+            <tr><td>Custom Code Validierung (post-Upgrade)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>ATC, Clean Core Check = Kundenaufgabe</td></tr>
+            <tr><td>Transport-Freigabe für Produktion</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Release-Autorisation = Kundenverantwortung</td></tr>
+          
+            <tr><td>Paketierte Services (gebündelte Wartungsaufgaben)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Mehrere zusammengehörige Standard-Tasks in einem Zeitraum; Verfügbarkeit in SAP for Me prüfen</td></tr>
+            <tr><td>HANA DB Minor Release Update (Bug-Fix / Erweiterungen)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Update = Wechsel auf neues Minor Release; Fokus auf Bug-Fixes; DB-Client-Updates inkl.</td></tr>
+            <tr><td>Konvertierung auf Pacemaker-HA (Systemumbau)</td><td class="raci-shared">🤝 Geteilt</td><td class="cat-opt">Optional</td><td>Kunde stellt Infrastruktur + Pacemaker-Pakete bereit; Ausführung SAP; Downtime-Fenster Kunde</td></tr>
+            <tr><td>Systemkopie Vorbereitung, Zertifikate, Pre-Steps</td><td class="raci-cas">💛 CAS</td><td class="cat-cas">CAS</td><td>TO_HANA_MDC_1.2.17_AE; Vorbereitung, Checks, Zertifikate und Vorabschritte für Tenant-Copy</td></tr>
+            </tbody>
+        </table>
+      </div>
+
+      <!-- Panel: IAM -->
+      <div id="raci-panel-iam" class="raci-panel" style="display:none">
+        <table class="raci-table">
+          <thead><tr><th style="width:38%">Aufgabe</th><th>Verantwortung</th><th>Kategorie</th><th>Hinweis</th></tr></thead>
+          <tbody>
+            <tr><td>SAP HANA User-Verwaltung (DB-Ebene)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Via CUST_USER_ROLE_ADMIN Rolle</td></tr>
+            <tr><td>ABAP User-Anlage (Endanwender)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Vollständige Kundenverantwortung</td></tr>
+            <tr><td>Rollenentwicklung (ABAP-Rollen / Profile)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Konzeption und Umsetzung = Kunde</td></tr>
+            <tr><td>Berechtigungskonzept (Design &amp; Pflege)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Fachbereich + Sicherheitsbeauftragter</td></tr>
+            <tr><td>Privilegierte Systemzugänge (Admin-Accounts)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Service provider access only (kein Kunde)</td></tr>
+            <tr><td>Entwickler- &amp; Objektschlüssel</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Steuerung durch Kunden-Admins</td></tr>
+            <tr><td>SSO / Identity Provider Setup</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>⚠️ Explicit Excluded Task im R&amp;R Dokument</td></tr>
+            <tr><td>Fiori IAM (Kataloge, Gruppen, Tile-Konfig.)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Fiori-Berechtigungen = Kundenaufgabe</td></tr>
+            <tr><td>Managed IAM / User Provisioning</td><td class="raci-cas">💛 CAS</td><td class="cat-cas">CAS optional</td><td>Kostenpflichtig buchbar bei SAP ECS</td></tr>
+            <tr><td>Segregation of Duties (SoD) Enforcement</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>SAP GRC Access Control empfohlen</td></tr>
+            <tr><td>Audit-Readiness (User-Log-Auswertung)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>SM20, SUIM = Kundenverantwortung</td></tr>
+            <tr><td>Password-Policy Konfiguration (SEC_*)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Profilparameter durch Kunden-Admin</td></tr>
+          
+            <tr><td>HANA MDC User-Management (paketierter Service)</td><td class="raci-cas">💛 CAS</td><td class="cat-cas">CAS</td><td>Benutzerverwaltung nicht-technischer User als buchbarer paketierter Service bei SAP ECS</td></tr>
+            <tr><td>Entwickler-Schlüssel &amp; Namespace-Registrierung</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Registrierung von Namespaces und Verwaltung von Entwicklerschlüsseln = Kundenaufgabe</td></tr>
+            <tr><td>SSO für andere SAP Cloud-Services (optional)</td><td class="raci-cas">💛 Optional</td><td class="cat-opt">Optional</td><td>Kunde kann andere SAP-Services für SSO-Lösungen in der Cloud-Umgebung beauftragen</td></tr>
+            </tbody>
+        </table>
+      </div>
+
+      <!-- Panel: BTP & Integration -->
+      <div id="raci-panel-btp" class="raci-panel" style="display:none">
+        <table class="raci-table">
+          <thead><tr><th style="width:38%">Aufgabe</th><th>Verantwortung</th><th>Kategorie</th><th>Hinweis</th></tr></thead>
+          <tbody>
+            <tr><td>BTP Global Account Bereitstellung</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Im RISE-Paket (Enterprise Support) enthalten</td></tr>
+            <tr><td>BTP Subaccount-Verwaltung</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Governance-Verantwortung beim Kunden</td></tr>
+            <tr><td>Cloud Connector Setup &amp; Betrieb</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>On-Premise ↔ Cloud-Konnektivität</td></tr>
+            <tr><td>SAP Integration Suite (CPI) – Betrieb</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Alternativ: DATAGROUP Managed BTP</td></tr>
+            <tr><td>Integration Flows entwickeln &amp; pflegen</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Development-Verantwortung beim Kunden</td></tr>
+            <tr><td>API Management (SAP APIM) Konfiguration</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>API-Policies und Gateway = Kunde</td></tr>
+            <tr><td>BTP Entitlement &amp; Quota Management</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Lizenzoptimierung = Kundenverantwortung</td></tr>
+            <tr><td>Cloud Transport Management (Deployment)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Deployment-Pipeline = Kundenaufgabe</td></tr>
+            <tr><td>SAP Cloud ALM – Bereitstellung</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Inkl. in Enterprise Support Cloud Edition</td></tr>
+            <tr><td>SAP Cloud ALM – Konfiguration &amp; Betrieb</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Alternativ: DATAGROUP Managed cALM</td></tr>
+            <tr><td>Schnittstellenüberwachung (End-to-End)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Alerting + Exception Monitoring Eigenleistung</td></tr>
+            <tr><td>ABAP Clean Core Extensions (Level A/B)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Architektur-Governance = Kundenaufgabe</td></tr>
+          
+            <tr><td>Smart Data Integration (SDI) – Aktivierung</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Aktivierung SDI-Fiori-Katalog/-Kacheln; Betrieb des Datenbereitstellungsservers im HANA-Cluster</td></tr>
+            <tr><td>SDI – Custom Adapter deployen</td><td class="raci-cas">💛 Optional</td><td class="cat-opt">Optional</td><td>TO_HANA_SDI_1.1.12; Standard-Adapter über SAP Help Portal; Custom Adapter = Kundenaufgabe/CAS</td></tr>
+            <tr><td>SDI – Remote-Subscriptions überwachen &amp; Exceptions</td><td class="raci-cas">💛 CAS</td><td class="cat-cas">CAS</td><td>TO_HANA_SDI_1.1.13/14; Monitor Data Provisioning Tasks; bei Bedarf vom Kunden oder CAS</td></tr>
+            <tr><td>SAP BTP Agent-Registrierung (HANA als Ziel)</td><td class="raci-customer">👤 Kunde</td><td class="cat-excluded">Excluded</td><td>Agent-Registrierung für HANA als Ziel in BTP-Implementierungsszenarien liegt beim Kunden</td></tr>
+            <tr><td>SAP Analytics Foundation / HANA Tools (zusätzlich)</td><td class="raci-sap">✅ SAP</td><td class="cat-std">Standard</td><td>Implementierung/Pflege zusätzlicher SAP-Tools im HANA-Kontext; nur von SAP gelieferte Tools</td></tr>
+            </tbody>
+        </table>
+      </div>
+
+      <!-- Bottom info box -->
+      <div style="padding:10px 14px;background:var(--accent-soft);border-radius:var(--radius-sm);font-size:12px;color:var(--accent);display:flex;gap:8px;align-items:flex-start;flex-shrink:0">
+        <span style="flex-shrink:0;font-size:16px">💡</span>
+        <div><strong>Assurance Gap:</strong> Das offizielle SAP R&amp;R Dokument umfasst über 1.000 Aufgaben – ein erheblicher Teil davon liegt beim Kunden (<span style="color:var(--danger);font-weight:600">Excluded Tasks</span>) oder ist kostenpflichtig (<span style="color:#92400e;font-weight:600">CAS</span>). Viele Kunden unterschätzen diesen Umfang. DATAGROUP <strong>SAP Basis Plus</strong> schließt diese operative Lücke.</div>
+      </div>
+	  </details>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 8: TABELLARISCHER VERGLEICH
+   ========================================== -->
+<div class="slide slide-tabs" data-slide="10" data-title="Vergleich OnPrem / RISE / GROW">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">10 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Entscheidungsmatrix</div>
+      <div class="slide-title">Leistungsmerkmale: On-Premise vs. RISE vs. GROW</div>
+    </div>
+  </div>
+  <div class="slide-body" style="padding-top:20px">
+    <div id="compare-tabs">
+      <div class="tabs-header">
+        <button class="tab-btn active" onclick="TabsModule.switchTab('compare-tabs','tab-vergleich',this)">Vergleichstabelle</button>
+        <button class="tab-btn" onclick="TabsModule.switchTab('compare-tabs','tab-rise-vorteile',this)">Top 3 RISE-Vorteile 2026</button>
+      </div>
+      <div class="tab-panel active" id="tab-vergleich">
+        <table style="font-size:12px">
+          <thead><tr>
+            <th style="width:26%">Merkmal</th>
+            <th>On-Premise</th>
+            <th>RISE with SAP</th>
+            <th>GROW with SAP</th>
+          </tr></thead>
+          <tbody>
+            <tr><td><strong>Deployment-Modell</strong></td><td>Eigenes RZ / Dienstleister</td><td>SAP Private Cloud (AWS/Azure/GCP/SCI)</td><td>SAP Public Cloud (Multi-Tenant)</td></tr>
+            <tr><td><strong>Lizenzmodell</strong></td><td>Perpetual Licence (CapEx)</td><td>Subscription / FUE (OpEx)</td><td>Subscription / FUE (OpEx)</td></tr>
+            <tr><td><strong>Individualisierung</strong></td><td><span class="badge badge-success">Sehr hoch</span></td><td><span class="badge badge-success">Hoch</span></td><td><span class="badge badge-warning">Gering</span></td></tr>
+            <tr><td><strong>Standardisierung</strong></td><td><span class="badge badge-warning">Niedrig</span></td><td><span class="badge badge-warning">Mittel</span></td><td><span class="badge badge-success">Sehr hoch</span></td></tr>
+            <tr><td><strong>Infrastruktur-Verantwortung</strong></td><td>Kunde / Partner</td><td>SAP</td><td>SAP</td></tr>
+            <tr><td><strong>Upgrade-Pflicht</strong></td><td>Empfohlen alle 5J</td><td>1× in 5 Jahren (Pflicht)</td><td>Quartalsweise (automatisch)</td></tr>
+            <tr><td><strong>Clean Core</strong></td><td><span class="badge badge-danger">Nicht erzwungen</span></td><td><span class="badge badge-warning">Empfohlen</span></td><td><span class="badge badge-success">Pflicht</span></td></tr>
+            <tr><td><strong>SAP BTP</strong></td><td>Zukaufbar</td><td><span class="badge badge-success">Inklusive</span></td><td><span class="badge badge-success">Inklusive</span></td></tr>
+            <tr><td><strong>KI / Joule / Business AI</strong></td><td><span class="badge badge-danger">sehr eingeschränkt</span></td><td><span class="badge badge-success">Vollständig</span></td><td><span class="badge badge-success">Vollständig</span></td></tr>
+            <tr><td><strong>Migrationsstrategie</strong></td><td>Brown- oder Greenfield</td><td>Brownfield bevorzugt</td><td>Greenfield (Neuimplementierung)</td></tr>
+            <tr><td><strong>Time-to-Value</strong></td><td>12–36 Monate</td><td>9–18 Monate</td><td>4–12 Wochen</td></tr>
+            <tr><td><strong>TCO (5J, mittel)</strong></td><td>Hoch (HW + Personal)</td><td>Mittel (Abo + Projekt)</td><td>Niedrig–Mittel</td></tr>
+            <tr><td><strong>Zielgruppe</strong></td><td>Komplex, reguliert, Sonderbranchen</td><td>Bestandskunden mit Komplexlandschaft</td><td>Neukunden, Greenfield, Mittelstand</td></tr>
+            <tr><td><strong>Vendor Lock-in</strong></td><td>Gering (eigenständig)</td><td>Hoch (SAP + Hyperscaler)</td><td>Sehr hoch (SaaS)</td></tr>
+            <tr><td><strong>DATAGROUP CORBOX</strong></td><td><span class="badge badge-success">Vollständig unterstützt</span></td><td><span class="badge badge-success">RISE-zertifiziert</span></td><td><span class="badge badge-info">Beratung &amp; Einführung</span></td></tr>
+			<tr><td><strong>Wartungsende (Mainstream)</strong></td><td><span class="badge badge-danger">ECC: Ende 2027</span></td><td>Laufend (vertraglich)</td><td>Laufend (automatisch)</td></tr>
+		  </tbody>
+        </table>
+      </div>
+      <div class="tab-panel" id="tab-rise-vorteile">
+		<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; margin-bottom:24px;">
+            <!-- Vorteil 1 -->
+            <div style="border:2px solid var(--primary); padding:28px; display:flex; flex-direction:column; gap:14px;">
+                <div style="font-size:48px; font-weight:700; color:var(--primary); opacity:0.2; line-height:1;">01</div>
+                <div style="font-size:18px; font-weight:700; color:var(--text); margin-top:-30px;">Integriertes AI &amp; Innovation Bundle</div>
+                <div style="font-size:13px; color:var(--text); line-height:1.7;">Mit RISE with SAP erhalten Unternehmen 2026 direkten Zugang zu <strong>SAP Business AI (Joule)</strong>, dem eingebetteten KI-Assistenten, der Routineaufgaben in Finance, HR, Supply Chain und Sales automatisiert. Während OnPrem-Kunden diese Funktionen separat lizenzieren und implementieren müssen, sind sie bei RISE vertraglich inkludiert.</div>
+                <div style="background:var(--primary-soft); padding:10px; font-size:12px; color:var(--primary); font-weight:600;">Quelle: SAP Produkt-Roadmap Q1/2026 – Cloud-first Innovation</div>
+            </div>
+            <!-- Vorteil 2 -->
+            <div style="border:2px solid #444; padding:28px; display:flex; flex-direction:column; gap:14px;">
+                <div style="font-size:48px; font-weight:700; color:#444; opacity:0.2; line-height:1;">02</div>
+                <div style="font-size:18px; font-weight:700; color:var(--text); margin-top:-30px;">TCO-Reduktion &amp; Kostenplanbarkeit</div>
+                <div style="font-size:13px; color:var(--text); line-height:1.7;">RISE konvertiert hohe, unplanbare CapEx-Ausgaben (Hardware, Lizenzen, RZ) in ein transparentes, FUE-basiertes OpEx-Abo. Studien aus dem SAP-Ecosystem zeigen eine durchschnittliche <strong>TCO-Reduktion von 20–40%</strong> über 5 Jahre durch wegfallende Infrastrukturkosten, reduzierte Basis-Administration und effizientere Update-Zyklen.</div>
+				<div style="font-size:13px; color:var(--text); line-height:1.7;">SAP übernimmt Infrastruktur, Hosting, Patching und Basis-Betrieb. Unternehmen sparen typischerweise 20–35 % der laufenden IT-Betriebskosten. Hardware-Investitionszyklen entfallen vollständig. DATAGROUP CORBOX ergänzt durch proaktives Monitoring &amp; Application Management.</div>
+                <div style="background:#f0f0f0; padding:10px; font-size:12px; color:#444; font-weight:600;">SAP-Partner-Analysen 2025/2026 – Total Cost of Ownership</div>
+            </div>
+            <!-- Vorteil 3 -->
+            <div style="border:2px solid #007a3d; padding:28px; display:flex; flex-direction:column; gap:14px;">
+                <div style="font-size:48px; font-weight:700; color:#007a3d; opacity:0.2; line-height:1;">03</div>
+                <div style="font-size:18px; font-weight:700; color:var(--text); margin-top:-30px;">Zukunftssicherheit &amp; Transformations-Services</div>
+                <div style="font-size:13px; color:var(--text); line-height:1.7;">Mit RISE sichern Unternehmen ihren Anschluss an SAPs offizielle Wartungsunterstützung über 2027 hinaus. Gleichzeitig liefert das Paket mit <strong>Signavio Process Mining, LeanIX und dem SAP Business Transformation Center</strong> professionelle Werkzeuge zur kontinuierlichen Prozessoptimierung – ohne Zusatzinvestition.</div>
+				<div style="font-size:13px; color:var(--text); line-height:1.7;">Durch Clean Core und standardisierte Erweiterungen via BTP werden Release-Wechsel von 9–12 monatigen Projekten auf wenige Wochen reduziert. SAP garantiert die technische Kompatibilität. Kein manuelles Patching mehr, keine veralteten Releases – das Compatibility-Scope-Problem entfällt.</div>
+                <div style="background:var(--success-bg); padding:10px; font-size:12px; color:var(--success); font-weight:600;">SAP DSAG-Nutzerbefragung 2025 – Transformationsszenarien</div>
+            </div>
+        </div>
+        <div class="callout">
+            <div>🔍 <strong>Fazit 2026:</strong> RISE with SAP entwickelt sich vom reinen Cloud-Migrations-Bundle zum strategischen Transformations-Enabler. Durch AI-Integration, Prozesstransparenz und eine einheitliche Vertragsstruktur bietet es gegenüber einem modernisierten OnPrem-Betrieb klare Wettbewerbsvorteile – besonders für mittelständische und Konzernkunden.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 9: FUE-RECHNER
+   ========================================== -->
+<div class="slide" data-slide="11" data-title="FUE-Rechner & TCO-Kalkulation">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">11 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Live Kalkulation</div>
+      <div class="slide-title">FUE-Rechner &amp; TCO / ROI Analyse</div>
+    </div>
+  </div>
+  <div class="slide-body" style="padding: 16px 30px 60px;">
+    <div class="fue-grid">
+      <!-- Left: Inputs -->
+      <div>
+        <div class="fue-card" style="margin-bottom:12px">
+          <h3>1. FUE Sizing</h3>
+          <label class="fue-label">Advanced / Professional User</label>
+          <input type="number" class="fue-input" id="inp-adv" value="50" oninput="FueTcoModule.calculateAll()">
+          <label class="fue-label">Core / Functional User</label>
+          <input type="number" class="fue-input" id="inp-core" value="200" oninput="FueTcoModule.calculateAll()">
+          <label class="fue-label">Self-Service / Productivity</label>
+          <input type="number" class="fue-input" id="inp-self" value="500" oninput="FueTcoModule.calculateAll()">
+          <label class="fue-label">Developer User (×2)</label>
+          <input type="number" class="fue-input" id="inp-dev" value="5" oninput="FueTcoModule.calculateAll()">
+          <div style="margin-top:12px; padding:10px; background:var(--primary); color:#fff; text-align:center;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;opacity:0.8">Berechnete FUE Gesamt</div>
+            <div id="out-fue-total" style="font-size:28px;font-weight:900">–</div>
+          </div>
+        </div>
+        <div class="fue-card">
+          <h3>2. Preisparameter</h3>
+          <label class="fue-label">Listenpreis / FUE / Monat (€)</label>
+          <input type="number" class="fue-input" id="inp-fue-price" value="175" oninput="FueTcoModule.calculateAll()">
+          <label class="fue-label">Kundenrabatt (%)</label>
+          <input type="number" class="fue-input" id="inp-discount" value="20" oninput="FueTcoModule.calculateAll()">
+          <label class="fue-label">RISE Migrationsprojekt (€)</label>
+          <input type="number" class="fue-input" id="inp-rise-capex" value="1800000" oninput="FueTcoModule.calculateAll()">
+          <label class="fue-label">On-Prem: HW-Refresh (€)</label>
+          <input type="number" class="fue-input" id="inp-onprem-capex" value="1200000" oninput="FueTcoModule.calculateAll()">
+          <label class="fue-label">On-Prem: OpEx / Jahr (€)</label>
+          <input type="number" class="fue-input" id="inp-onprem-opex" value="850000" oninput="FueTcoModule.calculateAll()">
+          <label class="fue-label">Laufzeit (Jahre)</label>
+          <select class="fue-input" id="inp-horizon" onchange="FueTcoModule.calculateAll()">
+            <option value="3">3 Jahre</option>
+            <option value="5" selected>5 Jahre</option>
+            <option value="7">7 Jahre</option>
+          </select>
+        </div>
+      </div>
+      <!-- Middle: KPIs + Chart -->
+      <div>
+        <div class="fue-kpi-row">
+          <div class="fue-kpi"><div class="k-label">RISE Abo/Jahr (netto)</div><div class="k-value" id="out-rise-annual">–</div></div>
+          <div class="fue-kpi highlight"><div class="k-label">TCO On-Premise (NPV)</div><div class="k-value" id="out-tco-onprem">–</div></div>
+          <div class="fue-kpi highlight"><div class="k-label">TCO RISE (NPV)</div><div class="k-value" id="out-tco-rise">–</div></div>
+          <div class="fue-kpi"><div class="k-label">ROI Schätzung</div><div class="k-value" id="out-roi">–</div></div>
+        </div>
+        <div class="fue-card" style="height: calc(100% - 130px)">
+          <h3>Kumulierte TCO-Entwicklung (NPV)</h3>
+          <div class="chart-container"><canvas id="tcoChart"></canvas></div>
+        </div>
+        <!-- T-Shirt Sizing -->
+        <div class="fue-card fue-tshirt" style="margin-top:12px">
+          <h3>T-Shirt Sizing</h3>
+          <table style="font-size:11px">
+            <thead><tr><th>Größe</th><th>FUE-Bereich</th><th>Typische Nutzer</th></tr></thead>
+            <tbody>
+              <tr id="tier-xxs"><td>XXS</td><td>1 – 135</td><td>bis 500</td></tr>
+              <tr id="tier-xs"><td>XS</td><td>136 – 550</td><td>500 – 2.000</td></tr>
+              <tr id="tier-s"><td>S</td><td>551 – 1.000</td><td>2.000 – 5.000</td></tr>
+              <tr id="tier-m"><td>M</td><td>1.001 – 2.000</td><td>5.000 – 15.000</td></tr>
+              <tr id="tier-l"><td>L</td><td>2.001+</td><td>über 15.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Right: ROI Factors -->
+      <div class="fue-card" style="overflow-y:auto; max-height: 800px;">
+        <h3>Business Value (ROI-Faktoren)</h3>
+        <div id="roi-factors-list"></div>
+        <button onclick="FueTcoModule.addROIFactor()" style="width:100%;margin-top:10px;padding:8px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-family:inherit;font-weight:700">+ Faktor hinzufügen</button>
+        <div style="margin-top:12px;padding:10px;background:var(--success-bg);border:1px solid var(--success);">
+          <div style="font-size:11px;font-weight:700;color:var(--success);text-transform:uppercase">Gesamtnutzen / Jahr</div>
+          <div id="out-annual-value" style="font-size:20px;font-weight:700;color:var(--success)">–</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 10: KAPITEL – SCHMERZPUNKTE
+   ========================================== -->
+<div class="slide slide-chapter" data-slide="12" data-title="Kapitel: Schmerzpunkte">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">12 / 21</div>
+  <div class="chapter-number">02</div>
+  <div class="chapter-title">Schmerzpunkte bei SAP-Transformationen</div>
+  <div class="chapter-desc">Typische Herausforderungen aus der Praxis – für ECC-Kunden auf dem Weg nach S/4HANA und für bestehende S/4HANA-Kunden beim Release-Wechsel</div>
+</div>
+
+<!-- ==========================================
+   FOLIE 11: ECC SCHMERZPUNKTE
+   ========================================== -->
+<div class="slide slide-tabs" data-slide="13" data-title="ECC zu S/4HANA – Schmerzpunkte">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">13 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Migration Deep Dive</div>
+      <div class="slide-title">Schmerzpunkte: ECC → S/4HANA &amp; S/4HANA Release-Wechsel</div>
+    </div>
+  </div>
+  <div class="slide-body" style="padding-top:16px">
+    <div id="pain-tabs">
+      <div class="tabs-header">
+        <button class="tab-btn active" onclick="TabsModule.switchTab('pain-tabs','tab-ecc',this)">ECC → S/4HANA Migration</button>
+        <button class="tab-btn" onclick="TabsModule.switchTab('pain-tabs','tab-s4',this)">S/4HANA Release-Wechsel</button>
+      </div>
+      <div class="tab-panel active" id="tab-ecc">
+        <table style="font-size:12px">
+          <thead><tr><th>#</th><th>Schmerzpunkt</th><th>Auswirkung</th><th>Bewertung</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Technische Schuld durch Z-Code</strong> – Tausende individuelle ABAP-Entwicklungen müssen geprüft, angepasst oder migriert werden</td><td>Sehr hohes Projektrisiko, lange Analysephase</td><td><span class="badge badge-danger">Kritisch</span></td></tr>
+            <tr><td>2</td><td><strong>Datenmigration &amp; Datenhygiene</strong> – Veraltete Stammdaten, redundante Kreditoren/Debitoren, inkonsistente Buchungskreise</td><td>Hoher Aufwand in der PREPARE-Phase</td><td><span class="badge badge-danger">Kritisch</span></td></tr>
+            <tr><td>3</td><td><strong>Wegfall von Transaktionen</strong> – Viele ECC-Transaktionen sind in S/4HANA durch Fiori-Apps ersetzt oder entfallen</td><td>Schulungsaufwand, Prozessunterbrechungen</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+            <tr><td>4</td><td><strong>Simplifizierungen</strong> – Vereinfachtes Datenmodell (z.B. ACDOCA, MATDOC) bricht bestehende Reports &amp; Schnittstellen</td><td>Umfangreiche Entwicklungs- &amp; Testarbeiten</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+            <tr><td>5</td><td><strong>Schnittstellenproblematik</strong> – IDOCs, BAPIs, RFCs müssen auf API-basierte Integration umgestellt werden</td><td>Integrationsarchitektur muss neu konzipiert werden</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+            <tr><td>6</td><td><strong>Unklare Transformation-Methode</strong> – Brownfield vs. Greenfield vs. Selective Data Transition führt zu Entscheidungslähmung</td><td>Projektverzögerungen, Budget-Unsicherheiten</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+            <tr><td>7</td><td><strong>Ressourcenengpass intern</strong> – Parallelbetrieb ECC + Migrationsprojekt überfordert IT-Teams</td><td>Burnout-Gefahr, Qualitätsverlust</td><td><span class="badge badge-danger">Kritisch</span></td></tr>
+            <tr><td>8</td><td><strong>Change Management</strong> – Fachbereiche akzeptieren neue Prozesse &amp; Fiori-UX nicht ohne intensive Begleitung</td><td>Akzeptanzprobleme, Workarounds entstehen</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+            <tr><td>9</td><td><strong>Lizenz-Komplexität &amp; Contract Conversion</strong> – Umrechnung alter Lizenzen (MALA, Named User) auf FUE ist komplex und teuer</td><td>Unerwartete Mehrkosten, Verhandlungsaufwand</td><td><span class="badge badge-warning">Mittel</span></td></tr>
+            <tr><td>10</td><td><strong>Test-Management</strong> – Fehlende Testautomatisierung, manuelle Regressionstests dauern Monate</td><td>Go-Live-Verzögerungen, Qualitätsrisiken</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-panel" id="tab-s4">
+        <table style="font-size:12px">
+          <thead><tr><th>#</th><th>Schmerzpunkt</th><th>Auswirkung</th><th>Bewertung</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Compatibility Scope abgelaufen</strong> – Seit 01.01.2026 gilt: ältere ABAP-APIs ohne Freigabe dürfen nicht mehr genutzt werden</td><td>Unmittelbares Lizenz- &amp; Sicherheitsrisiko</td><td><span class="badge badge-danger">Kritisch</span></td></tr>
+            <tr><td>2</td><td><strong>Update-Horror</strong> – Jedes neue Release bricht bestehende Z-Entwicklungen, Patches werden gemieden</td><td>Sicherheitslücken, technische Schuld wächst exponentiell</td><td><span class="badge badge-danger">Kritisch</span></td></tr>
+            <tr><td>3</td><td><strong>Fehlende Clean-Core-Disziplin</strong> – Nach Brownfield-Migration laufen alte Eigenentwicklungen unverändert weiter</td><td>Wartungskosten steigen, Release-Fähigkeit sinkt</td><td><span class="badge badge-danger">Kritisch</span></td></tr>
+            <tr><td>4</td><td><strong>BTP-Kompetenz fehlt</strong> – Neue Erweiterungen sollen via BTP (CAP, RAP) umgesetzt werden, aber Know-how fehlt intern</td><td>Rückfall in klassische ABAP-Modifikationen</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+            <tr><td>5</td><td><strong>Fiori-Adoption</strong> – Anwender nutzen weiterhin SAP GUI-Transaktionen statt moderner Fiori-Apps</td><td>Effizienzgewinne werden nicht realisiert</td><td><span class="badge badge-warning">Mittel</span></td></tr>
+            <tr><td>6</td><td><strong>Datenqualität degradiert</strong> – Migration hat Altdaten mitgenommen, Bereinigung fehlt</td><td>Reports liefern falsche Ergebnisse, Vertrauen schwindet</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+            <tr><td>7</td><td><strong>Performance-Probleme</strong> – HANA-In-Memory nicht optimal genutzt, Legacy-Selektionslogiken bremsen</td><td>Systemlast steigt, SLAs werden verletzt</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+            <tr><td>8</td><td><strong>Integrationswirrwarr</strong> – Parallel laufen PI/PO, CPI, RFC, IDOC-Schnittstellen ohne Governance</td><td>Instabile Prozesse, Fehleraufwand steigt</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 12: TRANSFORMATIONSVERGLEICH
+   ========================================== -->
+<div class="slide" data-slide="14" data-title="Transformation: Früher vs. Heute vs. Zukunft">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">14 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Transformation Paradigmen</div>
+      <div class="slide-title">Dimensionen der Transformation: ECC-Welt → S/4HANA → Datengetriebene Zukunft</div>
+    </div>
+  </div>
+  <div class="slide-body" style="padding-top:16px">
+    <table style="font-size:11.5px; margin-bottom:14px">
+      <thead><tr><th style="width:22%">Dimension</th><th>ECC-Welt (vergangenheit)</th><th>S/4HANA Today</th><th>Datengetriebene Zukunft</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Prozessansatz</strong></td><td>Prozesse folgen dem System – IT entscheidet</td><td>Fit-to-Standard als Zielbild</td><td>Prozesse aus Daten ableiten (Process Mining)</td></tr>
+        <tr><td><strong>Erweiterungen</strong></td><td>Direkte Systemmodifikationen (Modifikationsbrowser)</td><td>User-Exits, Enhancement Spots, BAdIs</td><td>BTP: CAP/RAP, Side-by-Side Extensions</td></tr>
+        <tr><td><strong>Datenmodell</strong></td><td>Normalisiert, viele Tabellen, redundant</td><td>HANA-optimiert (ACDOCA Universal Journal)</td><td>Real-Time Analytics, KI-ready Data Fabric</td></tr>
+        <tr><td><strong>Integrationen</strong></td><td>Punkt-zu-Punkt (RFC, IDOC, BAPI)</td><td>Hybrid: PI/PO + CPI + APIs</td><td>Event-driven, API-first, SAP Integration Suite</td></tr>
+        <tr><td><strong>Benutzerinterface</strong></td><td>SAP GUI – komplex, einheitlich</td><td>Fiori + SAP GUI parallel</td><td>Conversational UI, Joule KI-Copilot</td></tr>
+        <tr><td><strong>Reporting</strong></td><td>ABAP-Reports, Query, Crystal Reports</td><td>SAP Analytics Cloud + Embedded Analytics</td><td>Predictive &amp; Prescriptive Analytics, Echtzeit</td></tr>
+        <tr><td><strong>Release-Zyklen</strong></td><td>1× in 5–10 Jahren (Mega-Projekte)</td><td>1× in 2–5 Jahren (Pflicht)</td><td>Continuous Delivery – quartalsweise automatisiert</td></tr>
+        <tr><td><strong>Sicherheit</strong></td><td>Manuelles Patching, oft verzögert</td><td>SAP-gestützte Patch-Strategie</td><td>Automatisiertes Security-Monitoring, Zero Trust</td></tr>
+        <tr><td><strong>Kosten-Modell</strong></td><td>CapEx – große Investitionen alle 5–7J</td><td>Mix CapEx/OpEx</td><td>OpEx Dominant – Subscription &amp; Cloud</td></tr>
+        <tr><td><strong>IT-Rolle</strong></td><td>System-Betreiber &amp; Entwickler</td><td>Architect &amp; Konfigurator</td><td>Business Enabler &amp; KI-Orchestrator</td></tr>
+        <tr><td><strong>Prozessanalyse</strong></td><td>Workshops, Interviews – subjektiv</td><td>Signavio Process Intelligence</td><td>Kontinuierliches Process Mining, KI-Empfehlungen</td></tr>
+        <tr><td><strong>Governance</strong></td><td>Wenig formalisiert, gewachsene Regeln</td><td>Clean Core Richtlinien entstehen</td><td>Automatisierte Governance, Policy-as-Code</td></tr>
+        <tr><td><strong>Skalierbarkeit</strong></td><td>Überkapazitäten nötig (Reserve)</td><td>Flexible Cloud-Skalierung</td><td>Elastisch, KI-gestützt auto-skalierend</td></tr>
+        <tr><td><strong>Datenhoheit</strong></td><td>Vollständig intern</td><td>Hybrid (lokal + Cloud)</td><td>EU-Datensouveränität, SAP Sovereign Cloud</td></tr>
+        <tr><td><strong>Wettbewerbsvorteil</strong></td><td>Individuelle Systemkopie</td><td>Schnellere Implementierungen</td><td>Echtzeit-Insights = schnellere Entscheidungen</td></tr>
+      </tbody>
+    </table>
+    <div class="callout success">
+      <div>🚀 <strong>Zukunft: Datengetriebenes Prozessmanagement</strong> – Durch Process Mining (SAP Signavio), Echtzeit-Analyse und KI-Integration können Unternehmen Prozessabweichungen sofort erkennen, Bottlenecks automatisch identifizieren und Handlungsempfehlungen erhalten. Der Kunde wird vom reaktiven System-Betreiber zum proaktiven, datengestützten Entscheider.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 13: SYSTEMLANDSCHAFT SCHMERZPUNKTE
+   ========================================== -->
+<div class="slide" data-slide="15" data-title="Systemlandschaft – Schmerzpunkte">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">15 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Gesamtsystemlandschaft</div>
+      <div class="slide-title">Schmerzpunkte: Systemlandschaft bei SAP-Conversions &amp; RISE-Umzug</div>
+    </div>
+  </div>
+  <div class="slide-body" style="padding-top:16px">
+    <table style="font-size:12px; margin-bottom:14px">
+      <thead><tr><th style="width:25%">Bereich</th><th>Typischer Schmerzpunkt</th><th>Folge</th><th>Prio</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Schnittstellenlandschaft</strong></td><td>Hunderte RFC/IDOC-Verbindungen zu Legacy-Systemen – kein API-Catalogue vorhanden</td><td>Migrationsprojekt scheitert an unbekannten Abhängigkeiten</td><td><span class="badge badge-danger">Kritisch</span></td></tr>
+        <tr><td><strong>Nebensysteme</strong></td><td>CRM, WMS, MES, EDI-Systeme sind eng mit ECC gekoppelt und nicht cloud-ready</td><td>Scope-Erweiterung, Mehrkosten, Projektverzug</td><td><span class="badge badge-danger">Kritisch</span></td></tr>
+        <tr><td><strong>Archivierungs- &amp; Dokumentenmanagement</strong></td><td>Historische Belege in alten Archivsystemen nicht mehr zugänglich nach Migration</td><td>Compliance-Risiko, Revisions-Probleme</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+        <tr><td><strong>BI/Reporting-Landschaft</strong></td><td>BW-Systeme, Crystal Reports, Excel-basierte Reports brechen durch Datenmodell-Änderung</td><td>Management-Reporting fällt aus</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+        <tr><td><strong>HR / HCM</strong></td><td>On-Premise HCM soll parallel zu SuccessFactors Cloud betrieben werden</td><td>Doppelpflege, Datenkonsistenz-Probleme</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+        <tr><td><strong>Treasury / Banking</strong></td><td>Proprietäre Banking-Schnittstellen (MT940, SEPA) müssen neu zertifiziert werden</td><td>Finanzprozesse stehen still – Business Impact</td><td><span class="badge badge-danger">Kritisch</span></td></tr>
+        <tr><td><strong>Sandbox / Testsystem-Strategie</strong></td><td>Unzureichende Testsysteme führen zu ungetesteten Go-Lives</td><td>Post-Go-Live Stabilisierungsphase zu lang &amp; teuer</td><td><span class="badge badge-warning">Hoch</span></td></tr>
+        <tr><td><strong>Lizenz-Bestand</strong></td><td>Unbekannte Named-User-Lizenzen, nicht inventarisierte Systeme erhöhen FUE-Kosten massiv</td><td>Unerwartete Lizenz-Nachzahlungen</td><td><span class="badge badge-warning">Mittel</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <div>💡 <strong>DATAGROUP CORBOX Ansatz:</strong> Vor Projektstart umfassendes Landscape Assessment (LAMA) – Inventarisierung aller Systeme, Schnittstellen, Z-Objekte und Lizenzen. Erst mit vollständigem Bild entsteht ein realistisches Projektbudget und -timeline.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 14: CLEAN CORE
+   ========================================== -->
+<div class="slide slide-tabs" data-slide="16" data-title="Clean Core Strategie">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">16 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Clean Core · Technische Schuld</div>
+      <div class="slide-title">Clean Core Strategie – Ansätze &amp; Umsetzungs-Roadmap</div>
+    </div>
+  </div>
+  <div class="slide-body" style="padding-top:16px">
+    <div id="cc-tabs">
+      <div class="tabs-header">
+        <button class="tab-btn active" onclick="TabsModule.switchTab('cc-tabs','tab-cc-was',this)">Was ist Clean Core?</button>
+        <button class="tab-btn" onclick="TabsModule.switchTab('cc-tabs','tab-cc-schmerz',this)">Schmerzpunkte</button>
+        <button class="tab-btn" onclick="TabsModule.switchTab('cc-tabs','tab-cc-strategie',this)">Roadmap</button>
+      </div>
+      <div class="tab-panel active" id="tab-cc-was">
+        <div class="two-col" style="margin-top:6px">
+          <div>
+            <div class="highlight-box">
+              <strong>Definition: Clean Core</strong>
+              Der SAP-Systemkern bleibt frei von Modifikationen. Eigenentwicklungen werden ausschließlich als „Side-by-Side"-Extensions auf der SAP BTP oder via stabiler, freigegebener APIs (Enhancement Spots, BAdIs) umgesetzt. Ergebnis: Release-Fähigkeit, niedrigere TCO, KI-Ready.
+            </div>
+            <div class="info-block" style="margin-top:12px">
+              <h4>Die 5 Säulen von Clean Core</h4>
+              <ul>
+                <li><strong>Prozesse:</strong> Fit-to-Standard – 80 % SAP-Standardprozesse nutzen</li>
+                <li><strong>Erweiterbarkeit:</strong> Nur via BTP, RAP, CAP, freigegebene APIs</li>
+                <li><strong>Daten:</strong> Governance, Bereinigung, Datenkonsistenz sicherstellen</li>
+                <li><strong>Integration:</strong> API-first – keine Punkt-zu-Punkt-Verbindungen mehr</li>
+                <li><strong>Betrieb:</strong> Governance-Prozesse, Change-Management, Clean-Core-Policy</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="info-block">
+              <h4>Clean Core Level Concept (Reifegradmodell)</h4>
+              <ul>
+                <li><span class="badge badge-danger">Level D</span> – Modifizierter Kern, direkter Eingriff in SAP-Code</li>
+                <li><span class="badge badge-warning">Level C</span> – User-Exits, veraltete Enhancement-Techniken</li>
+                <li><span class="badge badge-info">Level B</span> – Stable APIs, BAdIs korrekt genutzt, kein direkter Eingriff</li>
+                <li><span class="badge badge-success">Level A</span> – Vollständig BTP-seitig, keine Kernmodifikation</li>
+              </ul>
+              <p style="font-size:12px;margin-top:10px;color:var(--text-secondary)">Ziel: Alle Z-Entwicklungen auf Level B oder A heben. Jeder Level-D-Code ist ein Release-Blocker.</p>
+            </div>
+            <div class="callout warning" style="margin-top:12px">
+              <div>⚠️ Ab 2026 ist Clean Core nicht mehr optional – Unternehmen mit D-Rating-Code riskieren Inkompatibilität nach jedem SAP-Release und verlieren Zugang zu KI-Features.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-cc-schmerz">
+        <table style="font-size:12px; margin-top:6px">
+          <thead><tr><th>Schmerzpunkt</th><th>Beschreibung</th><th>Lösung</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Analyse-Aufwand</strong></td><td>Tausende Z-Objekte müssen klassifiziert werden (genutzt / ungenutzt / kritisch)</td><td>SAP Custom Code Migration App, ABAP Test Cockpit, smartShift</td></tr>
+            <tr><td><strong>Prozess-Neugestaltung</strong></td><td>Viele Z-Entwicklungen kompensieren fehlende Standard-Prozessschritte – muss in Fachbereich rückgeklärt werden</td><td>Workshop mit Key-Usern, Fit-to-Standard-Analyse</td></tr>
+            <tr><td><strong>BTP-Know-how fehlt</strong></td><td>Interne ABAP-Entwickler kennen CAP/RAP, Node.js, Java nicht</td><td>Upskilling-Programm, DATAGROUP Developer Academy</td></tr>
+            <tr><td><strong>Branchenspezifika</strong></td><td>IS-Mill, IS-Retail, IS-Automotive haben eigene Objekte außerhalb des Standard-Scope</td><td>Industry Cloud / Partner Solutions auf BTP evaluieren</td></tr>
+            <tr><td><strong>Change-Management</strong></td><td>Fachbereiche wollen ihre "bewährten" Z-Funktionen nicht aufgeben</td><td>Business Case je Objekt, ROI zeigen, Executive Sponsoring</td></tr>
+            <tr><td><strong>Vendor Lock-in BTP</strong></td><td>Clean Core zwingt in BTP-Ökosystem – neue Kosten für BTP-Lizenzen</td><td>BTP-Kostenmodell analysieren, Alternativen (Hybris-Architektur) prüfen</td></tr>
+            <tr><td><strong>Technische Schuld wächst</strong></td><td>Nach Go-Live wird weiter Z-Code ohne Governance entwickelt</td><td>Clean Core Policy, Code-Review-Gates im Change Management</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-panel" id="tab-cc-strategie">
+        <div class="two-col" style="margin-top:6px">
+          <div>
+            <div class="info-block">
+              <h4>Phase 1: Analyse &amp; Inventarisierung (6–12 Wochen)</h4>
+              <ul>
+                <li>Custom Code Scan mit SAP ABAP Test Cockpit / CCA-Tool</li>
+                <li>Klassifizierung: Genutzt / Ungenutzt / Migrierbar / Löschbar</li>
+                <li>Rating nach Clean Core Level (A–D)</li>
+                <li>Business-Case-Bewertung je Objekt (Kosten vs. Nutzen)</li>
+                <li>Ergebnis: Custom Code Inventory &amp; Priorisierungs-Backlog</li>
+              </ul>
+            </div>
+            <div class="info-block" style="margin-top:10px">
+              <h4>Phase 2: Strategieentwicklung (4–8 Wochen)</h4>
+              <ul>
+                <li>Fit-to-Standard-Workshops je Fachbereich</li>
+                <li>Entscheidung: Keep / Remove / Migrate-to-BTP / Replace-by-Standard</li>
+                <li>BTP-Architektur-Design für neue Erweiterungen</li>
+                <li>Integration Governance (API Hub, Event Mesh)</li>
+                <li>Clean Core Policy &amp; Governance-Framework definieren</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="info-block">
+              <h4>Phase 3: Umsetzung &amp; Migration (12–24 Monate)</h4>
+              <ul>
+                <li>Schrittweiser Abbau technischer Schuld nach Priorisierung</li>
+                <li>Brownfield: Bereinigung parallel zum laufenden System</li>
+                <li>Greenfield: Bewusstes Neu-Bauen auf Clean-Core-Basis</li>
+                <li>Dev-Team-Schulung: BTP, RAP, CAP, Fiori Extension Points</li>
+                <li>Automatisiertes Testen einführen (eCATT, TOSCA)</li>
+              </ul>
+            </div>
+            <div class="info-block" style="margin-top:10px">
+              <h4>Phase 4: Kontinuierliche Governance</h4>
+              <ul>
+                <li>Clean Core Policy: Jede neue Entwicklung muss Level B+ sein</li>
+                <li>Code-Review-Gates im Transport-Management</li>
+                <li>Quartalsweise Custom Code Report &amp; Bewertung</li>
+                <li>DATAGROUP CORBOX übernimmt laufendes Monitoring</li>
+                <li>KI-gestütztes Code-Rating (SAP BAS, Joule-Integration)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 15: KAPITEL – WORKSHOP
+   ========================================== -->
+<div class="slide slide-chapter" data-slide="17" data-title="Kapitel: Workshop">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">17 / 21</div>
+  <div class="chapter-number">03</div>
+  <div class="chapter-title">Workshop: Offene Themen &amp; Entscheidungen</div>
+  <div class="chapter-desc">Gemeinsame Erarbeitung offener Punkte – Kanban Board für strukturierte Diskussion und Entscheidungsfindung</div>
+</div>
+
+<!-- ==========================================
+   FOLIE 16: KANBAN
+   ========================================== -->
+<div class="slide slide-kanban" data-slide="18" data-title="Workshop Kanban Board">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">18 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Workshop</div>
+      <div class="slide-title">Offene Themen &amp; Entscheidungen – Kanban Board</div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="kanban-board">
+      <div class="kanban-col" id="col-offen">
+        <div class="kanban-col-header">
+          📋 Offen
+          <button onclick="KanbanModule.addCard('col-offen')" title="Karte hinzufügen">+</button>
+        </div>
+        <div class="kanban-card" draggable="true" id="kc1">
+          <button class="card-delete" onclick="this.parentElement.remove();KanbanModule.saveState()">✕</button>
+          <div class="card-content" contenteditable="true">Betriebsmodell-Entscheidung: RISE vs. On-Prem vs. GROW – Präferenz des Kunden?</div>
+        </div>
+        <div class="kanban-card" draggable="true" id="kc2">
+          <button class="card-delete" onclick="this.parentElement.remove();KanbanModule.saveState()">✕</button>
+          <div class="card-content" contenteditable="true">Anzahl Z-Entwicklungen und Custom-Code-Inventar vorhanden?</div>
+        </div>
+        <div class="kanban-card" draggable="true" id="kc3">
+          <button class="card-delete" onclick="this.parentElement.remove();KanbanModule.saveState()">✕</button>
+          <div class="card-content" contenteditable="true">Welche Nebensysteme sind betroffen (CRM, WMS, EDI)?</div>
+        </div>
+        <div class="kanban-card" draggable="true" id="kc4">
+          <button class="card-delete" onclick="this.parentElement.remove();KanbanModule.saveState()">✕</button>
+          <div class="card-content" contenteditable="true">Budget-Rahmen für Transformation – CapEx / OpEx-Präferenz?</div>
+        </div>
+      </div>
+      <div class="kanban-col" id="col-klaerung">
+        <div class="kanban-col-header">
+          🔍 In Klärung
+          <button onclick="KanbanModule.addCard('col-klaerung')" title="Karte hinzufügen">+</button>
+        </div>
+        <div class="kanban-card" draggable="true" id="kc5">
+          <button class="card-delete" onclick="this.parentElement.remove();KanbanModule.saveState()">✕</button>
+          <div class="card-content" contenteditable="true">CORBOX Managed Service Scope – welche Ebenen sollen übergeben werden?</div>
+        </div>
+        <div class="kanban-card" draggable="true" id="kc6">
+          <button class="card-delete" onclick="this.parentElement.remove();KanbanModule.saveState()">✕</button>
+          <div class="card-content" contenteditable="true">Timeline-Anforderungen: Wann muss ECC abgelöst sein?</div>
+        </div>
+      </div>
+      <div class="kanban-col" id="col-entscheidung">
+        <div class="kanban-col-header">
+          ✅ Entscheidung
+          <button onclick="KanbanModule.addCard('col-entscheidung')" title="Karte hinzufügen">+</button>
+        </div>
+        <div class="kanban-card" draggable="true" id="kc7">
+          <button class="card-delete" onclick="this.parentElement.remove();KanbanModule.saveState()">✕</button>
+          <div class="card-content" contenteditable="true">DATAGROUP als strategischer SAP-Partner bestätigt</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 17: KAPITEL – NEXT STEPS
+   ========================================== -->
+<div class="slide slide-chapter" data-slide="19" data-title="Kapitel: Next Steps">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">19 / 21</div>
+  <div class="chapter-number">04</div>
+  <div class="chapter-title">Next Steps &amp; Ausblick</div>
+  <div class="chapter-desc">Gemeinsam vereinbarte Maßnahmen und Handlungsempfehlungen für die nächsten Wochen</div>
+</div>
+
+<!-- ==========================================
+   FOLIE 18: CHECKLISTE NEXT STEPS
+   ========================================== -->
+<div class="slide slide-checklist" data-slide="20" data-title="Next Steps Checkliste">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">20 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Abschluss &amp; Maßnahmen</div>
+      <div class="slide-title">Next Steps – Interaktive Checkliste</div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <ul class="checklist">
+        <li class="checklist-item" onclick="ChecklistModule.toggle(this)">
+          <div class="checklist-check">✓</div>
+          <div class="checklist-content">
+            <div class="checklist-text">Landscape Assessment durchführen (LAMA)</div>
+            <div class="checklist-subtext">Inventarisierung aller SAP-Systeme, Z-Objekte, Schnittstellen und Lizenzen – Basis für Projektplanung</div>
+          </div>
+        </li>
+        <li class="checklist-item" onclick="ChecklistModule.toggle(this)">
+          <div class="checklist-check">✓</div>
+          <div class="checklist-content">
+            <div class="checklist-text">Betriebsmodell-Entscheidung treffen</div>
+            <div class="checklist-subtext">On-Premise CORBOX / RISE with SAP / GROW with SAP – intern abstimmen</div>
+          </div>
+        </li>
+        <li class="checklist-item" onclick="ChecklistModule.toggle(this)">
+          <div class="checklist-check">✓</div>
+          <div class="checklist-content">
+            <div class="checklist-text">FUE-Sizing verifizieren &amp; Lizenz-Cockpit prüfen</div>
+            <div class="checklist-subtext">Bestehende Named User / MALA mit FUE abgleichen, Contract Conversion einleiten</div>
+          </div>
+        </li>
+        <li class="checklist-item" onclick="ChecklistModule.toggle(this)">
+          <div class="checklist-check">✓</div>
+          <div class="checklist-content">
+            <div class="checklist-text">Clean Core Assessment starten</div>
+            <div class="checklist-subtext">Custom Code Scan mit ABAP Test Cockpit – ersten Überblick über technische Schuld gewinnen</div>
+          </div>
+        </li>
+        <li class="checklist-item" onclick="ChecklistModule.toggle(this)">
+          <div class="checklist-check">✓</div>
+          <div class="checklist-content">
+            <div class="checklist-text">Projektteam &amp; Steering Committee benennen</div>
+            <div class="checklist-subtext">IT + Fachbereiche + Management – ohne Executive Sponsoring scheitert die Transformation</div>
+          </div>
+        </li>
+      </ul>
+      <ul class="checklist">
+        <li class="checklist-item" onclick="ChecklistModule.toggle(this)">
+          <div class="checklist-check">✓</div>
+          <div class="checklist-content">
+            <div class="checklist-text">CORBOX Service-Angebot von DATAGROUP anfordern</div>
+            <div class="checklist-subtext">Managed SAP Basis Plus als sofortige Entlastung für das interne Team – parallel zur Transformation</div>
+          </div>
+        </li>
+        <li class="checklist-item" onclick="ChecklistModule.toggle(this)">
+          <div class="checklist-check">✓</div>
+          <div class="checklist-content">
+            <div class="checklist-text">Transformations-Roadmap entwickeln</div>
+            <div class="checklist-subtext">Grob-Zeitplan mit Meilensteinen, Abhängigkeiten und Budget-Rahmen erstellen</div>
+          </div>
+        </li>
+        <li class="checklist-item" onclick="ChecklistModule.toggle(this)">
+          <div class="checklist-check">✓</div>
+          <div class="checklist-content">
+            <div class="checklist-text">Fit-to-Standard-Workshop mit Fachbereichen planen</div>
+            <div class="checklist-subtext">Prozesse mit SAP-Standard abgleichen – Grundlage für Modellauswahl &amp; Clean Core Strategy</div>
+          </div>
+        </li>
+        <li class="checklist-item" onclick="ChecklistModule.toggle(this)">
+          <div class="checklist-check">✓</div>
+          <div class="checklist-content">
+            <div class="checklist-text">Nächsten Workshop-Termin vereinbaren</div>
+            <div class="checklist-subtext">Folgetermin für Deep-Dive in spezifische Themen (z.B. BTP-Architektur, Integration-Strategie)</div>
+          </div>
+        </li>
+        <li class="checklist-item" onclick="ChecklistModule.toggle(this)">
+          <div class="checklist-check">✓</div>
+          <div class="checklist-content">
+            <div class="checklist-text">Protokoll dieses Workshops verteilen</div>
+            <div class="checklist-subtext">Notizen aus dem heutigen Workshop als PDF exportieren &amp; an Teilnehmer senden</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 19: DISCLAIMER
+   ========================================== -->
+<div class="slide slide-disclaimer" data-slide="21" data-title="Rechtliche Hinweise">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">21 / 21</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">DATAGROUP SE</div>
+      <div class="slide-title">Rechtliche Hinweise / Disclaimer</div>
+    </div>
+  </div>
+  <div class="slide-body disclaimer-text">
+    <p>Diese Präsentation wurde von der Firma DATAGROUP SE erstellt und ist ausschließlich als Entscheidungshilfe für den Empfänger gedacht.</p>
+    <p>Diese Präsentation ist kein Prospekt und versteht sich in keiner Art und Weise als Angebot oder Aufforderung, Gesellschaftsanteile oder sonstige Anteile zu kaufen bzw. zu zeichnen.</p>
+    <p>Diese Präsentation wurde nach bestem Wissen zusammengestellt, dennoch übernimmt DATAGROUP SE keinerlei Gewähr für Genauigkeit und Vollständigkeit der ausdrücklich oder implizit gemachten Angaben. Dies gilt auch für jede andere schriftliche oder mündliche Aussage, die gegenüber dem interessierten Empfänger oder dessen Beratern gemacht wurde. Jegliche Haftung ist ausdrücklich ausgeschlossen.</p>
+    <p>Diese Präsentation beinhaltet Angaben, Schätzungen und Voraussagen in Bezug auf die erwartete zukünftige Entwicklung. Sie basieren auf verschiedenen Annahmen, die vom Management der DATAGROUP SE in Bezug auf die erwarteten Ergebnisse getroffen wurden, und können sich je nach der tatsächlichen Entwicklung als wahr oder falsch herausstellen. Für die Richtigkeit dieser Angaben wird keine Gewähr übernommen. Die in dieser Präsentation gemachten Angaben sind nur eine Auswahl und deshalb nicht vollständig. Erweiterungen, Änderungen oder Korrekturen bleiben ausdrücklich vorbehalten. Für die Richtigkeit von Kennzahlen und Schätzungen aus explizit gekennzeichneten, öffentlich zugänglichen Quellen übernimmt die DATAGROUP SE keine Gewähr.</p>
+    <p>Diese Präsentation ist vertraulich und sie bzw. ihr Inhalt darf weder ganz noch teilweise an Dritte weitergegeben werden.</p>
+    <p>Ohne vorherige Zustimmung der DATAGROUP SE dürfen unter keinen Umständen Mitarbeiter, Repräsentanten, Vertreter, Berater, Kunden oder Lieferanten der DATAGROUP SE kontaktiert werden.</p>
+  </div>
+</div>
+
+</div><!-- end .presentation -->
+
+<!-- ==========================================
+   JAVASCRIPT MODULES
+   ========================================== -->
+<script>
+// ============================================
+// NAVIGATION
+// ============================================
+const slides = document.querySelectorAll('.slide');
+const TOTAL = slides.length;
+let currentIdx = 0;
+const notesData = {}; // {slideIdx: "text"}
+
+function showSlide(idx) {
+  slides[currentIdx].classList.remove('active');
+  currentIdx = Math.max(0, Math.min(idx, TOTAL - 1));
+  slides[currentIdx].classList.add('active');
+  updateNotesPanel();
+}
+
+function navigate(dir) {
+  showSlide(currentIdx + dir);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); exportJSON(); }
+});
+
+// ============================================
+// SETTINGS
+// ============================================
+function openSettings() { document.getElementById('settingsOverlay').classList.add('open'); }
+function closeSettings() { document.getElementById('settingsOverlay').classList.remove('open'); }
+
+document.getElementById('settingsOverlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('settingsOverlay')) closeSettings();
+});
+
+function applySettings() {
+  const title = document.getElementById('set-title').value;
+  const customer = document.getElementById('set-customer').value;
+  const date = document.getElementById('set-date').value;
+  const agendaRaw = document.getElementById('set-agenda').value;
+
+  document.getElementById('cover-title').innerHTML = title.replace(/–/g,'–');
+  document.getElementById('cover-customer').textContent = customer;
+  document.getElementById('cover-date').textContent = date;
+  document.title = title;
+
+  const lines = agendaRaw.trim().split('\n').filter(l => l.trim());
+  const agendaList = document.getElementById('agendaList');
+  agendaList.innerHTML = '';
+  lines.forEach(line => {
+    const parts = line.split('|').map(p => p.trim());
+    const time = parts[0] || '';
+    const agTitle = parts[1] || '';
+    const desc = parts[2] || '';
+    const isBreak = agTitle.toLowerCase().includes('pause');
+    const li = document.createElement('li');
+    li.className = 'agenda-item' + (isBreak ? ' is-break' : '');
+    li.innerHTML = `<span class="agenda-time">${time}</span><div><div class="agenda-title">${agTitle}</div>${desc ? `<div class="agenda-desc">${desc}</div>` : ''}</div>`;
+    agendaList.appendChild(li);
+  });
+  closeSettings();
+}
+
+
+// RACI switch
+function switchRaciTab(id, btn) {
+  document.querySelectorAll('.raci-panel').forEach(function(p){ p.style.display='none'; });
+  document.querySelectorAll('.raci-tab').forEach(function(t){ t.classList.remove('active'); });
+  var panel = document.getElementById('raci-panel-'+id);
+  if (panel) panel.style.display='block';
+  if (btn) btn.classList.add('active');
+}
+
+
+// ============================================
+// NOTES / PROTOCOL
+// ============================================
+function toggleNotes() {
+  document.getElementById('notesSidebar').classList.toggle('open');
+}
+
+function updateNotesPanel() {
+  const slide = slides[currentIdx];
+  const num = slide.getAttribute('data-slide');
+  const title = slide.getAttribute('data-title');
+  document.getElementById('notesSlideInfo').textContent = `Folie ${num} – ${title}`;
+  document.getElementById('notesTextarea').value = notesData[currentIdx] || '';
+}
+
+document.getElementById('notesTextarea').addEventListener('input', (e) => {
+  notesData[currentIdx] = e.target.value;
+});
+
+function exportNotesTXT() {
+  let out = `WORKSHOP-PROTOKOLL\nKunde: ${document.getElementById('cover-customer').textContent}\nDatum: ${document.getElementById('cover-date').textContent}\n\n`;
+  slides.forEach((slide, i) => {
+    const note = notesData[i];
+    if (note && note.trim()) {
+      out += `--- Folie ${slide.getAttribute('data-slide')}: ${slide.getAttribute('data-title')} ---\n${note}\n\n`;
+    }
+  });
+  const blob = new Blob([out], { type: 'text/plain' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'protokoll.txt'; a.click();
+}
+
+function exportNotesPDF() {
+  const customer = document.getElementById('cover-customer').textContent;
+  const date = document.getElementById('cover-date').textContent;
+  let htmlContent = `<html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;font-size:12px;color:#333;} h1{font-size:16px;color:#E3000F;border-bottom:2px solid #E3000F;padding-bottom:6px;} h2{font-size:13px;color:#E3000F;margin-top:18px;} p{line-height:1.6;} .note-block{background:#f5f5f5;border-left:3px solid #E3000F;padding:10px;margin:8px 0;} hr{border-color:#ccc;}</style></head><body>`;
+  htmlContent += `<h1>Workshop Protokoll</h1><p><strong>Kunde:</strong> ${customer} &nbsp;&nbsp; <strong>Datum:</strong> ${date}</p><hr>`;
+  let hasNotes = false;
+  slides.forEach((slide, i) => {
+    const note = notesData[i];
+    if (note && note.trim()) {
+      hasNotes = true;
+      htmlContent += `<h2>Folie ${slide.getAttribute('data-slide')}: ${slide.getAttribute('data-title')}</h2><div class="note-block"><p>${note.replace(/\n/g,'<br>')}</p></div>`;
+    }
+  });
+  if (!hasNotes) htmlContent += '<p><em>Keine Notizen erfasst.</em></p>';
+  htmlContent += '</body></html>';
+  const el = document.createElement('div');
+  el.innerHTML = htmlContent;
+  document.body.appendChild(el);
+  const opt = { margin: 12, filename: 'protokoll.pdf', image: { type: 'jpeg', quality: 0.9 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+  html2pdf().set(opt).from(el).save().then(() => document.body.removeChild(el));
+}
+
+// ============================================
+// JSON EXPORT / IMPORT
+// ============================================
+function exportJSON() {
+  const data = {
+    version: '1.0',
+    date: new Date().toISOString(),
+    title: document.getElementById('cover-title').textContent,
+    customer: document.getElementById('cover-customer').textContent,
+    notes: notesData,
+    checklistStates: Array.from(document.querySelectorAll('.checklist-item')).map(el => ({
+      text: el.querySelector('.checklist-text')?.textContent,
+      checked: el.classList.contains('checked')
+    })),
+    kanban: getKanbanState(),
+    fueState: getFUEState()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'workshop-state.json'; a.click();
+}
+
+function importJSON() {
+  const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (data.notes) Object.assign(notesData, data.notes);
+        if (data.customer) { document.getElementById('cover-customer').textContent = data.customer; document.getElementById('set-customer').value = data.customer; }
+        if (data.title) { document.getElementById('cover-title').textContent = data.title; }
+        if (data.checklistStates) {
+          const items = document.querySelectorAll('.checklist-item');
+          data.checklistStates.forEach((s, i) => { if (items[i] && s.checked) items[i].classList.add('checked'); });
+        }
+        updateNotesPanel();
+        alert('Zustand erfolgreich geladen!');
+      } catch(err) { alert('Fehler beim Laden: ' + err.message); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function getKanbanState() {
+  const state = {};
+  document.querySelectorAll('.kanban-col').forEach(col => {
+    state[col.id] = Array.from(col.querySelectorAll('.card-content')).map(c => c.textContent.trim());
+  });
+  return state;
+}
+
+function getFUEState() {
+  const ids = ['inp-adv','inp-core','inp-self','inp-dev','inp-fue-price','inp-discount','inp-rise-capex','inp-onprem-capex','inp-onprem-opex','inp-horizon'];
+  const state = {};
+  ids.forEach(id => { const el = document.getElementById(id); if (el) state[id] = el.value; });
+  return state;
+}
+
+// ============================================
+// TABS MODULE
+// ============================================
+const TabsModule = {
+  init: function() {},
+  switchTab: function(containerId, panelId, btnElement) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btnElement.classList.add('active');
+    const panel = document.getElementById(panelId);
+    if (panel) panel.classList.add('active');
+  }
+};
+
+// ============================================
+// CHECKLIST MODULE
+// ============================================
+const ChecklistModule = {
+  toggle: function(element) {
+    element.classList.toggle('checked');
+  }
+};
+
+// ============================================
+// KANBAN MODULE
+// ============================================
+const KanbanModule = {
+  init: function() { this.setupDragAndDrop(); },
+  addCard: function(columnId) {
+    const text = prompt('Inhalt der Karte:');
+    if (!text) return;
+    const column = document.getElementById(columnId);
+    if (!column) return;
+    const card = this.createCardElement(text, 'card-' + Date.now());
+    column.appendChild(card);
+    this.saveState();
+  },
+  createCardElement: function(text, id) {
+    const card = document.createElement('div');
+    card.className = 'kanban-card';
+    card.id = id; card.draggable = true;
+    card.innerHTML = `<button class="card-delete" onclick="this.parentElement.remove();KanbanModule.saveState()">✕</button><div class="card-content" contenteditable="true">${text}</div>`;
+    card.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', card.id); card.style.opacity = '0.5'; });
+    card.addEventListener('dragend', () => { card.style.opacity = '1'; this.saveState(); });
+    return card;
+  },
+  setupDragAndDrop: function() {
+    document.querySelectorAll('.kanban-col').forEach(col => {
+      col.addEventListener('dragover', (e) => { e.preventDefault(); col.classList.add('drag-over'); });
+      col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
+      col.addEventListener('drop', (e) => {
+        e.preventDefault(); col.classList.remove('drag-over');
+        const cardId = e.dataTransfer.getData('text/plain');
+        const card = document.getElementById(cardId);
+        if (card) { col.appendChild(card); this.saveState(); }
+      });
+    });
+    // Initial draggable setup for existing cards
+    document.querySelectorAll('.kanban-card').forEach(card => {
+      card.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', card.id); card.style.opacity = '0.5'; });
+      card.addEventListener('dragend', () => { card.style.opacity = '1'; });
+    });
+  },
+  saveState: function() {}
+};
+
+// ============================================
+// TABLE MODULE
+// ============================================
+const TableModule = { init: function() {}, addRow: function() {}, deleteRow: function() {}, save: function() {} };
+
+// ============================================
+// FUE TCO MODULE
+// ============================================
+const FueTcoModule = {
+  chart: null,
+  roiFactors: [
+    { id: 1, name: 'IT-Infrastruktur Einsparung (HW/RZ)', value: 120000 },
+    { id: 2, name: 'SAP Basis Administration Effizienz', value: 55000 },
+    { id: 3, name: 'Geringere Ausfallzeiten (SLA)', value: 20000 },
+    { id: 4, name: 'Energiekosten RZ', value: 45000 },
+    { id: 5, name: 'Agilität / Time-to-Market', value: 150000 },
+    { id: 6, name: 'Bestandsoptimierung (Working Capital)', value: 10000 },
+    { id: 7, name: 'Finanzabschluss Beschleunigung', value: 5000 },
+    { id: 8, name: 'Automatisierung HR-Prozesse', value: 4000 },
+    { id: 9, name: 'Externe Beraterkosten Reduzierung', value: 10000 },
+    { id: 10, name: 'KI / Predictive Maintenance', value: 9000 }
+  ],
+  
+  // NEU: Die Start-Funktion
+  init: function() {
+    this.renderROIFactors(); // 1. Zeichnet die Liste EINMAL beim Start
+    this.calculateAll();     // 2. Berechnet alle initialen Summen und den Chart
+  },
+  
+  gv: function(id) { return parseFloat(document.getElementById(id)?.value || 0); },
+  fmt: function(v) { if (Math.abs(v) >= 1e6) return '€ ' + (v/1e6).toFixed(2) + 'M'; if (Math.abs(v) >= 1e3) return '€ ' + (v/1e3).toFixed(0) + 'k'; return '€ ' + Math.round(v); },
+  setTxt: function(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; },
+
+  calculateAll: function() {
+    const adv = this.gv('inp-adv'); const core = this.gv('inp-core');
+    const self = this.gv('inp-self'); const dev = this.gv('inp-dev');
+    const totalFue = Math.ceil(adv * 1 + core * 0.2 + self * 0.033 + dev * 2);
+    this.setTxt('out-fue-total', totalFue.toLocaleString('de-DE'));
+    this.updateTshirtSize(totalFue);
+
+    const price = this.gv('inp-fue-price'); const disc = this.gv('inp-discount');
+    const monthlyNet = (totalFue * price) * (1 - disc/100);
+    const annualRise = monthlyNet * 12;
+    this.setTxt('out-rise-annual', this.fmt(annualRise));
+
+    const years = parseInt(document.getElementById('inp-horizon')?.value || 5);
+    const wacc = 0.08;
+    const opCapex = this.gv('inp-onprem-capex'); const riseCapex = this.gv('inp-rise-capex');
+    const opOpex = this.gv('inp-onprem-opex');
+    const annualBenefit = this.roiFactors.reduce((s, f) => s + f.value, 0);
+
+    let npvOP = opCapex, npvRise = riseCapex;
+    const labels = ['Jahr 0'], dataOP = [npvOP], dataRise = [npvRise];
+    for (let i = 1; i <= years; i++) {
+      const f = Math.pow(1 + wacc, i);
+      npvOP += opOpex / f;
+      npvRise += annualRise / f;
+      labels.push('Jahr ' + i); dataOP.push(npvOP); dataRise.push(npvRise);
+    }
+    this.setTxt('out-tco-onprem', this.fmt(npvOP));
+    this.setTxt('out-tco-rise', this.fmt(npvRise));
+
+    const savings = npvOP - npvRise;
+    const netBenefit = savings + annualBenefit * years;
+    const roi = riseCapex > 0 ? (netBenefit / riseCapex * 100) : 0;
+    this.setTxt('out-roi', roi.toFixed(0) + '%');
+    this.setTxt('out-annual-value', this.fmt(annualBenefit));
+
+    this.renderChart({ labels, dataOP, dataRise });
+    
+    // Keine renderROIFactors() hier! (Wie im letzten Schritt besprochen)
+  },
+
+  updateTshirtSize: function(fue) {
+    ['xxs','xs','s','m','l'].forEach(s => { const r = document.getElementById('tier-'+s); if (r) r.classList.remove('active-tier'); });
+    const size = fue <= 135 ? 'xxs' : fue <= 550 ? 'xs' : fue <= 1000 ? 's' : fue <= 2000 ? 'm' : 'l';
+    const row = document.getElementById('tier-' + size);
+    if (row) row.classList.add('active-tier');
+  },
+
+  renderChart: function(d) {
+    const canvas = document.getElementById('tcoChart');
+    if (!canvas || !window.Chart) return;
+    if (this.chart) this.chart.destroy();
+    this.chart = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: d.labels,
+        datasets: [
+          { label: 'On-Premise TCO', data: d.dataOP, borderColor: '#999', backgroundColor: 'rgba(150,150,150,0.08)', fill: true, tension: 0.3, borderWidth: 2 },
+          { label: 'RISE with SAP TCO', data: d.dataRise, borderColor: '#E3000F', backgroundColor: 'rgba(227,0,15,0.08)', fill: true, tension: 0.3, borderWidth: 2 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 } } },
+          tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': € ' + Math.round(ctx.parsed.y).toLocaleString('de-DE') } }
+        },
+        scales: {
+          y: { ticks: { callback: (v) => '€' + (v/1e6).toFixed(1) + 'M', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+          x: { ticks: { font: { size: 11 } }, grid: { display: false } }
+        }
+      }
+    });
+  },
+
+  renderROIFactors: function() {
+    const list = document.getElementById('roi-factors-list');
+    if (!list) return;
+    list.innerHTML = '';
+    this.roiFactors.forEach((f, i) => {
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px;padding:8px;background:#f9f9f9;border:1px solid #eee;';
+      div.innerHTML = `
+        <span style="font-size:11px;color:#999;min-width:16px">${i+1}</span>
+        <input type="text" value="${f.name}" oninput="FueTcoModule.roiFactors[${i}].name=this.value" style="flex:1;border:none;background:transparent;font-size:12px;outline:none;color:var(--text)">
+        <input type="number" value="${f.value}" oninput="FueTcoModule.roiFactors[${i}].value=parseFloat(this.value)||0;FueTcoModule.calculateAll()" style="width:80px;border:1px solid #ddd;padding:3px 6px;font-size:12px;font-weight:700;color:var(--success);text-align:right">
+        <button onclick="FueTcoModule.roiFactors.splice(${i},1); FueTcoModule.renderROIFactors(); FueTcoModule.calculateAll()" style="background:none;border:none;cursor:pointer;color:#ccc;font-size:14px">✕</button>
+      `;
+      list.appendChild(div);
+    });
+  },
+
+  addROIFactor: function() {
+    this.roiFactors.push({ id: Date.now(), name: 'Neuer Business Value', value: 50000 });
+    this.renderROIFactors(); 
+    this.calculateAll();
+  }
+};
+
+// GANZ WICHTIG: Hier am Ende des Scripts starten wir das Modul!
+document.addEventListener('DOMContentLoaded', () => {
+  FueTcoModule.init();
+});
+
+// ============================================
+// INIT
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  KanbanModule.init();
+  FueTcoModule.calculateAll();
+  updateNotesPanel();
+});
+</script>
+</body>
+</html>
