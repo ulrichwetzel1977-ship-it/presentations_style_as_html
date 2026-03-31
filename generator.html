@@ -958,9 +958,11 @@
             const repoOwner = document.getElementById('ghOwner').value.trim();
             const repoName = document.getElementById('ghRepo').value.trim();
             const rawBaseUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${defaultBranchName}/`;
+            const stdBaseUrl = `${rawBaseUrl}js/stdFunk/`;
 
             const isCustomTheme = design.startsWith('theme-') && loadedThemesUrls[design];
 
+            // 1. GLOBAL CSS & THEME LOGIC
             if (embedCode) {
                 prompt += `\n### ABSOLUTE SYSTEM-REGEL: CSS & DESIGN (STRIKT BEFOLGEN!)\n`;
                 prompt += `Du darfst absolut KEIN eigenes CSS erfinden, keine neuen Klassen ausdenken und absolut KEINE Inline-Styles verwenden! Nutze AUSSCHLIESSLICH den exakten CSS-Code, der dir hier zur Verfügung gestellt wird. Kombiniere das Basis-Layout und das Theme im <style> Block der Datei.\n\n`;
@@ -991,44 +993,49 @@
             const includeDisclaimer = document.getElementById('chkDisclaimerState').checked;
             const includeChapters = document.getElementById('chkFeatureChapters').checked;
 
-            // NEU: Einbindung der Standard-Funktionen aus js/lib/stdFunk
-            const stdBaseUrl = `${rawBaseUrl}js/lib/stdFunk/`;
-
-            prompt += `### STANDARD-FUNKTIONEN & FOLIEN-TEMPLATES\n`;
-            prompt += `Du musst für den Aufbau der Präsentation zwingend die Vorlagen aus meinem GitHub-Repository nutzen. Verwende dein Web-Search-Tool, um die Anleitungen (.md), HTML-Gerüste (.html), Skripte (.js) und Styles (.css) aus den folgenden Verzeichnissen abzurufen und exakt umzusetzen:\n\n`;
-
-            prompt += `**1. Generelle Pflicht-Funktionen:**\n`;
-            prompt += `- **Navigation:** Die Folien müssen per Tastatur (Pfeiltaste Links/Rechts) und mit vor-/ zurück buttons auf der seite navigierbar sein.\n`;
+            prompt += `### GENERELLE PFLICHT-FUNKTIONEN (Immer einbauen)\n`;
+            let reqCounter = 1;
+            prompt += `${reqCounter++}. **Navigation:** Die Folien müssen per Tastatur (Pfeiltaste Links/Rechts) und mit vor-/ zurück buttons auf der seite navigierbar sein (z.B. durch ein / Ausblenden von <section> Elementen).\n`;
             
-            if (includeSettings) prompt += `- **Einstellungsbereich:** Es muss eine sichtbare UI geben (z.B. zahnradsymbol auf der Titelseite), in der der Nutzer Agenda, Titel, Kundenname und Datum nachträglich ändern kann. Die Folien sollen nummeriert sein. Diese Änderungen müssen im DOM sichtbar werden.\n`;
-            if (includeProtocol) prompt += `- **Protokoll/Notizen-Funktion:** Integriere zu JEDER Folie einen anderen Bereich als den Einstellungen Bereich, in dem der Nutzer Notizen/Protokolle für den Kunden erfassen kann. Implementiere einen Button, der die erfassten Folien-Notizen als PDF und Text exportiert (Nutze html2pdf.js über CDN). Das PDF muss die aktuelle Folie als Bild passend auf die Seite skalieren und die Notizen direkt darunter ausgeben.\n`;
-            if (includeState) prompt += `- **JSON Export/Import:** Biete Funktionen an, um den gesamten Arbeitsfortschritt als JSON herunterzuladen und wieder hochzuladen.\n\n`;
+            if (includeSettings) prompt += `${reqCounter++}. **Einstellungsbereich:** Es muss eine sichtbare UI geben (z.B. zahnradsymbol auf der Titelseite), in der der Nutzer Agenda, Titel, Kundenname und Datum nachträglich ändern kann. Die Folien sollen nummeriert sein. Diese Änderungen müssen im DOM sichtbar werden.\n`;
+            if (includeProtocol) prompt += `${reqCounter++}. **Protokoll/Notizen-Funktion:** Integriere zu JEDER Folie einen anderen Bereich als die Einstellungen Bereich (z.B. am Rand oder als Overlay oder in einem ausklappbaren Sidebar-Menü), in dem der Nutzer Notizen/Protokolle für den Kunden oder Workshop erfassen kann. Implementiere einen Button, der die erfassten Folien-Notizen als PDF und als einfachen Text exportiert (Nutze dafür html2pdf.js über CDN). WICHTIG FÜR DEN PDF-EXPORT: Das erzeugte PDF muss so formatiert sein, dass die aktuelle Folie als Bild passend auf die Seite skaliert wird und die erfassten Notizen/Protokolle zu dieser Folie übersichtlich direkt darunter ausgegeben werden.\n`;
+            if (includeState) prompt += `${reqCounter++}. **JSON Export/Import:** Biete Funktionen an, um den gesamten Arbeitsfortschritt der Präsentation als JSON herunterzuladen und wieder hochzuladen.\n\n`;
 
-            prompt += `**2. Standard-Folien & Layouts (STRIKT BEFOLGEN!):**\n`;
-            prompt += `Anstatt eines generischen Boilerplates MUSST du für die jeweiligen Folien die Dateien aus den folgenden GitHub-Ordnern abrufen (Lese die .md Anleitung und nutze den dazugehörigen Code):\n\n`;
-
-            prompt += `==== TITELFOLIE (Immer Folie 1) ====\n`;
-            prompt += `- Basis-Ordner: ${stdBaseUrl}titel/\n`;
-            prompt += `- Lese die Vorgaben aus diesem Ordner und wende sie exakt für die erste Folie an.\n\n`;
-
-            prompt += `==== AGENDA (Immer Folie 2) ====\n`;
-            prompt += `- Basis-Ordner: ${stdBaseUrl}agenda/\n`;
-            prompt += `- Lese die Vorgaben aus diesem Ordner und wende sie exakt für die Agenda-Folie an.\n\n`;
-
-            prompt += `==== STANDARD-FOLIE (Für alle weiteren Inhaltsfolien) ====\n`;
-            prompt += `- Basis-Ordner: ${stdBaseUrl}stdfolie/\n`;
-            prompt += `- Lese die Vorgaben aus diesem Ordner und nutze das dortige HTML-Gerüst für ALLE regulären Content-Folien.\n\n`;
-
-            if (includeChapters) {
-                prompt += `==== KAPITELFOLIEN ====\n`;
-                prompt += `- Basis-Ordner: ${stdBaseUrl}kapitel/\n`;
-                prompt += `- Füge vor jedem neuen Kapitel eine Trennfolie ein. Lese die Vorgaben aus diesem Ordner und wende sie exakt an.\n\n`;
+            // --- HILFSFUNKTION FÜR MODULE (URL vs EMBEDDED) ---
+            function appendModuleContent(moduleTitle, folderName, instructionText) {
+                let out = `==== ${moduleTitle} ====\n`;
+                out += `- ${instructionText}\n`;
+                
+                if (embedCode) {
+                    const data = loadedFunctions[folderName];
+                    if (data) {
+                        if (data.md) out += `--- ANLEITUNG (${folderName}.md) ---\n${data.md}\n\n`;
+                        if (data.html) out += `--- HTML TEMPLATE (${folderName}.html) ---\n\`\`\`html\n${data.html}\n\`\`\`\n\n`;
+                        if (data.js) out += `--- JAVASCRIPT (${folderName}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
+                        if (data.css) out += `--- CSS STYLES (${folderName}.css) ---\n\`\`\`css\n${data.css}\n\`\`\`\n\n`;
+                    } else {
+                        out += `(FEHLER: Code für '${folderName}' wurde nicht gefunden. Bitte GitHub neu laden.)\n\n`;
+                    }
+                } else {
+                    out += `- Basis-Ordner: ${stdBaseUrl}${folderName}/\n`;
+                    out += `- Lese zwingend die Vorgaben (.md, .html, .js, .css) über dein Web-Search-Tool aus diesem Ordner und wende sie exakt an.\n\n`;
+                }
+                return out;
             }
 
+            // 2. STANDARD-FOLIEN & TEMPLATES LOGIC
+            prompt += `### STANDARD-FUNKTIONEN & FOLIEN-TEMPLATES (STRIKT BEFOLGEN!)\n`;
+            prompt += `Du musst für den Aufbau der Präsentation zwingend die folgenden Vorlagen nutzen. Anstatt eines generischen Boilerplates verwendest du für die jeweiligen Folien exakt die definierten Gerüste:\n\n`;
+
+            prompt += appendModuleContent("TITELFOLIE (Immer Folie 1)", "titel", "Wende dieses Gerüst exakt für die erste Folie an.");
+            prompt += appendModuleContent("AGENDA (Immer Folie 2)", "agenda", "Wende dieses Gerüst exakt für die Agenda-Folie an.");
+            prompt += appendModuleContent("STANDARD-FOLIE (Inhaltsfolien)", "stdfolie", "Nutze dieses HTML-Gerüst für ALLE regulären Content-Folien.");
+
+            if (includeChapters) {
+                prompt += appendModuleContent("KAPITELFOLIEN", "kapitel", "Füge vor jedem neuen Kapitel eine Trennfolie ein. Nutze hierfür exakt dieses Gerüst.");
+            }
             if (includeDisclaimer) {
-                prompt += `==== DISCLAIMER (Immer letzte Folie) ====\n`;
-                prompt += `- Basis-Ordner: ${stdBaseUrl}dg_disclaimer/\n`;
-                prompt += `- Füge als allerletzte Folie den Disclaimer ein. Lese die Vorgaben aus diesem Ordner und wende sie exakt an.\n\n`;
+                prompt += appendModuleContent("DISCLAIMER (Immer letzte Folie)", "dg_disclaimer", "Füge als allerletzte Folie den Disclaimer ein. Nutze hierfür exakt dieses Gerüst.");
             }
 
             prompt += `### ABSOLUTE SYSTEM-REGELN FÜR DIE KI (STRIKT BEFOLGEN!)\n`;
@@ -1043,24 +1050,13 @@
                 prompt += `Recherchiere und erstelle den Inhalt und baue die Folien basierend auf folgendem Auftrag:\n"${topic}"\n`;
                 prompt += `Teile die Inhalte logisch auf die Agenda-Punkte auf.\n\n`;
                 
-                // KI MODUS ZUSATZFUNKTIONEN (Globaler Block)
+                // KI MODUS: CUSTOM ZUSATZFUNKTIONEN
                 if (selectedFunctions.size > 0) {
                     prompt += `### ZUSATZFUNKTIONEN (CUSTOM MODULE)\n`;
-                    prompt += `Ich habe spezielle Zusatzfunktionen entwickelt. Binde die folgenden ausgewählten Funktionen exakt so in das HTML/JS Konstrukt ein. Lese zwingend die Bauanleitungen aus den jeweiligen .md Dateien!\n\n`;
+                    prompt += `Ich habe spezielle Zusatzfunktionen entwickelt. Binde die folgenden ausgewählten Funktionen exakt so in das HTML/JS Konstrukt ein:\n\n`;
                     
                     selectedFunctions.forEach(funcName => {
-                        const data = loadedFunctions[funcName];
-                        prompt += `==== FUNKTION: ${funcName} ====\n`;
-                        if (embedCode) {
-                            prompt += `--- ANLEITUNG (${funcName}.md) ---\n${data.md}\n\n`;
-                            if (data.js) prompt += `--- JAVASCRIPT (${funcName}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
-                            if (data.html) prompt += `--- HTML TEMPLATE (${funcName}.html) ---\n\`\`\`html\n${data.html}\n\`\`\`\n\n`;
-                        } else {
-                            prompt += `- Anleitung (.md): ${data.urls.md}\n`;
-                            if (data.urls.js) prompt += `- JavaScript (.js): ${data.urls.js}\n`;
-                            if (data.urls.html) prompt += `- HTML Template (.html): ${data.urls.html}\n`;
-                            prompt += `\n`;
-                        }
+                        prompt += appendModuleContent(`FUNKTION: ${funcName}`, funcName, "Lese zwingend die Bauanleitungen aus den jeweiligen .md Dateien und nutze die Logik!");
                     });
                 } else {
                     prompt += `(Keine spezifischen Zusatzfunktionen geladen. Nutze Standard-Bordmittel).\n`;
@@ -1081,22 +1077,10 @@
                     if(contentVal !== "" || funcVal !== "") {
                         prompt += `\n[Folie ${index + 1}]:\n${contentVal}\n`;
                         
-                        // Wenn eine Funktion für DIESE Folie ausgewählt wurde
                         if(funcVal !== "") {
                             prompt += `-> WICHTIG: Binde auf dieser Folie zwingend die Zusatzfunktion "${funcVal}" ein!\n`;
-                            prompt += `-> Befolge hierfür strikt die Bauanleitung aus der zugehörigen .md Datei:\n`;
-                            const data = loadedFunctions[funcVal];
-                            if (data && data.urls) {
-                                if (embedCode) {
-                                    prompt += `\n--- ANLEITUNG (${funcVal}.md) ---\n${data.md}\n\n`;
-                                    if (data.js) prompt += `--- JAVASCRIPT (${funcVal}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
-                                    if (data.html) prompt += `--- HTML TEMPLATE (${funcVal}.html) ---\n\`\`\`html\n${data.html}\n\`\`\`\n\n`;
-                                } else {
-                                    prompt += `   - Anleitung (.md): ${data.urls.md}\n`;
-                                    if (data.urls.js) prompt += `   - JavaScript (.js): ${data.urls.js}\n`;
-                                    if (data.urls.html) prompt += `   - HTML Template (.html): ${data.urls.html}\n`;
-                                }
-                            }
+                            prompt += `-> Befolge hierfür strikt die nachfolgende Bauanleitung:\n\n`;
+                            prompt += appendModuleContent(`FUNKTIONS-DETAILS: ${funcVal}`, funcVal, "Bauanleitung und Logik für diese spezifische Folie.");
                         }
                     }
                 });

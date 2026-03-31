@@ -26,6 +26,8 @@
     --warning-bg: #fff3e0;
     --success: #008a00;
     --success-bg: #e8f5e9;
+    --info: #62b15b;
+    --info-bg: #e8f5e9;
     --danger-bg: #fde5e6;
     --radius: 0px;
     --radius-sm: 0px;
@@ -102,12 +104,15 @@ body, html {
     font-size: clamp(20px, 2.5vw, 32px);
     font-weight: 700;
     color: var(--text);
-    letter-spacing: -0.01em;
+    /*letter-spacing: -0.01em;*/
+    letter-spacing: normal;
 }
 
 .slide-body {
     padding: 30px 60px 70px;
     overflow-y: auto;
+    overflow-x: auto;
+    width: 100%;
     flex: 1;
 }
 
@@ -141,6 +146,8 @@ body, html {
 }
 .callout.warning { border-color: var(--warning); background: var(--warning-bg); }
 .callout.success { border-color: var(--success); background: var(--success-bg); }
+.callout.danger { background: #fff1f0; border-color: var(--danger-bg); }
+.callout.info { background: var(--info-bg); border-color: var(--info); }
 
 table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 0; overflow: hidden; border: none; }
 th { background-color: var(--primary) !important; color: #fff !important; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; padding: 11px 16px; text-align: left; border: 1px solid var(--primary); }
@@ -550,6 +557,30 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
   .cat-cas, .cat-opt { background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
   .cat-excluded  { background:#fee2e2; color:#991b1b; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
   .cat-additional{ background:#ede9fe; color:#5b21b6; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
+
+  /* GAP MATRIX */
+  .gap-matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .gap-item {
+    background: white;
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    border-top: 4px solid;
+  }
+  .gap-item.risk-high { border-top-color: var(--danger); }
+  .gap-item.risk-med { border-top-color: var(--warning); }
+  .gap-item.risk-low { border-top-color: var(--success); }
+  .gap-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .gap-item p { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+  .gap-risk-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .risk-high .gap-risk-label { color: var(--danger); }
+  .risk-med .gap-risk-label { color: var(--warning); }
+  .risk-low .gap-risk-label { color: var(--success); }
 </style>
 </head>
 <body>
@@ -620,7 +651,7 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 <div class="slide slide-cover active" data-slide="1" data-title="Titelfolie">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">1 / 19</div>
+  <div class="slide-counter">1 / 23</div>
   <div class="cover-content">
     <div class="cover-eyebrow">DATAGROUP SE · Workshop</div>
     <div class="cover-title" id="cover-title">Von SAP bis Rechenzentrum –<br>Business Transformation &amp; CORBOX</div>
@@ -639,7 +670,7 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 <div class="slide slide-agenda" data-slide="2" data-title="Agenda">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">2 / 19</div>
+  <div class="slide-counter">2 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">DATAGROUP SE · Workshop</div>
@@ -670,7 +701,7 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 <div class="slide slide-chapter" data-slide="3" data-title="Kapitel: SAP Betriebsmodelle">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">3 / 19</div>
+  <div class="slide-counter">3 / 23</div>
   <div class="chapter-number">01</div>
   <div class="chapter-title">SAP Betriebsmodelle im Überblick</div>
   <div class="chapter-desc">On-Premise, RISE with SAP (Private Cloud) und GROW with SAP (Public Cloud) – die drei strategischen Optionen für SAP S/4HANA in 2026</div>
@@ -682,7 +713,7 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 <div class="slide" data-slide="4" data-title="SAP Betriebsmodelle – Vergleich">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">4 / 19</div>
+  <div class="slide-counter">4 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Kapitel 1 - Grundlagen und SAP Strategie 2026</div>
@@ -757,23 +788,28 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
     </div>
   </div>
 </div>
+<!-- ==========================================
+   FOLIE 5: KAPITEL 2 – ZUKUNFT ONPREM
+   ========================================== -->
 <!-- ===================== KAPITELFOLIE 2 ===================== -->
 <div class="slide slide-chapter" data-slide="5" data-title="Kapitel 2 – Zukunft OnPrem">
     <div class="branding-logo" style="filter:brightness(0) invert(1); opacity:0.7;"></div>
     <div class="branding-claim"></div>
-	  <div class="slide-counter">5 / 21</div>
+	  <div class="slide-counter">5 / 23</div>
     <div class="chapter-content">
         <div class="chapter-number">02</div>
         <div class="chapter-title">Die Zukunft der<br>SAP Betriebsmodelle</div>
         <div class="chapter-desc">Wartungsfristen, strategische Optionen und was der Weiterbetrieb von SAP-Systemen bedeutet.</div>
     </div>
 </div>
-
-<!-- ===================== FOLIE 4: ZUKUNFT ONPREM ===================== -->
+<!-- ==========================================
+   FOLIE 6: KAPITEL – Zukunft On-Premise Betrieb
+   ========================================== -->
+<!-- ===================== FOLIE 6: ZUKUNFT ONPREM ===================== -->
 <div class="slide" data-slide="6" data-title="Zukunft On-Premise Betrieb">
     <div class="branding-logo"></div>
     <div class="branding-claim"></div>
-	  <div class="slide-counter">6 / 21</div>
+	  <div class="slide-counter">6 / 23</div>
     <div class="slide-header">
         <div>
             <div class="slide-module-tag">Kapitel 2 · On-Premise</div>
@@ -823,13 +859,14 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
         </div>
     </div>
 </div>
+
 <!-- ==========================================
-   FOLIE 5: ON-PREMISE ZUKUNFT
+   FOLIE 7: ON-PREMISE ZUKUNFT
    ========================================== -->
 <div class="slide" data-slide="7" data-title="Zukunft On-Premise SAP">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">7 / 21</div>
+  <div class="slide-counter">7 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Kapitel 2 · On-Premise</div>
@@ -882,12 +919,12 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 </div>
 
 <!-- ==========================================
-   FOLIE 6: GROW WITH SAP
+   FOLIE 8: GROW WITH SAP
    ========================================== -->
 <div class="slide" data-slide="8" data-title="GROW with SAP">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">8 / 21</div>
+  <div class="slide-counter">8 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Kapitel 2 · SAP Cloud · Public Edition</div>
@@ -948,12 +985,12 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 </div>
 
 <!-- ==========================================
-   FOLIE 7: RISE WITH SAP
+   FOLIE 9: RISE WITH SAP
    ========================================== -->
 <div class="slide" data-slide="9" data-title="RISE with SAP">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">9 / 21</div>
+  <div class="slide-counter">9 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Kapitel 2 · SAP Cloud · Private Edition</div>
@@ -1010,79 +1047,25 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
         </div>
       </div>
     </div>
-	<!-- Basis Plus Stelle -->
-	<details style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 20px; overflow: hidden;">
-  	  <summary style="padding: 16px 20px; font-weight: 700; color: var(--primary); background: var(--surface-alt); border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px;">
-		<span>📋 Basis+ Ihre DATAGROUP Assurance</span>
-	  </summary>
-	<div class="callout info" style="margin-bottom:18px">
-        <div class="callout-icon">💡</div>
-        <div class="callout-content">
-          <h4>Was ist SAP Basis Plus?</h4>
-          <p>Der Service von DATAGROUP schließt die <strong>Assurance Gap</strong> im RISE-Standard: Er übernimmt alle applikationsnahen Basis-Tätigkeiten, die SAP ECS nicht abdeckt – mit persönlichem Ansprechpartner und End-to-End-Verantwortung.</p>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
-        <div style="background:white;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:18px">
-          <div style="font-size:12px;font-weight:700;color:#cc0000;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">🔧 Leistungsumfang Operations</div>
-          <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--text-secondary)">
-            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Job- &amp; Transportmanagement (ext. Transporte, Add-ons, SAP Notes)</li>
-            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Schnittstellen &amp; Outputmanagement (Datenaustausch, E-Mail, Druck)</li>
-            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>IT-Security: Zertifikatsmanagement, Single Sign-On (SAML 2.0)</li>
-            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Support &amp; Störungsbehebung (Tickets, Systemöffnungen, Userbereitstellung)</li>
-            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>User- &amp; Berechtigungsmanagement (Rollen, Objektschlüssel)</li>
-            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Lizenzmanagement (Überwachung &amp; Optimierung)</li>
-            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Patchmanagement: Security Notes, OS-Patches alle 6 Monate</li>
-            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>BTP-Instanz- &amp; CPI-Schnittstellenverwaltung</li>
-          </ul>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div style="background:white;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:16px">
-            <div style="font-size:12px;font-weight:700;color:#cc0000;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">🧩 Verantwortlichkeits-Matrix (RACI)</div>
-            <div style="font-size:12px;color:var(--text-secondary);line-height:1.7">
-              <div style="display:grid;grid-template-columns:1fr 60px 80px 60px;gap:4px;font-size:11px;margin-bottom:4px">
-                <div style="font-weight:600;color:var(--text)">Aufgabe</div>
-                <div style="font-weight:600;text-align:center;color:orange">Kunde</div>
-                <div style="font-weight:600;text-align:center;color:#cc0000">DATAGROUP</div>
-                <div style="font-weight:600;text-align:center;color:#005bb5">SAP</div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 60px 80px 60px;gap:2px;font-size:11px;border-top:1px solid var(--border);padding-top:4px">
-                <div>Incident Management (App)</div><div style="text-align:center">R</div><div style="text-align:center;color:#cc0000;font-weight:600">A</div><div style="text-align:center">I</div>
-                <div style="border-top:1px solid var(--border);padding-top:3px">Security Notes</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">A</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#cc0000;font-weight:600">R</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">I</div>
-                <div style="border-top:1px solid var(--border);padding-top:3px">Transport Management</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">A</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#cc0000;font-weight:600">R</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div>
-                <div style="border-top:1px solid var(--border);padding-top:3px">OS-Patching (Infra)</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#005bb5;font-weight:600">R</div>
-                <div style="border-top:1px solid var(--border);padding-top:3px">IAM / Berechtigungen</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">A</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#cc0000;font-weight:600">R</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div>
-              </div>
-            </div>
-          </div>
-          <div style="background:white;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:16px">
-            <div style="font-size:12px;font-weight:700;color:#cc0000;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">⏱ Servicezeiten &amp; SLAs</div>
-            <div style="font-size:13px;color:var(--text-secondary);display:flex;flex-direction:column;gap:5px">
-              <div>📅 Service <strong>Mo–Fr, 08:00–18:00 Uhr</strong> · Rufbereitschaft optional</div>
-              <div>🔴 P1 Incident: <strong>2 Stunden</strong> Reaktionszeit</div>
-              <div>🟡 P2 Incident: <strong>4 Stunden</strong> Reaktionszeit</div>
-              <div>🟢 P3 Incident: <strong>2 Arbeitstage</strong> Reaktionszeit</div>
-              <div>👤 Persönlicher Service Lead + Service Koordinator</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="callout success" style="margin-bottom:0">
-        <div class="callout-icon">🤝</div>
-        <div class="callout-content">
-          <h4>Ergänzende Services: Managed BTP + Managed Cloud ALM</h4>
-          <p>Neben SAP Basis Plus bietet DATAGROUP auch <strong>Managed SAP BTP</strong> (Global Account Management, Connectivity, IAM, Integration Suite) und <strong>Managed Cloud ALM</strong> (Monitoring, Alert Management, Systemlandscape) als vollständig gebuchte Managed Services an.</p>
-        </div>
-      </div>
-	  </br>
-	</details>
-	<details style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 20px; overflow: hidden;">
-  	  <summary style="padding: 16px 20px; font-weight: 700; color: var(--primary); background: var(--surface-alt); border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px;">
-		<span>📋 Detaillierte RACI-Matrix & Aufgabenverteilung einblenden</span>
-	  </summary>
-	<!-- Legend -->
 
-      
+  </div>
+</div>
+
+<!-- ==========================================
+   FOLIE 10: RISE RACI Darstellung
+   ========================================== -->
+<div class="slide" data-slide="10" data-title="RISE RACI">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">10 / 23</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Kapitel 2 · SAP CLOUD - Private Edition</div>
+      <div class="slide-title">Detaillierte RACI-Matrix & Aufgabenverteilung</div>
+    </div>
+  </div>
+  <div class="slide-body">
+	<!-- Legend --> 
 	  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
         <span style="font-size:11px;font-weight:700;color:var(--text-secondary);margin-right:2px">Legende:</span>
         <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#d1fae5;color:#065f46;border:1px solid #6ee7b7">✅ Standard SAP</span>
@@ -1090,8 +1073,10 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
         <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5">🚫 Excluded (Kunde)</span>
         <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#e0e7ff;color:#3730a3;border:1px solid #a5b4fc">👤 Kunde</span>
         <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#f3e8ff;color:#6b21a8;border:1px solid #d8b4fe">🤝 Geteilt</span>
-		<span style="font-size:10px;background:#e8f0fe;color:#0071e3;padding:4px 10px;border-radius:20px;font-weight:600;flex-shrink:0">Quelle: SAP R&amp;R Dokument v.7-2025 (DE) · 1.000+ Aufgaben</span>
-      </div>
+		    <a href="https://www.sap.com/docs/download/agreements/product-policy/hec/roles-responsibilities/sap-s4hana-cloud-private-edition-and-sap-erp-pce-roles-and-responsibilities-german-v7-2025.pdf" target="_blank" style="text-decoration:none;">
+          <span style="font-size:10px;background:#e8f0fe;color:#0071e3;padding:4px 10px;border-radius:20px;font-weight:600;flex-shrink:0">Quelle: SAP R&amp;R Dokument v.7-2025 (DE) · 1.000+ Aufgaben</span>
+        </a>
+    </div>
 
       <!-- Tabs -->
       <div style="display:flex;gap:2px;border-bottom:2px solid var(--border);flex-shrink:0">
@@ -1326,17 +1311,124 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
         <span style="flex-shrink:0;font-size:16px">💡</span>
         <div><strong>Assurance Gap:</strong> Das offizielle SAP R&amp;R Dokument umfasst über 1.000 Aufgaben – ein erheblicher Teil davon liegt beim Kunden (<span style="color:var(--danger);font-weight:600">Excluded Tasks</span>) oder ist kostenpflichtig (<span style="color:#92400e;font-weight:600">CAS</span>). Viele Kunden unterschätzen diesen Umfang. DATAGROUP <strong>SAP Basis Plus</strong> schließt diese operative Lücke.</div>
       </div>
-	  </details>
+  </div>
+</div>
+
+<!-- =========================================
+   Folie 11 - Basis plus
+   =========================================== -->
+
+<div class="slide" data-slide="11" data-title="Basis Plus">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">11 / 23</div>
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Kapitel 2 · SAP Cloud · Private Edition</div>
+      <div class="slide-title">RISE with SAP – Basis+ - Ihre DATAGROUP Assurance</div>
+    </div>
+  </div>
+  <div class="slide-body" style="padding-top:20px">
+    <div class="callout info" style="margin-bottom:20px">
+      <div class="callout-icon">📊</div>
+      <div class="callout-content">
+          <h4>Definition: Assurance Gap</h4>
+          <p>Die kritische Lücke zwischen den Standard-Leistungen von SAP und den Aufgaben, die für einen stabilen Geschäftsbetrieb zwingend erforderlich sind – aber niemand übernimmt.</p>
+        </div>
+    </div>
+      <div class="gap-matrix">
+        <div class="gap-item risk-high">
+          <div class="gap-risk-label">⬆ Hohes Risiko</div>
+          <h4>Incident Management (App-Ebene)</h4>
+          <p>SAP meldet, wenn die DB steht. Wenn ein Zahllauf durch Custom-Code-Fehler abbricht – liegt die Störungsbehebung bei Ihnen.</p>
+        </div>
+        <div class="gap-item risk-high">
+          <div class="gap-risk-label">⬆ Hohes Risiko</div>
+          <h4>Berechtigungswesen &amp; Compliance</h4>
+          <p>IAM und Segregation of Duties (SoD) ist Ihre operative Pflicht. Fehler führen zu Compliance-Verstößen und erhöhtem Betrugsrisiko.</p>
+        </div>
+        <div class="gap-item risk-med">
+          <div class="gap-risk-label">▲ Mittleres Risiko</div>
+          <h4>Interface &amp; Integration Monitoring</h4>
+          <p>SAP überwacht nicht den Datenfluss zu Ihrem Webshop oder Logistikpartner. Inkonsistente Datenbestände drohen.</p>
+        </div>
+        <div class="gap-item risk-med">
+          <div class="gap-risk-label">▲ Mittleres Risiko</div>
+          <h4>Custom Code &amp; Upgrade-Stabilität</h4>
+          <p>Ihr Z-Code wird bei Updates nicht von SAP repariert. Ohne Clean-Core-Strategie wird jedes Release zum Hochrisiko-Projekt.</p>
+        </div>
+      </div> 
+	  <!-- Basis Plus Stelle -->
+    </br>
+	  <div class="callout info" style="margin-bottom:18px">
+      <div class="callout-icon">💡</div>
+      <div class="callout-content">
+          <h4>Darum BASIS+ als Ihre Gap Verischerung</h4>
+          <p>Der Service von DATAGROUP schließt die <strong>Assurance Gap</strong> im RISE-Standard: Er übernimmt alle applikationsnahen Basis-Tätigkeiten, die SAP ECS nicht abdeckt – mit persönlichem Ansprechpartner und End-to-End-Verantwortung.</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+        <div style="background:white;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:18px">
+          <div style="font-size:12px;font-weight:700;color:#cc0000;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">🔧 Leistungsumfang Operations</div>
+          <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--text-secondary)">
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Job- &amp; Transportmanagement (ext. Transporte, Add-ons, SAP Notes)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Schnittstellen &amp; Outputmanagement (Datenaustausch, E-Mail, Druck)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>IT-Security: Zertifikatsmanagement, Single Sign-On (SAML 2.0)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Support &amp; Störungsbehebung (Tickets, Systemöffnungen, Userbereitstellung)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>User- &amp; Berechtigungsmanagement (Rollen, Objektschlüssel)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Lizenzmanagement (Überwachung &amp; Optimierung)</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>Patchmanagement: Security Notes, OS-Patches alle 6 Monate</li>
+            <li style="display:flex;gap:8px"><span style="color:var(--accent);flex-shrink:0">→</span>BTP-Instanz- &amp; CPI-Schnittstellenverwaltung</li>
+          </ul>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="background:white;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:16px">
+            <div style="font-size:12px;font-weight:700;color:#cc0000;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">🧩 Verantwortlichkeits-Matrix (RACI)</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.7">
+              <div style="display:grid;grid-template-columns:1fr 60px 80px 60px;gap:4px;font-size:11px;margin-bottom:4px">
+                <div style="font-weight:600;color:var(--text)">Aufgabe</div>
+                <div style="font-weight:600;text-align:center;color:orange">Kunde</div>
+                <div style="font-weight:600;text-align:center;color:#cc0000">DATAGROUP</div>
+                <div style="font-weight:600;text-align:center;color:#005bb5">SAP</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 60px 80px 60px;gap:2px;font-size:11px;border-top:1px solid var(--border);padding-top:4px">
+                <div>Incident Management (App)</div><div style="text-align:center">R</div><div style="text-align:center;color:#cc0000;font-weight:600">A</div><div style="text-align:center">I</div>
+                <div style="border-top:1px solid var(--border);padding-top:3px">Security Notes</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">A</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#cc0000;font-weight:600">R</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">I</div>
+                <div style="border-top:1px solid var(--border);padding-top:3px">Transport Management</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">A</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#cc0000;font-weight:600">R</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div>
+                <div style="border-top:1px solid var(--border);padding-top:3px">OS-Patching (Infra)</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#005bb5;font-weight:600">R</div>
+                <div style="border-top:1px solid var(--border);padding-top:3px">IAM / Berechtigungen</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">A</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center;color:#cc0000;font-weight:600">R</div><div style="border-top:1px solid var(--border);padding-top:3px;text-align:center">–</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:white;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:16px">
+            <div style="font-size:12px;font-weight:700;color:#cc0000;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">⏱ Servicezeiten &amp; SLAs</div>
+            <div style="font-size:13px;color:var(--text-secondary);display:flex;flex-direction:column;gap:5px">
+              <div>📅 Service <strong>Mo–Fr, 08:00–18:00 Uhr</strong> · Rufbereitschaft optional</div>
+              <div>🔴 P1 Incident: <strong>2 Stunden</strong> Reaktionszeit</div>
+              <div>🟡 P2 Incident: <strong>4 Stunden</strong> Reaktionszeit</div>
+              <div>🟢 P3 Incident: <strong>2 Arbeitstage</strong> Reaktionszeit</div>
+              <div>👤 Persönlicher Service Lead + Service Koordinator</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="callout success" style="margin-bottom:0">
+        <div class="callout-icon">🤝</div>
+        <div class="callout-content">
+          <h4>Ergänzende Services: Managed BTP + Managed Cloud ALM</h4>
+          <p>Neben SAP Basis Plus bietet DATAGROUP auch <strong>Managed SAP BTP</strong> (Global Account Management, Connectivity, IAM, Integration Suite) und <strong>Managed Cloud ALM</strong> (Monitoring, Alert Management, Systemlandscape) als vollständig gebuchte Managed Services an.</p>
+        </div>
+      </div>
   </div>
 </div>
 
 <!-- ==========================================
-   FOLIE 8: TABELLARISCHER VERGLEICH
+   FOLIE 12 TABELLARISCHER VERGLEICH
    ========================================== -->
-<div class="slide slide-tabs" data-slide="10" data-title="Vergleich OnPrem / RISE / GROW">
+<div class="slide slide-tabs" data-slide="12" data-title="Vergleich OnPrem / RISE / GROW">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">10 / 21</div>
+  <div class="slide-counter">12 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Entscheidungsmatrix</div>
@@ -1346,10 +1438,10 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
   <div class="slide-body" style="padding-top:20px">
     <div id="compare-tabs">
       <div class="tabs-header">
-        <button class="tab-btn active" onclick="TabsModule.switchTab('compare-tabs','tab-vergleich',this)">Vergleichstabelle</button>
-        <button class="tab-btn" onclick="TabsModule.switchTab('compare-tabs','tab-rise-vorteile',this)">Top 3 RISE-Vorteile 2026</button>
+        <button class="tab-btn" onclick="TabsModule.switchTab('compare-tabs','tab-vergleich',this)">Vergleichstabelle</button>
+        <button class="tab-btn active" onclick="TabsModule.switchTab('compare-tabs','tab-rise-vorteile',this)">Top 3 RISE-Vorteile 2026</button>
       </div>
-      <div class="tab-panel active" id="tab-vergleich">
+      <div class="tab-panel" id="tab-vergleich">
         <table style="font-size:12px">
           <thead><tr>
             <th style="width:26%">Merkmal</th>
@@ -1377,7 +1469,7 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 		  </tbody>
         </table>
       </div>
-      <div class="tab-panel" id="tab-rise-vorteile">
+      <div class="tab-panel active" id="tab-rise-vorteile">
 		<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; margin-bottom:24px;">
             <!-- Vorteil 1 -->
             <div style="border:2px solid var(--primary); padding:28px; display:flex; flex-direction:column; gap:14px;">
@@ -1412,12 +1504,12 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 </div>
 
 <!-- ==========================================
-   FOLIE 9: FUE-RECHNER
+   FOLIE 13 FUE-RECHNER
    ========================================== -->
-<div class="slide" data-slide="11" data-title="FUE-Rechner & TCO-Kalkulation">
+<div class="slide" data-slide="13" data-title="FUE-Rechner & TCO-Kalkulation">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">11 / 21</div>
+  <div class="slide-counter">13 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Live Kalkulation</div>
@@ -1505,24 +1597,24 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 </div>
 
 <!-- ==========================================
-   FOLIE 10: KAPITEL – SCHMERZPUNKTE
+   FOLIE 14: KAPITEL – SCHMERZPUNKTE
    ========================================== -->
-<div class="slide slide-chapter" data-slide="12" data-title="Kapitel: Schmerzpunkte">
+<div class="slide slide-chapter" data-slide="14" data-title="Kapitel: Schmerzpunkte">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">12 / 21</div>
+  <div class="slide-counter">14 / 23</div>
   <div class="chapter-number">02</div>
   <div class="chapter-title">Schmerzpunkte bei SAP-Transformationen</div>
   <div class="chapter-desc">Typische Herausforderungen aus der Praxis – für ECC-Kunden auf dem Weg nach S/4HANA und für bestehende S/4HANA-Kunden beim Release-Wechsel</div>
 </div>
 
 <!-- ==========================================
-   FOLIE 11: ECC SCHMERZPUNKTE
+   FOLIE 15: ECC SCHMERZPUNKTE
    ========================================== -->
-<div class="slide slide-tabs" data-slide="13" data-title="ECC zu S/4HANA – Schmerzpunkte">
+<div class="slide slide-tabs" data-slide="15" data-title="ECC zu S/4HANA – Schmerzpunkte">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">13 / 21</div>
+  <div class="slide-counter">15 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Migration Deep Dive</div>
@@ -1572,12 +1664,12 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 </div>
 
 <!-- ==========================================
-   FOLIE 12: TRANSFORMATIONSVERGLEICH
+   FOLIE 16: TRANSFORMATIONSVERGLEICH
    ========================================== -->
-<div class="slide" data-slide="14" data-title="Transformation: Früher vs. Heute vs. Zukunft">
+<div class="slide" data-slide="16" data-title="Transformation: Früher vs. Heute vs. Zukunft">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">14 / 21</div>
+  <div class="slide-counter">16 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Transformation Paradigmen</div>
@@ -1612,12 +1704,12 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 </div>
 
 <!-- ==========================================
-   FOLIE 13: SYSTEMLANDSCHAFT SCHMERZPUNKTE
+   FOLIE 17: SYSTEMLANDSCHAFT SCHMERZPUNKTE
    ========================================== -->
-<div class="slide" data-slide="15" data-title="Systemlandschaft – Schmerzpunkte">
+<div class="slide" data-slide="17" data-title="Systemlandschaft – Schmerzpunkte">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">15 / 21</div>
+  <div class="slide-counter">17 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Gesamtsystemlandschaft</div>
@@ -1645,12 +1737,12 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 </div>
 
 <!-- ==========================================
-   FOLIE 14: CLEAN CORE
+   FOLIE 18: CLEAN CORE
    ========================================== -->
-<div class="slide slide-tabs" data-slide="16" data-title="Clean Core Strategie">
+<div class="slide slide-tabs" data-slide="18" data-title="Clean Core Strategie">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">16 / 21</div>
+  <div class="slide-counter">18 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Clean Core · Technische Schuld</div>
@@ -1766,24 +1858,24 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 </div>
 
 <!-- ==========================================
-   FOLIE 15: KAPITEL – WORKSHOP
+   FOLIE 19: KAPITEL – WORKSHOP
    ========================================== -->
-<div class="slide slide-chapter" data-slide="17" data-title="Kapitel: Workshop">
+<div class="slide slide-chapter" data-slide="19" data-title="Kapitel: Workshop">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">17 / 21</div>
+  <div class="slide-counter">19 / 23</div>
   <div class="chapter-number">03</div>
   <div class="chapter-title">Workshop: Offene Themen &amp; Entscheidungen</div>
   <div class="chapter-desc">Gemeinsame Erarbeitung offener Punkte – Kanban Board für strukturierte Diskussion und Entscheidungsfindung</div>
 </div>
 
 <!-- ==========================================
-   FOLIE 16: KANBAN
+   FOLIE 20: KANBAN
    ========================================== -->
-<div class="slide slide-kanban" data-slide="18" data-title="Workshop Kanban Board">
+<div class="slide slide-kanban" data-slide="20" data-title="Workshop Kanban Board">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">18 / 21</div>
+  <div class="slide-counter">20 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Workshop</div>
@@ -1843,24 +1935,24 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 </div>
 
 <!-- ==========================================
-   FOLIE 17: KAPITEL – NEXT STEPS
+   FOLIE 21: KAPITEL – NEXT STEPS
    ========================================== -->
-<div class="slide slide-chapter" data-slide="19" data-title="Kapitel: Next Steps">
+<div class="slide slide-chapter" data-slide="21" data-title="Kapitel: Next Steps">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">19 / 21</div>
+  <div class="slide-counter">21 / 23</div>
   <div class="chapter-number">04</div>
   <div class="chapter-title">Next Steps &amp; Ausblick</div>
   <div class="chapter-desc">Gemeinsam vereinbarte Maßnahmen und Handlungsempfehlungen für die nächsten Wochen</div>
 </div>
 
 <!-- ==========================================
-   FOLIE 18: CHECKLISTE NEXT STEPS
+   FOLIE 22: CHECKLISTE NEXT STEPS
    ========================================== -->
-<div class="slide slide-checklist" data-slide="20" data-title="Next Steps Checkliste">
+<div class="slide slide-checklist" data-slide="22" data-title="Next Steps Checkliste">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">20 / 21</div>
+  <div class="slide-counter">22 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">Abschluss &amp; Maßnahmen</div>
@@ -1948,12 +2040,12 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 </div>
 
 <!-- ==========================================
-   FOLIE 19: DISCLAIMER
+   FOLIE 23: DISCLAIMER
    ========================================== -->
-<div class="slide slide-disclaimer" data-slide="21" data-title="Rechtliche Hinweise">
+<div class="slide slide-disclaimer" data-slide="23" data-title="Rechtliche Hinweise">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
-  <div class="slide-counter">21 / 21</div>
+  <div class="slide-counter">23 / 23</div>
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">DATAGROUP SE</div>
@@ -2083,25 +2175,235 @@ function exportNotesTXT() {
 }
 
 function exportNotesPDF() {
-  const customer = document.getElementById('cover-customer').textContent;
-  const date = document.getElementById('cover-date').textContent;
-  let htmlContent = `<html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;font-size:12px;color:#333;} h1{font-size:16px;color:#E3000F;border-bottom:2px solid #E3000F;padding-bottom:6px;} h2{font-size:13px;color:#E3000F;margin-top:18px;} p{line-height:1.6;} .note-block{background:#f5f5f5;border-left:3px solid #E3000F;padding:10px;margin:8px 0;} hr{border-color:#ccc;}</style></head><body>`;
-  htmlContent += `<h1>Workshop Protokoll</h1><p><strong>Kunde:</strong> ${customer} &nbsp;&nbsp; <strong>Datum:</strong> ${date}</p><hr>`;
-  let hasNotes = false;
-  slides.forEach((slide, i) => {
-    const note = notesData[i];
-    if (note && note.trim()) {
-      hasNotes = true;
-      htmlContent += `<h2>Folie ${slide.getAttribute('data-slide')}: ${slide.getAttribute('data-title')}</h2><div class="note-block"><p>${note.replace(/\n/g,'<br>')}</p></div>`;
-    }
+  // 1. Dynamisches CSS für den Druck erzeugen
+  if (!document.getElementById('custom-print-style')) {
+      const printStyle = document.createElement('style');
+      printStyle.id = 'custom-print-style';
+      printStyle.innerHTML = `
+          @media print {
+              /* DIN A4 Format mit sicheren Rändern */
+              @page {
+                  size: A4 portrait;
+                  margin: 10mm;
+              }
+              
+              html, body {
+                  height: auto !important;
+                  overflow: visible !important;
+                  background-color: #ffffff !important;
+                  margin: 0 !important;
+                  padding: 0 !important;
+              }
+              
+              /* Alle Menüs und Overlays konsequent ausblenden */
+              #presentation, .settings-btn, .notes-toggle, .notes-sidebar, .nav-buttons, .settings-overlay, #ui-layer, .no-print {
+                  display: none !important;
+              }
+              
+              #print-section {
+                  display: block !important;
+                  position: static !important;
+                  width: 100% !important;
+              }
+
+              /* --- FIX FÜR WEISSE ZWISCHENSEITEN --- */
+              /* Höhe auf 265mm begrenzt (A4 ist 297mm - 20mm Rand = 277mm). 
+                 Die fehlenden 12mm Puffer verhindern leere Subpixel-Seitenumbrüche! */
+              .print-wrapper {
+                  page-break-after: always !important;
+                  page-break-inside: avoid !important;
+                  break-after: page !important;
+                  display: flex !important;
+                  flex-direction: column !important;
+                  height: 265mm !important;     
+                  max-height: 265mm !important;
+                  overflow: hidden !important;  
+                  padding: 0 !important;
+                  margin: 0 !important;
+                  box-sizing: border-box !important;
+              }
+
+              .print-wrapper:last-child {
+                  page-break-after: auto !important;
+                  break-after: auto !important;
+              }
+
+              /* Bilderrahmen für die Folie (Exakt 16:9 auf A4 Breite skaliert) */
+              .slide-print-container {
+                  position: relative !important;
+                  width: 190mm !important;
+                  height: 107mm !important; 
+                  overflow: hidden !important; 
+                  border: 1px solid #cccccc !important;
+                  margin-bottom: 5mm !important;
+                  box-sizing: border-box !important;
+                  flex-shrink: 0 !important;
+              }
+
+              /* Geklonte Folie bleibt nativ 1200x675px und wird auf 59.8% geschrumpft */
+              .slide-print-container .slide {
+                  position: absolute !important;
+                  top: 0 !important;
+                  left: 0 !important;
+                  width: 1200px !important;
+                  height: 675px !important;
+                  transform: scale(0.598) !important; 
+                  transform-origin: top left !important;
+                  opacity: 1 !important;
+                  visibility: visible !important;
+                  display: block !important;
+                  background: #ffffff !important;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  pointer-events: none !important;
+              }
+              
+              .slide-print-container .slide-body {
+                  overflow: hidden !important; 
+              }
+
+              /* Notizen füllen den Rest und werden abgeschnitten, falls sie zu lang sind */
+              .print-notes {
+                  flex: 1 !important; 
+                  overflow: hidden !important; 
+                  background: #f9f9f9 !important;
+                  border-left: 4px solid #E3000F !important;
+                  padding: 15px !important;
+                  font-family: Arial, sans-serif !important;
+                  font-size: 14px !important;
+                  line-height: 1.5 !important;
+                  color: #333333 !important;
+                  box-sizing: border-box !important;
+              }
+          }
+          
+          @media screen {
+              #print-section { display: none !important; }
+          }
+      `;
+      document.head.appendChild(printStyle);
+  }
+
+  // 2. Alten Druck-Container bereinigen
+  let oldPrintSection = document.getElementById('print-section');
+  if (oldPrintSection) oldPrintSection.remove();
+  
+  const printSection = document.createElement('div');
+  printSection.id = 'print-section';
+  document.body.appendChild(printSection);
+
+  // 3. Metadaten holen
+  let customer = 'Kunde';
+  if (document.getElementById('cover-customer')) customer = document.getElementById('cover-customer').textContent;
+
+  const allSlides = document.querySelectorAll('.presentation .slide');
+
+  // --- HILFSFUNKTION ZUM GENERIEREN EINER DRUCKSEITE ---
+  function createPrintPage(slide, slideIndex, note, tabIndex = -1) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'print-wrapper';
+
+      let slideTitle = slide.getAttribute('data-title') || `Folie ${slideIndex + 1}`;
+      
+      const clone = slide.cloneNode(true);
+      clone.classList.add('active'); 
+      
+      // Geschachtelte Details/Akkordeons für den Druck aufklappen
+      clone.querySelectorAll('details').forEach(det => det.setAttribute('open', 'true'));
+
+      // --- LOGIK FÜR TABS ---
+      if (tabIndex !== -1) {
+          const clonedPanels = clone.querySelectorAll('.tab-panel');
+          const clonedBtns = clone.querySelectorAll('.tab-btn');
+          
+          // Nur den aktuellen Tab sichtbar machen
+          clonedPanels.forEach((p, idx) => {
+              if (idx === tabIndex) {
+                  p.classList.add('active');
+                  p.style.display = 'block'; // Zwingend anzeigen
+              } else {
+                  p.classList.remove('active');
+                  p.style.display = 'none';  // Verstecken
+              }
+          });
+          
+          // Button-Status & Titel anpassen
+          clonedBtns.forEach((b, idx) => {
+              if (idx === tabIndex) {
+                  b.classList.add('active');
+                  slideTitle += ` | Tab: ${b.textContent}`; // Tab-Name an den Header anhängen
+              } else {
+                  b.classList.remove('active');
+              }
+          });
+      }
+
+      // Header erstellen
+      wrapper.innerHTML += `
+          <div style="height: 15mm; margin-bottom: 5mm; display: flex; justify-content: space-between; border-bottom: 2px solid #E3000F; padding-bottom: 5px; font-family: Arial, sans-serif; align-items: flex-end; box-sizing: border-box;">
+              <div>
+                  <h2 style="font-size:16px; color:#E3000F; margin:0;">Workshop Protokoll | ${customer}</h2>
+              </div>
+              <div style="font-size:14px; color:#666;">Folie ${slideIndex + 1}: ${slideTitle}</div>
+          </div>
+      `;
+
+      const slideContainer = document.createElement('div');
+      slideContainer.className = 'slide-print-container';
+
+      // Diagramme rüberkopieren (Chart.js etc.)
+      const origCanvases = slide.querySelectorAll('canvas');
+      const clonedCanvases = clone.querySelectorAll('canvas');
+      origCanvases.forEach((origCanvas, index) => {
+          const clonedCanvas = clonedCanvases[index];
+          if (clonedCanvas && origCanvas.width > 0) {
+              clonedCanvas.width = origCanvas.width;
+              clonedCanvas.height = origCanvas.height;
+              clonedCanvas.getContext('2d').drawImage(origCanvas, 0, 0);
+          }
+      });
+
+      slideContainer.appendChild(clone);
+      wrapper.appendChild(slideContainer);
+
+      // Notizen anhängen
+      const noteDiv = document.createElement('div');
+      noteDiv.className = 'print-notes';
+      if (note.trim() !== '') {
+          noteDiv.innerHTML = `<strong>Notizen:</strong><br>${note.replace(/\n/g, '<br>')}`;
+      } else {
+          noteDiv.innerHTML = `<em>Keine Notizen zu dieser Folie erfasst.</em>`;
+      }
+      wrapper.appendChild(noteDiv);
+
+      printSection.appendChild(wrapper);
+  }
+
+  // 4. Folien durchlaufen
+  allSlides.forEach((slide, i) => {
+      let note = notesData[i] || '';
+
+      const tabPanels = slide.querySelectorAll('.tab-panel');
+      
+      // Wenn die Folie Tabs hat, für jeden Tab eine eigene Seite rendern!
+      if (tabPanels.length > 0) {
+          tabPanels.forEach((panel, tabIndex) => {
+              createPrintPage(slide, i, note, tabIndex);
+          });
+      } else {
+          // Normale Folie (keine Tabs)
+          createPrintPage(slide, i, note, -1);
+      }
   });
-  if (!hasNotes) htmlContent += '<p><em>Keine Notizen erfasst.</em></p>';
-  htmlContent += '</body></html>';
-  const el = document.createElement('div');
-  el.innerHTML = htmlContent;
-  document.body.appendChild(el);
-  const opt = { margin: 12, filename: 'protokoll.pdf', image: { type: 'jpeg', quality: 0.9 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-  html2pdf().set(opt).from(el).save().then(() => document.body.removeChild(el));
+
+  // 5. Sidebar vor dem Aufruf zwingend schließen, damit sie nicht stört!
+  const sidebar = document.getElementById('notesSidebar');
+  if (sidebar) sidebar.classList.remove('open');
+
+  // 6. Native Druckfunktion verzögert aufrufen
+  setTimeout(() => {
+      window.print();
+  }, 500);
 }
 
 // ============================================
