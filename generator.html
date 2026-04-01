@@ -714,17 +714,22 @@
             prompt += `### SCHRITT 1: HTML-VORLAGE LADEN (PFLICHT)\n`;
             prompt += `BEVOR du irgendetwas generierst, MUSST du dein Web-Search-Tool nutzen und den vollständigen Quelltext der folgenden HTML-Vorlage abrufen:\n`;
             prompt += `${rawBaseUrl}template.html\n\n`;
-            prompt += `Diese Vorlage ist deine **einzige und vollständige Basis**. Du übernimmst daraus:\n`;
-            prompt += `- Den gesamten <style>-Block (CSS + Theme) unverändert\n`;
-            prompt += `- Die Struktur der .presentation > .slide Hierarchie\n`;
-            prompt += `- Alle vorhandenen JavaScript-Module und Funktionen\n`;
-            prompt += `- Die Titelfolie (Folie 1) und die Agenda-Folie (Folie 2) als strukturelle Basis\n`;
-            prompt += `- Alle Branding-Elemente (.branding-logo, .branding-claim)\n\n`;
+            prompt += `Lösche oder verändere keine bestehenden Skripte im Template, sondern ersetze NUR die Platzhalter.\n`;
+            //prompt += `Diese Vorlage ist deine **einzige und vollständige Basis**. Du übernimmst daraus:\n`;
+            //prompt += `- Den gesamten <style>-Block (CSS + Theme) unverändert\n`;
+            //prompt += `- Die Struktur der .presentation > .slide Hierarchie\n`;
+            //prompt += `- Alle vorhandenen JavaScript-Module und Funktionen\n`;
+            //prompt += `- Die Titelfolie (Folie 1) und die Agenda-Folie (Folie 2) als strukturelle Basis\n`;
+            //prompt += `- Alle Branding-Elemente (.branding-logo, .branding-claim)\n\n`;
 
-            // === SCHRITT 2: THEME ANPASSEN (nur wenn abweichend) ===
+            // === SCHRITT 2: THEME METADATEN SETZEN (nur wenn abweichend) ===
             if (isCustomTheme) {
-                prompt += `### SCHRITT 2: THEME ÜBERSCHREIBEN\n`;
-                prompt += `WICHTIG: Ersetze in der aufgerufenen template.html das vorkommen von {{THEME_CSS_URL}} durch ${rawBaseUrl}${loadedThemesUrls[design]}\n\n`;
+                prompt += `### SCHRITT 2: THEME & METADATEN SETZEN\n`;
+                /*prompt += `WICHTIG: 
+                - Ersetze in der aufgerufenen template.html das vorkommen von {{THEME_CSS_URL}} durch ${loadedThemesUrls[design]}.
+                - Ersetze {{PRESENTATION_TITLE}} mit dem Titel.
+                - Ersetze {{THEME_CLASS}} mit: theme-${loadedThemesUrls[design]}\n\n`;*/
+                
                 if (embedCode && loadedThemes[design]) {
                     const themeCssReady = loadedThemes[design].replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);
                     prompt += `Ersetze im <style>-Block den :root { ... } Abschnitt mit folgendem CSS:\n`;
@@ -736,8 +741,18 @@
                 }
             }
 
-            // === SCHRITT 3: AGENDA-DATEN SETZEN ===
-            prompt += `### SCHRITT 3: AGENDA-DATEN SETZEN\n`;
+            // === SCHRITT 3: ZUSAMMENBAU DER MODULE (PLATZHALTER & SAMMLUNG) ===
+            prompt += `SCHRITT 3: ZUSAMMENBAU DER MODULE (PLATZHALTER & SAMMLUNG)\n`;
+            prompt += 'Ich benötige für diese Präsentation verschiedene Module. Gehe beim Ersetzen der Platzhalter im Template exakt so vor:\n';
+            prompt += '1. {{MODULE_CSS_LINKS}}: Sammle die CSS-Links (<link rel="stylesheet" href="...">) ALLER unten geforderten Module und füge sie hier als Liste UNTEREINANDER ein. Schreibe niemals Styles direkt in die HTML-Slides!\n';
+            prompt += '2. {{MODULE_JS_SCRIPTS}}: Sammle die JavaScript-Dateien (<script src="..."><\\/script>) ALLER geforderten Module und füge sie hier UNTEREINANDER ein.\n';
+            prompt += '3. Ordne die HTML-Blöcke der Folien (<div class="slide">...</div>) exakt in diese Platzhalter ein:\n';
+            prompt += '- {{TITELFOLIE_CONTENT}}: HTML der Titelfolie.\n';
+            prompt += '- {{AGENDA_CONTENT}}: HTML der Agenda-Folie.\n';
+            prompt += '- {{CONTENT_SLIDES}}: Sammle das HTML ALLER Inhalts-, Interaktions- und Kapitelfolien in der logischen Reihenfolge und füge sie hier UNTEREINANDER ein.\n';
+            prompt += '- {{SCHLUSSFOLIE_CONTENT}}: HTML der Checkliste / Next Steps.\n';
+            prompt += '- {{DISCLAIMER_CONTENT}}: HTML des Disclaimers.\n\n';
+            prompt += 'WICHTIG: Wenn ein Platzhalter nicht benötigt wird, entferne ihn einfach (leer lassen).\n\n';
             prompt += `Ersetze in der Vorlage die agendaData-Variable mit den konfigurierten Agenda-Punkten:\n`;
             prompt += `\`\`\`javascript\nvar agendaData = [\n  // Fülle hier die Agenda-Punkte ein basierend auf den oben angegebenen Agenda/Kapitel-Daten\n  // Format: { time:'HH:MM – HH:MM', title:'Titel', desc:'Beschreibung', isBreak:false }\n];\n\`\`\`\n\n`;
 
@@ -751,7 +766,7 @@
             prompt += `### SCHRITT 4: PFLICHTFUNKTIONEN (aus Vorlage übernehmen oder ergänzen)\n`;
             prompt += `Die folgenden Funktionen sind bereits in der Vorlage enthalten – behalte sie und verändere sie nicht:\n`;
             prompt += `1. **Navigation:** Tastatur (Pfeiltaste Links/Rechts) + Vor-/Zurück-Buttons\n`;
-            if (includeSettings) prompt += `2. **Einstellungsbereich:** ⚙-Button für Titel, Kundenname, Datum und Agendapunkte (bereits in Vorlage)\n`;
+            if (includeSettings) prompt += `2. **Grundlayout** (bereits in Vorlage)\n`;
             if (includeProtocol) prompt += `3. **Protokoll/Notizen:** Notizen-Sidebar pro Folie mit PDF- und TXT-Export über html2pdf.js (CDN)\n`;
             if (includeState) prompt += `4. **JSON Export/Import:** Gesamten Arbeitsfortschritt als JSON speichern/laden\n`;
             prompt += `\n`;
@@ -785,7 +800,7 @@
             prompt += `### SCHRITT 5: STANDARD-FOLIEN-TEMPLATES (STRIKT BEFOLGEN)\n`;
             prompt += `Für den Aufbau der Präsentation MUSST du diese Vorlagen aus der Bibliothek verwenden:\n\n`;
             prompt += appendModuleContent("TITELFOLIE (Folie 1)", "titel", "Passe nur Titel, Kunde und Datum an – ändere NICHT die Struktur.");
-            prompt += appendModuleContent("AGENDA (Folie 2 – bereits in Vorlage)", "agenda", "Setze agendaData gemäß Schritt 3 – das Rendering übernimmt renderAgendaSlide().");
+            prompt += appendModuleContent("AGENDA (Folie 2 – bereits in Vorlage)", "agenda", "Setze agendaData – das Rendering übernimmt renderAgendaSlide().");
             prompt += appendModuleContent("STANDARD-INHALTSFOLIE", "stdfolie", "Nutze dieses Gerüst für ALLE regulären Content-Folien.");
             if (includeChapters) {
                 prompt += appendModuleContent("KAPITELFOLIE", "kapitel", "Füge vor jedem Kapitel eine Trennfolie ein.");

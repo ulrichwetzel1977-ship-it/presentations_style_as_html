@@ -134,6 +134,9 @@ body, html {
 .card-title { color: #fff; font-weight: 700; font-size: 15px; margin-bottom: 8px; }
 .card-text { color: rgba(255,255,255,0.88); font-size: 13px; line-height: 1.5; }
 
+.card-title-cc { color: #000000; font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+.card-text-cc { color: rgb(0, 0, 0); font-size: 13px; line-height: 1.5; }
+
 .callout {
     border-radius: var(--radius-sm);
     padding: 14px 18px;
@@ -417,6 +420,44 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 .badge-warning { background: var(--warning-bg); color: var(--warning); border-color: var(--warning); }
 .badge-danger  { background: var(--danger-bg);  color: var(--danger);  border-color: var(--danger); }
 .badge-info    { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+
+.badge-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap; /* Bricht um, falls der Platz auf kleinen Screens eng wird */
+  margin-top: 12px;
+}
+
+.link-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 12px; /* Macht die Ränder schön rund (Pillen-Form) */
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none; /* Entfernt den Standard-Unterstrich von Links */
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.link-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* Leichter Schatten statt nur Transparenz */
+}
+
+/* Badge 1: Auffälliger (Primary) */
+.badge-primary {
+  background-color: var(--primary-soft, #6f90eb); /* Nutzt den soften Ton aus dem Theme */
+  color: var(--primary, #E3000F);
+  border: 1px solid var(--primary, #E3000F);
+}
+
+/* Badge 2: Dezenter (Secondary) */
+.badge-secondary {
+  background-color: var(--surface-alt, #6ef3c7);
+  color: var(--text-secondary, #6e6e73);
+  border: 1px solid var(--border, #cccccc);
+}
 
 /* DISCLAIMER */
 .slide-disclaimer {
@@ -1843,8 +1884,18 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
         <div class="two-col" style="margin-top:6px">
           <div>
             <div class="highlight-box">
-              <strong>Definition: Clean Core</strong>
+              <strong>Clean Core Prinzip (v2.3, August 2025)</strong><br>
               Der SAP-Systemkern bleibt frei von Modifikationen. Eigenentwicklungen werden ausschließlich als „Side-by-Side"-Extensions auf der SAP BTP oder via stabiler, freigegebener APIs (Enhancement Spots, BAdIs) umgesetzt. Ergebnis: Release-Fähigkeit, niedrigere TCO, KI-Ready.
+              <p>Strenge Trennung von SAP-Standard-Code und kundeneigenen Erweiterungen. Dies ist die einzige Strategie, um Upgrade-Stabilität, Cloud-Fähigkeit und niedrige TCO dauerhaft zu sichern.</p>
+              
+              <div class="badge-container">
+                <a href="https://www.sap.com/products/erp/rise/methodology/clean-core.html?pdf-asset=20aece06-d87e-0010-bca6-c68f7e60039b&page=1" target="_blank" class="link-badge badge-primary">
+                  📄 Clean Core Konzept
+                </a>
+                <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/business-excellence-with-sap-s-new-clean-core-extensibility-levels-why-what/ba-p/14191481#:~:text=The%20%E2%80%9CSAP%20Business%20Accelerator%20Hub%E2%80%9D%20and%20%E2%80%9CCloudification,not%20classified%20as%20A%2C%20B%20and%20D)" target="_blank" class="link-badge badge-secondary">
+                  💬 Community Beitrag mit Erklärung
+                </a>
+              </div>
             </div>
             <div class="info-block" style="margin-top:12px">
               <h4>Die 5 Säulen von Clean Core</h4>
@@ -1873,13 +1924,7 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
             </div>
           </div>
         </div>
-        <div class="callout info" style="margin-bottom:20px">
-        <div class="callout-icon">🏗️</div>
-        <div class="callout-content">
-          <h4>Clean Core Prinzip (v2.3, August 2025)</h4>
-          <p>Strenge Trennung von SAP-Standard-Code und kundeneigenen Erweiterungen. Dies ist die einzige Strategie, um Upgrade-Stabilität, Cloud-Fähigkeit und niedrige TCO dauerhaft zu sichern.</p>
-        </div>
-      </div>
+        
 
       <div class="level-bar">
         <div class="level-seg level-a">Level A<span>ABAP Cloud · Released APIs · Upgrade-stabil</span></div>
@@ -1890,16 +1935,16 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 
       <div class="cards-grid" style="margin-top:16px">
         <div class="card" style="border-top:3px solid var(--success)">
-          <div class="card-title">✅ Rule 1: Released APIs Only</div>
-          <div class="card-text">Direkte Tabellenzugriffe (SELECT * FROM T005) sind verboten. Nutze Cloud-Successors wie I_COUNTRY. Alles andere ist technische Schuld.</div>
+          <div class="card-title-cc">✅ Rule 1: Released APIs Only</div>
+          <div class="card-text-cc">Direkte Tabellenzugriffe (SELECT * FROM T005) sind verboten. Nutze Cloud-Successors wie I_COUNTRY. Alles andere ist technische Schuld.</div>
         </div>
         <div class="card" style="border-top:3px solid var(--success)">
-          <div class="card-title">✅ Rule 2: No Modifications</div>
-          <div class="card-text">SAP-Originalcode bleibt unberührt. Erweiterungspunkte (BAdIs) werden genutzt. Zero Modifications ist kein Nice-to-have, sondern Pflicht.</div>
+          <div class="card-title-cc">✅ Rule 2: No Modifications</div>
+          <div class="card-text-cc">SAP-Originalcode bleibt unberührt. Erweiterungspunkte (BAdIs) werden genutzt. Zero Modifications ist kein Nice-to-have, sondern Pflicht.</div>
         </div>
         <div class="card" style="border-top:3px solid var(--success)">
-          <div class="card-title">✅ Rule 3: Cloud-Optimized ABAP</div>
-          <div class="card-text">Moderne ABAP-Befehle, CDS Views, RAP-Modell, OData. Veraltete Statements (Dynpro, Classic SQL) verursachen Fehler in der Cloud-Laufzeit.</div>
+          <div class="card-title-cc">✅ Rule 3: Cloud-Optimized ABAP</div>
+          <div class="card-text-cc ">Moderne ABAP-Befehle, CDS Views, RAP-Modell, OData. Veraltete Statements (Dynpro, Classic SQL) verursachen Fehler in der Cloud-Laufzeit.</div>
         </div>
       </div>
 
