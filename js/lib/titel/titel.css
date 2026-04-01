@@ -2,57 +2,37 @@
    TITEL / COVER SLIDE STYLES
    ========================================== */
 
-/* Spezielle Inhaltsanordnung für die Titelfolie */
 .slide-cover {
-    background: #1d1d1f !important; /* Dunkler Hintergrund laut Vorlage */
+    position: relative; /* Wichtig für das Overlay */
+    /* 1. Hintergrundfarbe (greift, wenn kein Bild da ist oder das Bild lädt) */
+    background-color: var(--cover-bg, var(--bg-color)); 
+    
+    /* 2. Hintergrundbild (greift, wenn die Variable im Theme definiert wurde) */
+    background-image: var(--cover-bg-image, none);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
     justify-content: center;
     align-items: flex-start;
     padding: 60px;
 }
 
-.slide-cover .branding-claim {
-    color: var(--primary); /* Rot im dunklen Modus */
+/* OPTIONAL ABER EMPFOHLEN: Ein leichtes Overlay, damit der weiße Text auf hellen Bildern lesbar bleibt */
+.slide-cover::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* Nutzt eine Theme-Variable für das Overlay, standardmäßig 40% Schwarz */
+    background: var(--cover-overlay, rgba(0, 0, 0, 0.4)); 
+    z-index: 1;
 }
 
-.cover-content {
-    margin-top: 60px;
-}
-
-.cover-eyebrow {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--primary);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 18px;
-}
-
-.cover-title {
-    font-size: clamp(28px, 4vw, 52px);
-    font-weight: 700;
-    color: #ffffff; /* Weiß auf Dunkel */
-    line-height: 1.15;
-    margin-bottom: 40px;
-    max-width: 780px;
-}
-
-.cover-meta {
-    display: flex;
-    gap: 40px;
-    flex-wrap: wrap;
-}
-
-.cover-meta-item label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--primary);
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 4px;
-}
-
-.cover-meta-item span {
-    font-size: 16px;
-    color: #ffffff;
-    font-weight: 500;
+/* Damit der eigentliche Text und die Logos ÜBER der Abdunkelung liegen */
+.slide-cover > .branding-logo,
+.slide-cover > .branding-claim,
+.slide-cover > .slide-counter,
+.slide-cover > .cover-content {
+    position: relative;
+    z-index: 2; 
 }
