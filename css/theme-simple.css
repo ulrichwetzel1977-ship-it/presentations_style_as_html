@@ -1,31 +1,51 @@
+/* ==========================================
+   THEME: SIMPLE (Minimalist & Neutral)
+   ========================================== */
+
 :root {
-    --app-bg: #333333;
-    --font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    
     /* Layout Farben */
-    --bg-color: #ffffff; /* Komplett weiß */
-    --header-bg: #ffffff;
+    --app-bg: #333333;
+    --bg-color: #ffffff;           /* Komplett weißer Hintergrund */
+    --header-bg: #ffffff;          /* Nahtloser Übergang */
     --surface: #ffffff;
+    --surface-alt: #f8f9fa;        /* Sehr sanftes Grau */
     
     /* Text & Akzente */
-    --primary: #4A4A4A;
+    --primary: #4A4A4A;            /* Dunkelgrau statt bunter Farbe */
+    --primary-hover: #222222;
     --primary-soft: #f8f9fa;
     --border: #e0e0e0;
     --text: #333333;
     --header-text: #111111;
     --text-secondary: #666666;
+    --claim-color: #666666;
     
     /* Tabellen */
     --table-header-bg: #f8f9fa;
     --table-header-text: #333333;
     
     /* Status */
-    --danger: #dc3545; --danger-bg: #f8d7da;
-    --warning: #ffc107; --warning-bg: #fff3cd;
-    --success: #28a745; --success-bg: #d4edda;
-    
-    /* Formen */
+    --info: #17a2b8;     --info-bg: #e1f5fe;
+    --success: #28a745;  --success-bg: #d4edda;
+    --warning: #ffc107;  --warning-bg: #fff3cd;
+    --danger: #dc3545;   --danger-bg: #f8d7da;
+
+    /* Formen (Flach, kleine Ecken, Fokus auf Rahmen) */
     --radius: 4px;
     --radius-sm: 2px;
     --shadow: none;
+    
+    /* Typografie */
+    --font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* --- SIMPLE-STYLE SPEZIFISCHE ÜBERSCHREIBUNGEN --- */
+
+/* Statt Schatten nutzen wir sichtbare Ränder für alle Boxen */
+.callout, .card {
+    border: 1px solid var(--border);
+}
+
+.slide-header {
+    border-bottom: 1px solid var(--border);
 }

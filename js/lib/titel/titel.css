@@ -1,0 +1,58 @@
+/* ==========================================
+   TITEL / COVER SLIDE STYLES
+   ========================================== */
+
+/* Spezielle Inhaltsanordnung für die Titelfolie */
+.slide-cover {
+    background: #1d1d1f !important; /* Dunkler Hintergrund laut Vorlage */
+    justify-content: center;
+    align-items: flex-start;
+    padding: 60px;
+}
+
+.slide-cover .branding-claim {
+    color: var(--primary); /* Rot im dunklen Modus */
+}
+
+.cover-content {
+    margin-top: 60px;
+}
+
+.cover-eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 18px;
+}
+
+.cover-title {
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 700;
+    color: #ffffff; /* Weiß auf Dunkel */
+    line-height: 1.15;
+    margin-bottom: 40px;
+    max-width: 780px;
+}
+
+.cover-meta {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.cover-meta-item label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.cover-meta-item span {
+    font-size: 16px;
+    color: #ffffff;
+    font-weight: 500;
+}

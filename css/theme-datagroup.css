@@ -3,123 +3,81 @@
    ========================================== */
 
 :root {
-    /* Farben laut Styleguide-Bildern */
+    /* Layout Farben */
+    --app-bg: #333333;
+    --bg-color: #ffffff;
+    --header-bg: #E6E6E6;          /* Grau hinterlegter Header */
+    --surface: #ffffff;
+    --surface-alt: #E6E6E6;        /* Hellgrau für alternative Flächen */
+    
+    /* Text & Akzente */
     --primary: #E3000F;            /* Offizielles DATAGROUP Rot */
     --primary-hover: #cc000e;
     --primary-soft: #fde5e6;
-    
-    --bg-color: #ffffff;
-    --surface: #ffffff;
-    --surface-alt: #E6E6E6;        /* Hellgrau für Titel-Hinterlegung */
-    
     --border: #cccccc;
     --text: #1d1d1f;
+    --header-text: #1d1d1f;
     --text-secondary: #6e6e73;
+    --claim-color: #E3000F;        /* Roter Claim */
     
-    /* Branding */
-    --claim-color: #E3000F;        /* Claim Text unten links in Rot */
+    /* Tabellen */
+    --table-header-bg: #E3000F;    /* Roter Tabellen-Kopf laut CI */
+    --table-header-text: #ffffff;
     
     /* Status */
-    --danger: #E3000F;
-    --warning: #ff9500;
-    --success: #008a00;
+    --info: #E3000F;     --info-bg: #fde5e6;
+    --success: #008a00;  --success-bg: #e8f5e9;
+    --warning: #ff9500;  --warning-bg: #fff3e0;
+    --danger: #E3000F;   --danger-bg: #fde5e6;
 
-    /* Formen (0px für den CORBOX-Würfel-Look) */
+    /* Formen (0px für den eckigen CORBOX-Würfel-Look) */
     --radius: 0px;
     --radius-sm: 0px;
     --shadow: none;
     
     /* Typografie */
     --font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-    
-    /* Glassmorphism deaktiviert für striktes Flat Design */
-    --glass-bg: #ffffff;
-    --glass-filter: none;
-
-    /* Diese Variable wird vom Generator befüllt */
-    --gh-raw-base: "";
 }
 
-/* --- LOGO OBEN RECHTS --- */
+/* --- DATAGROUP BRANDING ELEMENTS --- */
 .branding-logo {
-    position: absolute;
-    top: 25px;
-    right: 40px;
-    width: 200px;
-    height: 60px;
     background-image: url('{{GH_RAW_BASE}}assets/images/Datagroup_design/header/logo.png'); /* Pfad anpassen */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: right top;
-    z-index: 1000;
 }
 
-/* --- CLAIM UNTEN LINKS (ROT) --- */
 .branding-claim {
-    position: absolute;
-    bottom: 25px;
-    left: 40px;
-    font-size: 14px;
-    font-weight: 700;
     color: var(--claim-color);
-    z-index: 1000;
 }
 .branding-claim::after {
-    content: "IT's that simple."; /* Claim aus Bild 7/8 */
+    content: "IT's that simple."; 
+    display: block; 
 }
 
-/* --- TITEL GRAU HINTERLEGT --- */
+/* --- DATAGROUP SPEZIFISCHE LAYOUT-ÜBERSCHREIBUNGEN --- */
 .slide-header {
-    background-color: var(--surface-alt) !important; /* Grau hinterlegt laut Anforderung */
-    border-bottom: none;
-    padding: 20px 60px;
+    border-bottom: none; /* Kein Rand unterm Header */
 }
 
-.slide-title {
-    color: var(--text);
-    text-transform: none;
-    font-weight: 700;
-}
-
-/* --- TABELLEN ROT HINTERLEGT --- */
-table {
-    border: none;
-    border-collapse: collapse;
-}
-
-table th {
-    background-color: var(--primary) !important; /* Rot hinterlegt laut Anforderung */
-    color: #ffffff !important;
+table.std-table th {
     text-transform: uppercase;
-    font-size: 12px;
     letter-spacing: 0.05em;
-    padding: 12px 20px;
-    border: 1px solid var(--primary);
+    border: 1px solid var(--primary); /* Tabellenkopf-Border rot */
 }
 
-table td {
-    border: 1px solid var(--border);
-    background-color: #ffffff;
-}
-
-/* Spezielle "Service-Boxen" Optik (wie im Organigramm) */
-.card, .kanban-col-header {
+/* Spezifische DATAGROUP "Service-Block" Karte */
+.card.dg-style {
     background-color: var(--primary);
     color: #ffffff;
     border: none;
 }
-
-.card .card-title, .card .card-text {
+.card.dg-style .card-title, 
+.card.dg-style .card-text {
     color: #ffffff;
 }
 
-/* --- DISCLAIMER (Nur in diesem Theme sichtbar) --- */
+/* Disclaimer wird in DG-Präsentationen immer angezeigt */
 .slide-disclaimer {
-    display: flex !important;
-    background-color: var(--surface-alt);
-}
-
-/* Disclaimer nur einblenden, wenn die Body-Klasse oder das Theme aktiv ist */
-.theme-datagroup .slide-disclaimer {
     display: flex !important;
 }

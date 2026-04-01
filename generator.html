@@ -724,6 +724,7 @@
             // === SCHRITT 2: THEME ANPASSEN (nur wenn abweichend) ===
             if (isCustomTheme) {
                 prompt += `### SCHRITT 2: THEME ÜBERSCHREIBEN\n`;
+                prompt += `WICHTIG: Ersetze in der aufgerufenen template.html das vorkommen von {{THEME_CSS_URL}} durch ${rawBaseUrl}${loadedThemesUrls[design]}\n\n`;
                 if (embedCode && loadedThemes[design]) {
                     const themeCssReady = loadedThemes[design].replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);
                     prompt += `Ersetze im <style>-Block den :root { ... } Abschnitt mit folgendem CSS:\n`;
@@ -748,12 +749,14 @@
 
             // === SCHRITT 4: PFLICHTFUNKTIONEN ===
             prompt += `### SCHRITT 4: PFLICHTFUNKTIONEN (aus Vorlage übernehmen oder ergänzen)\n`;
-            prompt += `Die folgenden Funktionen sind bereits in der Vorlage enthalten – behalte sie:\n`;
+            prompt += `Die folgenden Funktionen sind bereits in der Vorlage enthalten – behalte sie und verändere sie nicht:\n`;
             prompt += `1. **Navigation:** Tastatur (Pfeiltaste Links/Rechts) + Vor-/Zurück-Buttons\n`;
             if (includeSettings) prompt += `2. **Einstellungsbereich:** ⚙-Button für Titel, Kundenname, Datum und Agendapunkte (bereits in Vorlage)\n`;
             if (includeProtocol) prompt += `3. **Protokoll/Notizen:** Notizen-Sidebar pro Folie mit PDF- und TXT-Export über html2pdf.js (CDN)\n`;
             if (includeState) prompt += `4. **JSON Export/Import:** Gesamten Arbeitsfortschritt als JSON speichern/laden\n`;
             prompt += `\n`;
+
+            // === SCHRITT 5: INSTRUKTURIONEN ERSETZUNGEN ===
 
             // --- HILFSFUNKTION FÜR MODULE ---
             function appendModuleContent(moduleTitle, folderName, instructionText) {
@@ -781,7 +784,7 @@
             // === SCHRITT 5: FOLIEN-TEMPLATES FÜR STANDARDFOLIEN ===
             prompt += `### SCHRITT 5: STANDARD-FOLIEN-TEMPLATES (STRIKT BEFOLGEN)\n`;
             prompt += `Für den Aufbau der Präsentation MUSST du diese Vorlagen aus der Bibliothek verwenden:\n\n`;
-            prompt += appendModuleContent("TITELFOLIE (Folie 1 – bereits in Vorlage)", "titel", "Passe nur Titel, Kunde und Datum an – ändere NICHT die Struktur.");
+            prompt += appendModuleContent("TITELFOLIE (Folie 1)", "titel", "Passe nur Titel, Kunde und Datum an – ändere NICHT die Struktur.");
             prompt += appendModuleContent("AGENDA (Folie 2 – bereits in Vorlage)", "agenda", "Setze agendaData gemäß Schritt 3 – das Rendering übernimmt renderAgendaSlide().");
             prompt += appendModuleContent("STANDARD-INHALTSFOLIE", "stdfolie", "Nutze dieses Gerüst für ALLE regulären Content-Folien.");
             if (includeChapters) {

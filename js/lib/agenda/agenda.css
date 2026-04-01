@@ -1,8 +1,19 @@
-/* === AGENDA LISTE === */
+/* ==========================================
+   AGENDA MODUL CSS
+   Nutzung der globalen Variablen aus layout.css & Themes
+   ========================================== */
+
+/* --- AGENDA ANZEIGE (Folie) --- */
+.agenda-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .agenda-items { 
   list-style: none; 
-  padding: 0; 
-  margin: 0; 
+  padding: 0;
+  margin: 0;
 }
 
 .agenda-item {
@@ -17,7 +28,7 @@
 .agenda-time {
   font-size: 13px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--primary, #0071e3); /* Fallback, falls --primary fehlt */
   padding-top: 2px;
 }
 
@@ -25,6 +36,7 @@
   font-size: 15px; 
   font-weight: 600; 
   margin-bottom: 2px; 
+  color: var(--text);
 }
 
 .agenda-desc { 
@@ -37,131 +49,117 @@
   font-style: italic;
 }
 
-/* === MODAL OVERLAY & CONTAINER === */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 3000; /* Erhöht, damit es über allem liegt */
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(8px);
-  display: none;
+.btn-icon-text {
+  display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
-.modal-overlay.open { 
-  display: flex; 
-}
-
-.modal {
-  background: var(--surface);
-  border-radius: 20px;
-  box-shadow: var(--shadow-lg);
+/* --- AGENDA SETTINGS MODAL --- */
+.agenda-modal {
   width: 600px;
-  max-width: 95vw;
   max-height: 85vh;
+}
+
+.agenda-settings-header {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.agenda-settings-header label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* --- AKTIONEN IM CONTENT-BEREICH --- */
+.agenda-actions {
+  display: flex;
+  justify-content: flex-end; /* Schiebt den Button nach rechts */
+  margin-bottom: 24px;       /* Abstand zur Agenda-Liste */
+}
+
+.btn-sm {
+  font-size: 11px;
+  padding: 5px 10px;
+}
+
+.settings-agenda-list {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  gap: 8px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 5px;
 }
-
-.modal-header {
-  padding: 24px 28px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modal-header h2 { font-size: 20px; font-weight: 600; margin: 0; }
-
-.modal-close {
-  background: var(--surface2);
-  border: none;
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--text-secondary);
-  transition: all 0.2s;
-}
-
-.modal-close:hover { background: var(--border); }
-
-.modal-body { 
-  padding: 24px 28px; 
-  overflow-y: auto; 
-  flex: 1; 
-}
-
-.modal-footer {
-  padding: 16px 28px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
-
-/* === MODAL BUTTONS & INPUTS === */
-.btn-primary {
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 10px 20px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-primary:hover { background: var(--accent-hover); }
-
-.btn-secondary {
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 20px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-secondary:hover { background: var(--border); }
 
 .setting-row { 
   display: flex; 
   gap: 8px; 
   align-items: flex-start; 
   padding: 8px; 
-  background: var(--surface2); 
-  border-radius: var(--radius-sm); 
-  margin-bottom: 8px;
+  background-color: var(--surface-alt, #f5f5f7); 
+  border-radius: var(--radius-sm, 8px); 
 }
 
-.setting-row input { 
+.setting-time-input {
+  width: 130px;
+  flex-shrink: 0;
+}
+
+.setting-inputs-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setting-row input[type="text"] { 
   padding: 6px 10px; 
   border: 1px solid var(--border); 
-  border-radius: var(--radius-sm); 
+  border-radius: var(--radius-sm, 4px); 
   font-family: inherit; 
   font-size: 13px; 
   outline: none; 
   width: 100%; 
+  background-color: var(--surface, #ffffff);
+  color: var(--text);
 }
 
-.btn-icon { 
+.setting-row input[type="text"]:focus {
+  border-color: var(--primary);
+}
+
+.btn-icon-del { 
   background: none; 
   border: none; 
   cursor: pointer; 
   font-size: 16px; 
   padding: 4px 6px; 
   border-radius: 4px; 
-  line-height: 1; 
   color: var(--text-secondary); 
-  transition: background .2s; 
+  transition: background 0.2s, color 0.2s; 
 }
 
-.btn-icon:hover { background: var(--border); }
+.btn-icon-del:hover { 
+  background-color: var(--border); 
+  color: var(--danger, #ff3b30);
+}
+
+/* Basis Modal Styles (falls in layout.css nicht vollständig vorhanden) */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: var(--radius, 14px); box-shadow: 0 8px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
+.modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-close { background: var(--surface-alt); border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; color: var(--text-secondary); }
+.modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }

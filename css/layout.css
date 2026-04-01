@@ -1,12 +1,13 @@
 /* ==========================================
-   LAYOUT.CSS - Globales Layout & Full-Screen Slides
+   LAYOUT.CSS - Globales Layout & Base Components
    ========================================== */
 
+/* --- GRUNDSTRUKTUR & RESETS --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body, html {
     font-family: var(--font-family);
-    background-color: var(--app-bg); /* Hintergrund hinter den Folien, oft schwarz oder dunkel */
+    background-color: var(--app-bg);
     color: var(--text);
     height: 100vh;
     width: 100vw;
@@ -20,40 +21,37 @@ body, html {
     height: 100vh;
     position: relative;
     overflow: hidden;
+    background-color: var(--bg-color);
 }
 
 /* --- DIE EINZELNE FOLIE (Full-Screen) --- */
 .slide {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
+    inset: 0;
+    display: none;
     flex-direction: column;
-    background-color: var(--bg-color); /* Hintergrund der gesamten Folie */
-    /* Transition für das Umschalten (optional, falls du JS nutzt) */
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
 }
 
 .slide.active {
+    display: flex;
     opacity: 1;
-    pointer-events: all;
+    z-index: 10;
 }
 
-/* --- FOLIE: KOPFBEREICH --- */
+/* --- STANDARD SLIDE-LAYOUT --- */
 .slide-header {
-    background-color: var(--header-bg);
-    padding: 28px 60px 22px;
-    border-bottom: 1px solid var(--border);
+    padding: 24px 60px;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    flex-shrink: 0; /* Verhindert, dass der Header schrumpft */
+    border-bottom: 1px solid var(--border);
+    background-color: var(--header-bg);
+    flex-shrink: 0;
 }
 
 .slide-module-tag {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--primary);
     text-transform: uppercase;
@@ -65,448 +63,139 @@ body, html {
     font-size: clamp(24px, 3vw, 36px);
     font-weight: 700;
     color: var(--header-text);
-    letter-spacing: -0.01em;
+    line-height: 1.2;
 }
 
-/*===========================================
-   SLIDE TEMPLATE: Inhaltsbereich
-   ========================================== */
-/* --- FOLIE: INHALTSBEREICH --- */
 .slide-body {
-    padding: 40px 60px 80px;
+    padding: 30px 60px 70px;
     overflow-y: auto;
-    flex: 1; /* Nimmt den restlichen Platz ein */
+    flex: 1;
+    width: 100%;
 }
 
-/* --- UI-ELEMENTE (Cards, Callouts, Tables) --- */
-.cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+/* --- BRANDING PLATZHALTER --- */
+.branding-logo {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    width: 180px;
+    height: 50px;
+    z-index: 1000;
 }
 
-.card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 24px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
+.branding-claim {
+    position: absolute;
+    bottom: 20px;
+    left: 40px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    z-index: 1000;
 }
 
+.slide-counter {
+    position: absolute;
+    bottom: 20px;
+    right: 40px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    z-index: 1000;
+}
+
+/* --- TYPOGRAFIE & LISTEN --- */
+h1, h2, h3, h4 { color: var(--header-text); margin-bottom: 10px; }
+p { font-size: 15px; line-height: 1.6; margin-bottom: 16px; color: var(--text); }
+ul.standard-list { font-size: 15px; line-height: 1.6; padding-left: 24px; margin-bottom: 16px; color: var(--text); }
+ul.standard-list li { margin-bottom: 8px; }
+
+/* --- STANDARD KOMPONENTEN --- */
+
+/* Callout / Hinweis-Boxen */
 .callout {
-    border-radius: var(--radius-sm);
-    padding: 18px 22px;
+    border-radius: var(--radius);
+    padding: 16px 20px;
     margin-bottom: 16px;
-    border-left: 4px solid var(--primary);
     display: flex;
     gap: 14px;
-    background: var(--primary-soft);
+    background-color: var(--info-bg);
+    border-left: 4px solid var(--info);
+    color: var(--text);
+    font-size: 14px;
 }
-.callout.warning { border-color: var(--warning); background: var(--warning-bg); }
-.callout.danger { border-color: var(--danger); background: var(--danger-bg); }
-.callout.success { border-color: var(--success); background: var(--success-bg); }
+.callout.warning { border-color: var(--warning); background-color: var(--warning-bg); }
+.callout.danger { border-color: var(--danger); background-color: var(--danger-bg); }
+.callout.success { border-color: var(--success); background-color: var(--success-bg); }
 
-/* Tabellen */
-table {
+/* Basis-Tabellen */
+table.std-table {
     width: 100%;
     border-collapse: collapse;
-    background: var(--surface);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    border: 1px solid var(--border);
-}
-th {
-    background: var(--table-header-bg);
-    color: var(--table-header-text);
-    padding: 14px 20px;
-    font-weight: 600;
-    text-align: left;
-}
-td {
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-}
-tr:last-child td { border-bottom: none; }
-
-/* ==========================================
-   SLIDE TEMPLATES (Spezifische Folien-Typen)
-   ========================================== */
-
-/*============================================
-   SLIDE TEMPLATE: AGENDA
-  ========================================== */
-   /* --- AGENDA FOLIE --- */
-.slide-agenda .agenda-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.slide-agenda .agenda-item {
-    display: grid;
-    grid-template-columns: 120px 1fr; /* Feste Breite für die Uhrzeit */
-    gap: 20px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--border);
-    align-items: start;
-}
-
-.slide-agenda .agenda-time {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--primary); /* Nutzt die Theme-Farbe */
-}
-
-.slide-agenda .agenda-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 4px;
-}
-
-.slide-agenda .agenda-desc {
-    font-size: 13px;
-    color: var(--text-secondary);
-}
-
-/* Modifier für Pausen (grau und kursiv) */
-.slide-agenda .agenda-item.is-break {
-    opacity: 0.6;
-    font-style: italic;
     background-color: var(--surface);
-    padding-left: 10px;
-    border-radius: var(--radius-sm);
-}
-
-/* --- KANBAN BOARD FOLIE --- */
-.slide-kanban .kanban-board {
-    display: flex;
-    gap: 24px;
-    height: 100%;
-    align-items: stretch;
-}
-
-.slide-kanban .kanban-col {
-    flex: 1;
-    background-color: var(--surface);
-    border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.slide-kanban .kanban-col-header {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 8px;
-    margin-bottom: 8px;
-}
-
-.slide-kanban .kanban-card {
-    background-color: var(--bg-color);
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 14px;
     box-shadow: var(--shadow);
-    cursor: grab;
-    font-size: 14px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
 }
-
-.slide-kanban .kanban-card:active {
-    cursor: grabbing;
-    transform: scale(0.98);
-}
-
-.slide-kanban .kanban-card:hover {
-    border-color: var(--primary);
-}
-
-/* ==========================================
-   SLIDE TEMPLATE: CHECKLISTE
-   ========================================== */
-
-.slide-checklist .checklist {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-/* Das einzelne Listen-Element (Dein JS-Ziel) */
-.slide-checklist .checklist-item {
-    display: flex;
-    align-items: center; /* Zentriert Haken und Text vertikal */
-    gap: 16px;
+table.std-table th {
+    background-color: var(--table-header-bg);
+    color: var(--table-header-text);
     padding: 12px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none; /* Verhindert das Markieren von Text beim schnellen Klicken */
-}
-
-/* Hover-Effekt (Nutzt die Theme-Farbe) */
-.slide-checklist .checklist-item:hover {
-    border-color: var(--primary);
-    background: var(--primary-soft);
-}
-
-/* Die visuelle Checkbox (Viereck oder Kreis) */
-.slide-checklist .checklist-check {
-    width: 24px;
-    height: 24px;
-    border: 2px solid var(--text-secondary);
-    border-radius: 4px; /* Für runde Apple-Haken z.B. 50% im Theme-File definieren */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: transparent; /* Versteckt das ✓ Zeichen im Standardzustand */
-    transition: all 0.2s;
-    flex-shrink: 0;
-    font-size: 14px;
-}
-
-/* Typografie */
-.slide-checklist .checklist-text {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text);
-    transition: all 0.2s;
-}
-
-.slide-checklist .checklist-subtext {
+    text-align: left;
+    font-weight: 600;
     font-size: 13px;
-    color: var(--text-secondary);
-    margin-top: 2px;
+    border-bottom: 1px solid var(--border);
 }
+table.std-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    vertical-align: top;
+    color: var(--text);
+}
+table.std-table tr:last-child td { border-bottom: none; }
 
-/* --- ZUSTAND: ABGEHAKT (Gesteuert durch dein JS: .checked) --- */
-.slide-checklist .checklist-item.checked {
-    opacity: 0.6;
-    background: var(--bg-color); /* Hebt sich weniger ab */
-    border-color: var(--border);
+/* Basis-Karten (Grid) */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
 }
-
-/* Der Haken wird Theme-basiert grün (Success) */
-.slide-checklist .checklist-item.checked .checklist-check {
-    background-color: var(--success);
-    border-color: var(--success);
-    color: white; /* Zeigt das ✓ Zeichen an */
-}
-
-/* Text wird durchgestrichen */
-.slide-checklist .checklist-item.checked .checklist-text {
-    text-decoration: line-through;
-    color: var(--text-secondary);
-}
-/*===========================================
-   SLIDE TEMPLATE: EINGABETABELLE
-   ========================================== */
-/* --- EINGABETABELLEN FOLIE --- */
-.slide-input-table table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--surface);
+.card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
-    overflow: hidden;
+    padding: 20px;
     box-shadow: var(--shadow);
 }
+.card-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--header-text); }
+.card-text { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
 
-.slide-input-table th {
-    background: var(--table-header-bg);
-    color: var(--table-header-text);
-    padding: 14px;
-    text-align: left;
-}
-
-.slide-input-table td {
-    border: 1px solid var(--border);
-    padding: 0; /* Padding auf 0, damit das Input-Feld die Zelle füllt */
-    position: relative;
-}
-
-/* Das Input-Feld macht sich in der Zelle breit */
-.slide-input-table td input[type="text"],
-.slide-input-table td input[type="number"] {
-    width: 100%;
-    height: 100%;
-    padding: 14px;
+/* Globale UI Buttons */
+.btn-primary {
+    background-color: var(--primary); 
+    color: #ffffff; 
     border: none;
-    background: transparent;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 14px;
-    outline: none;
-    box-sizing: border-box;
-}
-
-/* Hervorhebung der aktuellen Zelle beim Tippen */
-.slide-input-table td input:focus {
-    background: var(--primary-soft);
-    box-shadow: inset 0 0 0 2px var(--primary); /* Innerer Rand, verändert das Layout nicht */
-}
-
-/* Styling für Dropdowns und Inputs in der Tabelle */
-.slide-input-table .table-input,
-.slide-input-table .table-select {
-    width: 100%;
-    border: none;
-    background: transparent;
-    font-family: inherit;
-    font-size: 13px;
-    outline: none;
-    padding: 10px;
-    color: var(--text);
-}
-
-.slide-input-table .table-select {
-    cursor: pointer;
-    text-align-last: center; /* Zentriert den Text im Dropdown */
-}
-
-/* Der Löschen Button in der Tabelle */
-.slide-input-table .btn-delete-row {
-    background: transparent;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    font-size: 14px;
-    transition: color 0.2s;
-}
-
-.slide-input-table .btn-delete-row:hover {
-    color: var(--danger);
-}
-
-/* ==========================================
-   MODAL TEMPLATE: JOB PROFILE & DRUCK
-   ========================================== */
-
-.job-pdf-view { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 14px; 
-}
-
-.job-pdf-view h3 { 
-    font-size: 13px; 
-    font-weight: 700; 
-    color: var(--primary); /* Holt die Farbe aus dem Theme */
-    border-bottom: 2px solid var(--primary-soft); 
-    padding-bottom: 6px; 
-    margin-top: 10px;
-}
-
-.job-pdf-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    font-size: 13px; 
-}
-
-.job-pdf-table th { 
-    background: var(--surface); 
-    padding: 9px 12px; 
-    text-align: left; 
-    font-weight: 600; 
-    font-size: 12px; 
-    color: var(--text-secondary); 
-    white-space: nowrap; 
-    border: 1px solid var(--border); 
-    width: 190px; 
-    vertical-align: top; 
-}
-
-.job-pdf-table td { 
-    padding: 4px 6px; 
-    border: 1px solid var(--border); 
-    vertical-align: top; 
-    background: var(--bg-color);
-}
-
-/* Die Textfelder, die wie normaler Text aussehen sollen */
-.job-edit-field { 
-    width: 100%; 
-    border: none; 
-    outline: none; 
-    resize: vertical; 
-    font-family: inherit; 
-    font-size: 13px; 
-    line-height: 1.6; 
-    min-height: 34px; 
-    background: transparent; 
-    padding: 4px 6px; 
+    padding: 10px 20px; 
     border-radius: var(--radius-sm);
-    color: var(--text);
+    font-family: inherit; 
+    font-size: 14px; 
+    font-weight: 600; 
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+.btn-primary:hover { filter: brightness(0.9); }
+
+.btn-secondary {
+    background-color: var(--surface-alt); 
+    color: var(--text); 
+    border: 1px solid var(--border);
+    padding: 10px 20px; 
+    border-radius: var(--radius-sm);
+    font-family: inherit; 
+    font-size: 14px; 
+    font-weight: 600; 
+    cursor: pointer;
     transition: background-color 0.2s;
 }
-
-.job-edit-field:focus { 
-    background: var(--primary-soft); 
-}
-
-/* --- PRINT MEDIA QUERY (Aus deiner HTML übernommen & optimiert) --- */
-@media print {
-    body > *:not(#jobProfileModal) { display: none !important; }
-    #jobProfileModal { display: block !important; position: static !important; overflow: visible !important; }
-    
-    #jobProfileModal .modal { 
-        max-height: none !important; 
-        box-shadow: none !important; 
-        border-radius: 0 !important; 
-        width: 100% !important; 
-        overflow: visible !important; 
-        border: none !important;
-    }
-    
-    /* Der Modal-Header wird zum Dokumenten-Kopf */
-    #jobProfileModal .modal-header {
-        background: transparent !important;
-        color: black !important;
-        border-bottom: 2px solid black !important;
-        padding-left: 0 !important;
-    }
-    #jobProfileModal .modal-header h2,
-    #jobProfileModal .modal-header p { 
-        color: black !important; 
-    }
-    
-    /* Versteckt Buttons beim Drucken */
-    #jobProfileModal .modal-footer, 
-    #jobProfileModal .modal-close { 
-        display: none !important; 
-    }
-    
-    .modal-overlay#jobProfileModal { 
-        display: block !important; 
-        background: transparent !important; 
-    }
-}
-
-/* ==========================================
-   BRANDING & SPEZIELLE ELEMENTE (z.B. Logo, Claim)
-   ========================================== */
-   /* Standardmäßig versteckt */
-.slide-disclaimer {
-    display: none !important;
-}
-
-/* Spezifisches Styling für Disclaimer-Text */
-.disclaimer-text {
-    font-size: 11px; /* Kleinerer, juristischer Schriftsatz */
-    line-height: 1.5;
-    color: var(--text-secondary);
-    text-align: justify; /* Blocksatz für professionelle Optik */
-}
-
-.disclaimer-text p {
-    margin-bottom: 12px;
-}
+.btn-secondary:hover { background-color: var(--border); }

@@ -1,0 +1,57 @@
+<div class="slide slide-cover active" data-slide="1" data-title="Titelfolie">
+  <div class="branding-logo"></div>
+  <div class="branding-claim"></div>
+  <div class="slide-counter">1 / {{TOTAL_SLIDES}}</div>
+  
+  <div class="cover-content">
+    <div class="cover-eyebrow">Business Transformation</div>
+    <h1 class="cover-title" id="cover-title">{{PRESENTATION_TITLE}}</h1>
+    
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <label>Kunde</label>
+        <span id="cover-customer">{{CUSTOMER_NAME}}</span>
+      </div>
+      <div class="cover-meta-item">
+        <label>Datum</label>
+        <span id="cover-date">{{PRESENTATION_DATE}}</span>
+      </div>
+      <div class="cover-meta-item">
+        <label>Präsentator</label>
+        <span id="cover-presenter">{{PRESENTER_NAME}}</span>
+      </div>
+    </div>
+    
+    <button class="btn-primary" style="margin-top: 40px;" onclick="TitelModule.openSettings()">
+      ⚙ Präsentationsdaten anpassen
+    </button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="titelSettingsModal">
+  <div class="modal-panel">
+    <h3 style="color:var(--primary); margin-bottom:20px;">⚙ Präsentationsdaten</h3>
+    
+    <label style="font-size:12px; font-weight:bold; color:var(--text-secondary); display:block; margin-top:10px;">Titel der Präsentation</label>
+    <input type="text" id="inp-title" style="width:100%; padding:8px; border:1px solid var(--border); margin-bottom:10px;">
+    
+    <label style="font-size:12px; font-weight:bold; color:var(--text-secondary); display:block;">Kunde</label>
+    <input type="text" id="inp-customer" style="width:100%; padding:8px; border:1px solid var(--border); margin-bottom:10px;">
+    
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
+      <div>
+        <label style="font-size:12px; font-weight:bold; color:var(--text-secondary); display:block;">Datum</label>
+        <input type="text" id="inp-date" style="width:100%; padding:8px; border:1px solid var(--border);">
+      </div>
+      <div>
+        <label style="font-size:12px; font-weight:bold; color:var(--text-secondary); display:block;">Präsentator</label>
+        <input type="text" id="inp-presenter" style="width:100%; padding:8px; border:1px solid var(--border);">
+      </div>
+    </div>
+    
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button class="btn-secondary" onclick="TitelModule.closeSettings()">Abbrechen</button>
+      <button class="btn-primary" onclick="TitelModule.applySettings()">Übernehmen</button>
+    </div>
+  </div>
+</div>
