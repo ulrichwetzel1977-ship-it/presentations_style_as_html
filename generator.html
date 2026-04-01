@@ -104,7 +104,6 @@
 <body class="p-6 md:p-12 min-h-screen flex justify-center">
 
     <div class="w-full space-y-8">
-        <!-- Header & Theme Toggle -->
         <div class="flex flex-col md:flex-row justify-between items-center card p-6">
             <div>
                 <h1 class="text-3xl font-bold">Präsentations-Prompt Generator</h1>
@@ -120,10 +119,8 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Left Column: Settings -->
             <div class="space-y-6">
                 
-                <!-- Global GitHub Settings -->
                 <div class="card p-6 space-y-4 bg-blue-50/30">
                     <h2 class="text-xl font-semibold border-b border-[var(--border)] pb-2 flex justify-between items-center cursor-pointer" onclick="toggleCard(this)">
                         <span><i class="fa-brands fa-github mr-2"></i>0. GitHub Konfiguration</span>
@@ -156,7 +153,6 @@
                     <button onclick="fetchAllGitHubData()" id="githubLoadAllBtn" class="btn-primary w-full text-sm mt-4"><i class="fa-solid fa-cloud-arrow-down mr-2"></i> Repository-Daten laden (Themes & Funktionen)</button>
                 </div>
 
-                <!-- General Settings -->
                 <div class="card p-6 space-y-4">
                     <h2 class="text-xl font-semibold border-b border-[var(--border)] pb-2"><i class="fa-solid fa-sliders mr-2"></i>1. Allgemeine Einstellungen</h2>
                     
@@ -197,8 +193,7 @@
                         </div>
                         <div id="agendaDetailSection" class="hidden space-y-2">
                             <div id="agendaItemsContainer" class="space-y-2">
-                                <!-- Dynamically added agenda items go here -->
-                            </div>
+                                </div>
                             <button onclick="addAgendaItem()" class="btn-secondary text-sm w-full"><i class="fa-solid fa-plus mr-1"></i> Agenda-Punkt hinzufügen</button>
                         </div>
                     </div>
@@ -224,10 +219,8 @@
                 </div>
             </div>
 
-            <!-- middle Column: Functions & Prompt generation -->
             <div class="space-y-6">
 
-                <!-- Standard Functions -->
                 <div class="card p-6 space-y-4">
                     <h2 class="text-xl font-semibold border-b border-[var(--border)] pb-2"><i class="fa-solid fa-layer-group mr-2"></i>3. Standard-Funktionen</h2>
                     <div class="space-y-2">
@@ -254,10 +247,23 @@
                     </div>
                 </div>
 
-                <!-- Generation Mode -->
                 <div class="card p-6 space-y-4">
                     <h2 class="text-xl font-semibold border-b border-[var(--border)] pb-2"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>4. Generierungs-Modus</h2>
                     
+                    <div class="mb-4 pb-4 border-b border-gray-100">
+                        <label class="block text-sm font-medium mb-1">Titelbild (Hintergrund Titelfolie)</label>
+                        <select id="presCoverImage" class="input-field">
+                            <option value="">-- Kein Hintergrundbild (Standard) --</option>
+                        </select>
+                        
+                        <div id="coverImagePreviewContainer" class="mt-3 hidden p-2 border border-dashed border-[var(--border)] rounded bg-gray-50">
+                            <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Vorschau:</p>
+                            <img id="presCoverPreview" src="" alt="Vorschau" class="max-w-full h-auto rounded shadow-sm mx-auto" style="max-height: 150px;">
+                        </div>
+                        
+                        <p class="text-xs text-[var(--text-muted)] mt-1">Dieses Bild wird in das CSS unter var(--cover-bg-image) geladen.</p>
+                    </div>
+
                     <div class="flex space-x-4 mb-4">
                         <label class="flex items-center space-x-2 cursor-pointer">
                             <input type="radio" name="genMode" value="ai" checked onchange="toggleMode()" class="w-4 h-4 text-blue-600">
@@ -286,15 +292,12 @@
                             <input type="text" id="manualTopic" class="input-field" placeholder="Projekt Kick-Off">
                         </div>
                         <div id="manualSlidesContainer" class="space-y-3">
-                            <!-- Dynamically added slide inputs go here -->
-                        </div>
+                            </div>
                         <button onclick="addManualSlide()" class="btn-secondary text-sm w-full"><i class="fa-solid fa-plus mr-1"></i> Folie hinzufügen</button>
                     </div>
                 </div>
             </div>
-            <!-- middle Column: Functions & Prompt generation -->
             <div class="space-y-6">
-                <!-- Action & Export -->
                 <div class="card p-6 space-y-4 bg-blue-50/30 border-blue-200">
                     <h2 class="text-xl font-semibold border-b border-[var(--border)] pb-2"><i class="fa-solid fa-terminal mr-2"></i>5. Generierung & Export</h2>
                     
@@ -316,7 +319,6 @@
                     </div>
                 </div>
 
-                <!-- erzeugen der Ausgabedatei -->
                 <div class="card p-6 space-y-4 bg-green-50/30 border-green-200">
                     <h2 class="text-xl font-semibold border-b border-green-200 pb-2 text-green-800">
                         <i class="fa-solid fa-file-code mr-2"></i>6. Präsentation bauen (SPA)
@@ -343,11 +345,28 @@
         let loadedFunctions = {}; // Format: { "FunctionName": { js: "...", md: "...", html: "..." } }
         let loadedThemes = {}; // Format: { "theme-xxx.css": "/* raw css content */" }
         let loadedThemesUrls = {}; // Speichert die direkten URLs zu den Themes
+        let loadedCoverImagesUrls = {}; // NEU: Speichert Titelbilder Format {"bild.jpg": "url"}
+        let loadedIconsUrls = {}; // Speichert die gefundenen Icons: { "name": "url" }
         let baseLayoutCss = ""; // Format: "/* raw layout css */"
         let baseLayoutCssUrl = ""; // Speichert die direkte URL zum Base Layout
         let defaultBranchName = "main";
         let manualSlideCount = 0;
         let agendaItemCount = 0;
+
+        const themePaths = {
+            "theme-datagroup.css": "assets/images/Datagroup_design/hintergrund",
+            "theme-apple.css": "assets/images/apple/hintergrund",
+            "theme-simple.css": "assets/images/simple/hintergrund"
+            // Weitere hier einfach nach dem Schema "DATEINAME": "ORDNERPFAD" ergänzen
+        };
+
+        const themeIconPaths = {
+            "theme-datagroup.css": "assets/images/Datagroup_design/symbole",
+            "theme-apple.css": "assets/images/apple/symbole"
+            // Pfade zu deinen Icon-Ordnern in GitHub
+        };
+
+
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -366,6 +385,38 @@
                 document.documentElement.removeAttribute('data-theme');
             }
         }
+
+        // Wenn das Design geändert wird, lade sofort die passenden Bilder
+        document.getElementById('presDesign').addEventListener('change', function() {
+            const selectedTheme = this.value; // FIX: Hier wird die Variable definiert!
+            const path = themePaths[this.value] || 'assets/images/hintergrund';
+            fetchBackgroundImagesFromGitHub(path);
+
+            // Icons laden
+            const iconPath = themeIconPaths[selectedTheme];
+            if (iconPath) {
+                fetchIconsFromGitHub(iconPath);
+            } else {
+                loadedIconsUrls = {}; // Zurücksetzen, wenn kein Pfad definiert
+            }
+        });
+
+        // Event-Listener für die Bild-Vorschau
+        document.getElementById('presCoverImage').addEventListener('change', function() {
+            const previewContainer = document.getElementById('coverImagePreviewContainer');
+            const previewImg = document.getElementById('presCoverPreview');
+            const selectedUrl = this.value;
+
+            if (selectedUrl) {
+                // Bildquelle setzen und Container anzeigen
+                previewImg.src = selectedUrl;
+                previewContainer.classList.remove('hidden');
+            } else {
+                // Container verstecken, wenn kein Bild gewählt ist
+                previewContainer.classList.add('hidden');
+                previewImg.src = "";
+            }
+        });
 
         function toggleMode() {
             const mode = document.querySelector('input[name="genMode"]:checked').value;
@@ -453,23 +504,38 @@
             const originalBtnHtml = btn.innerHTML;
             const listContainer = document.getElementById('functionsList');
             const designSelect = document.getElementById('presDesign');
+            const coverSelect = document.getElementById('presCoverImage');
 
             // Set global loading states
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Lade Daten...';
             btn.disabled = true;
             listContainer.innerHTML = '<p class="text-sm text-blue-500 text-center py-4"><i class="fa-solid fa-spinner fa-spin mb-2 text-2xl"></i><br>Lese Repository-Struktur...</p>';
             designSelect.innerHTML = '<option value="">Lade Themes...</option>';
+            coverSelect.innerHTML = '<option value="">Lade Hintergrundbilder...</option>';
             
             if (document.getElementById('noFunctionsMsg')) {
                 document.getElementById('noFunctionsMsg').style.display = 'none';
             }
 
             try {
-                // Führe beide Fetch-Aufrufe parallel aus
+                // 1. Alles parallel laden (Themes und Funktionen)
                 await Promise.all([
                     fetchThemesFromGitHub(),
                     fetchFunctionsFromGitHub()
                 ]);
+
+                // 2. Jetzt das aktuelle Design prüfen (nachdem Themes geladen sind)
+                const selectedTheme = document.getElementById('presDesign').value;
+
+                // 3. Den passenden Pfad für die Hintergrundbilder laden
+                const bgPath = themePaths[selectedTheme] || 'assets/images/hintergrund';
+                await fetchBackgroundImagesFromGitHub(bgPath);
+
+                // 4. NEU: Den passenden Pfad für die Icons laden (falls definiert)
+                const iconPath = themeIconPaths[selectedTheme];
+                if (iconPath) {
+                    await fetchIconsFromGitHub(iconPath);
+                }
             } catch (error) {
                 console.error("Globaler Fetch Fehler:", error);
                 alert("Fehler beim Laden der GitHub-Daten: " + error.message);
@@ -477,6 +543,105 @@
                 // Restore button state
                 btn.innerHTML = originalBtnHtml;
                 btn.disabled = false;
+            }
+        }
+        
+        // --- ICONS laden ---
+        async function fetchIconsFromGitHub(folderPath) {
+            loadedIconsUrls = {};
+            const repoOwner = document.getElementById('ghOwner').value.trim();
+            const repoName = document.getElementById('ghRepo').value.trim();
+
+            try {
+                const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
+                const response = await fetch(apiUrl);
+                if (!response.ok) return; // Falls kein Icon-Ordner existiert
+                
+                const files = await response.json();
+                files.forEach(file => {
+                    if (file.type === 'file' && file.name.match(/\.(svg|png|webp|jpg|jpeg|gif)$/i)) {
+                        // Speichere Icon-Name (ohne Endung) und URL
+                        const iconName = file.name.split('.')[0];
+                        loadedIconsUrls[iconName] = file.download_url;
+                    }
+                });
+                console.log("Icons geladen:", Object.keys(loadedIconsUrls));
+            } catch (error) {
+                console.warn("Fehler beim Laden der Icons:", error);
+            }
+        }
+
+        async function fetchBackgroundImagesFromGitHub() {
+            loadedCoverImagesUrls = {};
+            document.getElementById('coverImagePreviewContainer').classList.add('hidden');
+            const repoOwner = document.getElementById('ghOwner').value.trim();
+            const repoName = document.getElementById('ghRepo').value.trim();
+            const folderPath = 'assets/images/Datagroup_design/hintergrund'; // Festgelegter Pfad laut Aufgabenstellung
+
+            if (!repoOwner || !repoName) return;
+
+            try {
+                const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`Bilder-Ordner Fehler: ${response.status}`);
+                }
+                
+                const files = await response.json();
+                
+                files.forEach(file => {
+                    // Filtern nach Bildformaten
+                    if (file.type === 'file' && file.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+                        loadedCoverImagesUrls[file.name] = file.download_url;
+                    }
+                });
+                renderCoverImageDropdown();
+
+            } catch (error) {
+                console.warn("Hintergrundbilder konnten nicht geladen werden:", error);
+                renderCoverImageDropdown();
+            }
+        }
+
+        function renderCoverImageDropdown() {
+            const selectEl = document.getElementById('presCoverImage');
+            const imageNames = Object.keys(loadedCoverImagesUrls);
+            let options = '<option value="">-- Kein Hintergrundbild (Standard) --</option>';
+            
+            imageNames.forEach(name => {
+                options += `<option value="${loadedCoverImagesUrls[name]}">${name}</option>`;
+            });
+            
+            selectEl.innerHTML = options;
+        }
+
+        // --- Hintergrundbilder laden ---
+        async function fetchBackgroundImagesFromGitHub(folderPath) {
+            loadedCoverImagesUrls = {};
+            const repoOwner = document.getElementById('ghOwner').value.trim();
+            const repoName = document.getElementById('ghRepo').value.trim();
+            const coverSelect = document.getElementById('presCoverImage');
+
+            if (!repoOwner || !repoName) return;
+
+            try {
+                const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error("Ordner nicht gefunden");
+                
+                const files = await response.json();
+                let options = '<option value="">-- Kein Hintergrundbild --</option>';
+                
+                files.forEach(file => {
+                    if (file.type === 'file' && file.name.match(/\.(jpg|jpeg|png|webp)$/i)) {
+                        loadedCoverImagesUrls[file.name] = file.download_url;
+                        options += `<option value="${file.download_url}">${file.name}</option>`;
+                    }
+                });
+                coverSelect.innerHTML = options;
+            } catch (error) {
+                coverSelect.innerHTML = '<option value="">Keine Bilder in: ' + folderPath + '</option>';
             }
         }
 
@@ -665,6 +830,7 @@
             const customer = document.getElementById('presCustomer').value || "Kein Kunde";
             const date = document.getElementById('presDate').value || "Kein Datum";
             const design = document.getElementById('presDesign').value;
+            const coverImageUrl = document.getElementById('presCoverImage').value; // NEU: Hintergrundbild URL
             
             let agenda = "";
             const agendaMode = document.querySelector('input[name="agendaMode"]:checked').value;
@@ -715,20 +881,31 @@
             prompt += `BEVOR du irgendetwas generierst, MUSST du dein Web-Search-Tool nutzen und den vollständigen Quelltext der folgenden HTML-Vorlage abrufen:\n`;
             prompt += `${rawBaseUrl}template.html\n\n`;
             prompt += `Lösche oder verändere keine bestehenden Skripte im Template, sondern ersetze NUR die Platzhalter.\n\n`;
-            //prompt += `Diese Vorlage ist deine **einzige und vollständige Basis**. Du übernimmst daraus:\n`;
-            //prompt += `- Den gesamten <style>-Block (CSS + Theme) unverändert\n`;
-            //prompt += `- Die Struktur der .presentation > .slide Hierarchie\n`;
-            //prompt += `- Alle vorhandenen JavaScript-Module und Funktionen\n`;
-            //prompt += `- Die Titelfolie (Folie 1) und die Agenda-Folie (Folie 2) als strukturelle Basis\n`;
-            //prompt += `- Alle Branding-Elemente (.branding-logo, .branding-claim)\n\n`;
 
-            // === SCHRITT 2: THEME METADATEN SETZEN (nur wenn abweichend) ===
+            // === SCHRITT 2: THEME METADATEN SETZEN ===
             if (isCustomTheme) {
                 prompt += `### SCHRITT 2: THEME & METADATEN SETZEN\n`;
                 prompt += `WICHTIG: 
                 - Ersetze in der aufgerufenen template.html das vorkommen von {{THEME_CSS_URL}} durch ${loadedThemesUrls[design]}.
                 - Ersetze {{PRESENTATION_TITLE}} mit dem Titel.
                 - Ersetze {{THEME_CLASS}} mit: theme-${loadedThemesUrls[design]}\n\n`;
+                // === TITELBILD VARIABLE ÜBERGEBEN ===
+                const coverImageUrl = document.getElementById('presCoverImage').value;
+                if (coverImageUrl) {
+                    prompt += `### TITELBILD HINTERGRUND\n`;
+                    prompt += `Setze im <style>-Block innerhalb von :root { ... } zwingend folgende Variable:\n`;
+                    prompt += `--cover-bg-image: url('${coverImageUrl}');\n\n`;
+                }
+
+                if (Object.keys(loadedIconsUrls).length > 0) {
+                    prompt += `### VERFÜGBARE GRAFIK-SYMBOLE (ICONS)\n`;
+                    prompt += `Nutze für die visuelle Gestaltung der Folien (z.B. in Karten oder Listen) bevorzugt die folgenden Symbole. Binde sie mit einem <img> Tag ein:\n`;
+                    
+                    for (const [name, url] of Object.entries(loadedIconsUrls)) {
+                        prompt += `- Symbol "${name}": ${url}\n`;
+                    }
+                    prompt += `WICHTIG: Erfinde keine eigenen Icon-Pfade. Nutze nur die oben genannten URLs.\n\n`;
+                }
                 
                 if (embedCode && loadedThemes[design]) {
                     const themeCssReady = loadedThemes[design].replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);
@@ -779,13 +956,11 @@
                 out += `- ${instructionText}\n`;
                 const data = loadedFunctions[folderName];
                 if (embedCode && data) {
-                    // Checkbox aktiv: vollständigen Code einbetten
                     if (data.md)   out += `--- ANLEITUNG (${folderName}.md) ---\n${data.md}\n\n`;
                     if (data.html) out += `--- HTML TEMPLATE (${folderName}.html) ---\n\`\`\`html\n${data.html}\n\`\`\`\n\n`;
                     if (data.js)   out += `--- JAVASCRIPT (${folderName}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
                     if (data.css)  out += `--- CSS STYLES (${folderName}.css) ---\n\`\`\`css\n${data.css}\n\`\`\`\n\n`;
                 } else {
-                    // Nur Repository-URLs übergeben, KI soll per Web-Search laden
                     out += `- Lade diese Dateien zwingend über dein Web-Search-Tool und wende sie exakt an:\n`;
                     out += `  - ${libBaseUrl}${folderName}/${folderName}.md\n`;
                     out += `  - ${libBaseUrl}${folderName}/${folderName}.js\n`;
@@ -831,7 +1006,6 @@
                 }
 
             } else {
-                // MANUELLER MODUS
                 const topic = document.getElementById('manualTopic').value;
                 prompt += `### SCHRITT 6: INHALT EINBAUEN (Manueller Modus)\n`;
                 prompt += `Generelles Thema: "${topic}".\n`;
@@ -853,7 +1027,7 @@
                 prompt += `\n`;
             }
 
-            prompt += `\nGebe mir NUR den validen, vollständigen HTML Quellcode zurück, der direkt im Browser geöffnet werden kann.`;
+            prompt += `\nGebe mir NUR den validen, vollständigen HTML Quellcode der gesamten Seite zurück, der direkt im Browser geöffnet werden kann.`;
 
             document.getElementById('finalPrompt').value = prompt;
         }
@@ -888,6 +1062,7 @@
                     customer: document.getElementById('presCustomer').value,
                     date: document.getElementById('presDate').value,
                     design: document.getElementById('presDesign').value,
+                    presCoverImage: document.getElementById('presCoverImage').value, // Titelfolie Hintergrund Speichern
                     agendaMode: document.querySelector('input[name="agendaMode"]:checked').value,
                     agendaText: document.getElementById('presAgendaText').value,
                     agendaItems: agendaItems,
@@ -910,6 +1085,7 @@
                 loadedFunctions: loadedFunctions, 
                 loadedThemes: loadedThemes,
                 loadedThemesUrls: loadedThemesUrls,
+                loadedCoverImagesUrls: loadedCoverImagesUrls, // Titlescreens Speichern
                 baseLayoutCss: baseLayoutCss,
                 baseLayoutCssUrl: baseLayoutCssUrl,
                 generatedPrompt: document.getElementById('finalPrompt').value
@@ -940,7 +1116,7 @@
 
                     document.getElementById('ghOwner').value = s.ghOwner || 'ulrichwetzel1977-ship-it';
                     document.getElementById('ghRepo').value = s.ghRepo || 'presentations_style_as_html';
-                    document.getElementById('ghCssFolder').value = s.ghCssFolder || 'CSS';
+                    document.getElementById('ghCssFolder').value = s.ghCssFolder || 'css';
                     document.getElementById('ghFolder').value = s.ghFolder || 'js/lib';
 
                     document.getElementById('presTitle').value = s.title || '';
@@ -989,6 +1165,12 @@
                         renderThemeDropdown();
                         document.getElementById('presDesign').value = s.design || '';
                     }
+
+                    if (state.loadedCoverImagesUrls) {
+                        loadedCoverImagesUrls = state.loadedCoverImagesUrls;
+                        renderCoverImageDropdown();
+                        document.getElementById('presCoverImage').value = s.presCoverImage || '';
+                    }
                     
                     if (state.loadedFunctions) {
                         loadedFunctions = state.loadedFunctions;
@@ -1021,7 +1203,6 @@
             reader.readAsText(file);
         }
 
-        // Ausgabe der html Datei als Schritt 6
         // --- SPA Builder Logic ---
         function buildAndDownloadSPA() {
             const aiHtml = document.getElementById('aiHtmlOutput').value.trim();
@@ -1031,21 +1212,16 @@
                 return;
             }
 
-            // Optional: Kurzer Check, ob es wirklich HTML ist
             if (!aiHtml.toLowerCase().includes("<!doctype html>") && !aiHtml.toLowerCase().includes("<html")) {
                 const proceed = confirm("Der eingefügte Text sieht nicht wie ein vollständiges HTML-Dokument aus. Möchtest du trotzdem fortfahren?");
                 if (!proceed) return;
             }
 
-            // Den Dateinamen aus dem Titel generieren
             let fileName = document.getElementById('presTitle').value.trim() || "Praesentation";
-            // Sonderzeichen entfernen für sauberen Dateinamen
             fileName = fileName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".html";
 
-            // Blob erzeugen (eine Datei im Arbeitsspeicher des Browsers)
             const blob = new Blob([aiHtml], { type: "text/html;charset=utf-8" });
             
-            // Virtuellen Download-Link erstellen und klicken
             const downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute("href", URL.createObjectURL(blob));
             downloadAnchorNode.setAttribute("download", fileName);
@@ -1056,15 +1232,9 @@
 
         // --- Card Toggle Logic ---
         function toggleCard(headerElement) {
-            // Finde den Inhalts-Container direkt unter der Überschrift
             const content = headerElement.nextElementSibling;
-            // Finde das kleine Pfeil-Icon in der Überschrift
             const icon = headerElement.querySelector('.toggle-icon');
-            
-            // Verstecke oder zeige den Inhalt (Tailwind 'hidden' Klasse)
             content.classList.toggle('hidden');
-            
-            // Drehe den Pfeil um 180 Grad
             if (icon) {
                 icon.classList.toggle('rotate-180');
             }
