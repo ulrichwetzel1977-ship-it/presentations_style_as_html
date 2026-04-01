@@ -692,52 +692,53 @@
                 });
             }
 
-            // Build Prompt String
-            let prompt = `Act as an Expert Frontend Developer and Presentation Designer.\n\n`;
-            prompt += `AUFGABE: Erstelle eine interaktive Präsentation als **EINE EINZIGE HTML-DATEI** (Single-File). Das bedeutet: Sämtliches CSS und JavaScript muss direkt im <style> und <script> Block der HTML Datei integriert sein. Keine externen lokalen Dateien referenzieren (benutze nicht die tailwind Klassen).\n\n`;
-            
-            prompt += `### GLOBALE PRÄSENTATIONS-DATEN\n`;
-            prompt += `- Titel: ${title}\n`;
-            prompt += `- Kunde: ${customer}\n`;
-            prompt += `- Datum: ${date}\n`;
-            prompt += `- Agenda/Kapitel:\n${agenda}\n`;
-            
-            const embedCode = document.getElementById('chkEmbedCode').checked;
-
             // GitHub Base URLs
             const repoOwner = document.getElementById('ghOwner').value.trim();
             const repoName = document.getElementById('ghRepo').value.trim();
             const rawBaseUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${defaultBranchName}/`;
-            const stdBaseUrl = `${rawBaseUrl}js/stdFunk/`;
-
+            const libBaseUrl = `${rawBaseUrl}js/lib/`;
             const isCustomTheme = design.startsWith('theme-') && loadedThemesUrls[design];
+            const embedCode = document.getElementById('chkEmbedCode').checked;
 
-            // 1. GLOBAL CSS & THEME LOGIC
-            if (embedCode) {
-                prompt += `\n### ABSOLUTE SYSTEM-REGEL: HTML Vorlage, CSS & DESIGN (STRIKT BEFOLGEN!)\n`;
-                prompt += `Benutze deine Websuche und lies die Daten aus der HTML Vorlage: ${rawBaseUrl}template_dg.html\n`;
-                prompt += `Du darfst absolut KEIN eigenes CSS erfinden, keine neuen Klassen ausdenken und absolut KEINE Inline-Styles verwenden! Nutze AUSSCHLIESSLICH den exakten CSS-Code, der dir hier zur Verfügung gestellt wird. Kombiniere das Basis-Layout und das Theme im <style> Block der Datei.\n\n`;
-                if (baseLayoutCssUrl && baseLayoutCss) {
-                    prompt += `--- CSS BASIS-LAYOUT (layout.css) ---\n\`\`\`css\n${baseLayoutCss}\n\`\`\`\n\n`;
-                }
-                if (isCustomTheme && loadedThemes[design]) {
+            // Build Prompt String
+            let prompt = `Act as an Expert Frontend Developer and Presentation Designer.\n\n`;
+            prompt += `AUFGABE: Erstelle eine interaktive Präsentation als **EINE EINZIGE HTML-DATEI** (Single-File). Sämtliches CSS und JavaScript muss direkt im <style> und <script> Block der HTML Datei integriert sein. Keine externen lokalen Dateien referenzieren (benutze NICHT die Tailwind Klassen).\n\n`;
+
+            prompt += `### GLOBALE PRÄSENTATIONS-DATEN\n`;
+            prompt += `- Titel: ${title}\n`;
+            prompt += `- Kunde: ${customer}\n`;
+            prompt += `- Datum: ${date}\n`;
+            prompt += `- Agenda/Kapitel:\n${agenda}\n\n`;
+
+            // === SCHRITT 1: TEMPLATE ALS BASIS ===
+            prompt += `### SCHRITT 1: HTML-VORLAGE LADEN (PFLICHT)\n`;
+            prompt += `BEVOR du irgendetwas generierst, MUSST du dein Web-Search-Tool nutzen und den vollständigen Quelltext der folgenden HTML-Vorlage abrufen:\n`;
+            prompt += `${rawBaseUrl}template.html\n\n`;
+            prompt += `Diese Vorlage ist deine **einzige und vollständige Basis**. Du übernimmst daraus:\n`;
+            prompt += `- Den gesamten <style>-Block (CSS + Theme) unverändert\n`;
+            prompt += `- Die Struktur der .presentation > .slide Hierarchie\n`;
+            prompt += `- Alle vorhandenen JavaScript-Module und Funktionen\n`;
+            prompt += `- Die Titelfolie (Folie 1) und die Agenda-Folie (Folie 2) als strukturelle Basis\n`;
+            prompt += `- Alle Branding-Elemente (.branding-logo, .branding-claim)\n\n`;
+
+            // === SCHRITT 2: THEME ANPASSEN (nur wenn abweichend) ===
+            if (isCustomTheme) {
+                prompt += `### SCHRITT 2: THEME ÜBERSCHREIBEN\n`;
+                if (embedCode && loadedThemes[design]) {
                     const themeCssReady = loadedThemes[design].replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);
-                    prompt += `--- CSS THEME (${design}) ---\n\`\`\`css\n${themeCssReady}\n\`\`\`\n\n`;
-                } else if (!isCustomTheme) {
-                    prompt += `- Design/Styleguide: Verwende ein ${design} aufbauend auf dem Basis-Layout.\n\n`;
-                }
-            } else {
-                prompt += `\n### ABSOLUTE SYSTEM-REGEL: HTML Vorlage,CSS & DESIGN (STRIKT BEFOLGEN!)\n`;
-                prompt += `Benutze deine Websuche und lies die Daten aus der HTML Vorlage: ${rawBaseUrl}template_dg.html\n`;
-                prompt += `Bevor du den HTML-Code generierst, MUSST du zwingend dein Web-Search-Tool nutzen, um den reinen Text-Inhalt der folgenden URLs abzurufen. Verwende für den <style>-Block AUSSCHLIESSLICH den Code, den du unter diesen URLs findest, und erfinde kein eigenes CSS! \n`;
-                prompt += `WICHTIG: Ersetze im abgerufenen CSS-Code alle Vorkommen von '{{GH_RAW_BASE}}' exakt durch '${rawBaseUrl}' bevor du es in das HTML einfügst!\n\n`;
-                if (baseLayoutCssUrl) prompt += `- URL Basis-Layout: ${baseLayoutCssUrl}\n`;
-                if (isCustomTheme) {
-                    prompt += `- URL Theme/Styleguide: ${loadedThemesUrls[design]}\n\n`;
+                    prompt += `Ersetze im <style>-Block den :root { ... } Abschnitt mit folgendem CSS:\n`;
+                    prompt += `\`\`\`css\n${themeCssReady}\n\`\`\`\n\n`;
                 } else {
-                    prompt += `- Design/Styleguide: Verwende ein ${design} aufbauend auf dem Basis-Layout.\n\n`;
+                    prompt += `Lade das Theme-CSS zwingend über dein Web-Search-Tool von folgender URL und ersetze damit den :root { ... } Abschnitt im <style>-Block:\n`;
+                    prompt += `${loadedThemesUrls[design]}\n`;
+                    prompt += `WICHTIG: Ersetze im abgerufenen CSS alle Vorkommen von '{{GH_RAW_BASE}}' durch '${rawBaseUrl}'\n\n`;
                 }
             }
+
+            // === SCHRITT 3: AGENDA-DATEN SETZEN ===
+            prompt += `### SCHRITT 3: AGENDA-DATEN SETZEN\n`;
+            prompt += `Ersetze in der Vorlage die agendaData-Variable mit den konfigurierten Agenda-Punkten:\n`;
+            prompt += `\`\`\`javascript\nvar agendaData = [\n  // Fülle hier die Agenda-Punkte ein basierend auf den oben angegebenen Agenda/Kapitel-Daten\n  // Format: { time:'HH:MM – HH:MM', title:'Titel', desc:'Beschreibung', isBreak:false }\n];\n\`\`\`\n\n`;
 
             const includeSettings = document.getElementById('chkFeatureSettings').checked;
             const includeProtocol = document.getElementById('chkFeatureProtocol').checked;
@@ -745,82 +746,79 @@
             const includeDisclaimer = document.getElementById('chkDisclaimerState').checked;
             const includeChapters = document.getElementById('chkFeatureChapters').checked;
 
-            prompt += `### GENERELLE PFLICHT-FUNKTIONEN (Immer einbauen)\n`;
-            let reqCounter = 1;
-            prompt += `${reqCounter++}. **Navigation:** Die Folien müssen per Tastatur (Pfeiltaste Links/Rechts) und mit vor-/ zurück buttons auf der seite navigierbar sein (z.B. durch ein / Ausblenden von <section> Elementen).\n`;
-            
-            if (includeSettings) prompt += `${reqCounter++}. **Einstellungsbereich:** Es muss eine sichtbare UI geben (z.B. zahnradsymbol auf der Titelseite), in der der Nutzer Agenda, Titel, Kundenname und Datum nachträglich ändern kann. Die Folien sollen nummeriert sein. Diese Änderungen müssen im DOM sichtbar werden.\n`;
-            if (includeProtocol) prompt += `${reqCounter++}. **Protokoll/Notizen-Funktion:** Integriere zu JEDER Folie einen anderen Bereich als die Einstellungen Bereich (z.B. am Rand oder als Overlay oder in einem ausklappbaren Sidebar-Menü), in dem der Nutzer Notizen/Protokolle für den Kunden oder Workshop erfassen kann. Implementiere einen Button, der die erfassten Folien-Notizen als PDF und als einfachen Text exportiert (Nutze dafür html2pdf.js über CDN). WICHTIG FÜR DEN PDF-EXPORT: Das erzeugte PDF muss so formatiert sein, dass die aktuelle Folie als Bild passend auf die Seite skaliert wird und die erfassten Notizen/Protokolle zu dieser Folie übersichtlich direkt darunter ausgegeben werden.\n`;
-            if (includeState) prompt += `${reqCounter++}. **JSON Export/Import:** Biete Funktionen an, um den gesamten Arbeitsfortschritt der Präsentation als JSON herunterzuladen und wieder hochzuladen.\n\n`;
+            // === SCHRITT 4: PFLICHTFUNKTIONEN ===
+            prompt += `### SCHRITT 4: PFLICHTFUNKTIONEN (aus Vorlage übernehmen oder ergänzen)\n`;
+            prompt += `Die folgenden Funktionen sind bereits in der Vorlage enthalten – behalte sie:\n`;
+            prompt += `1. **Navigation:** Tastatur (Pfeiltaste Links/Rechts) + Vor-/Zurück-Buttons\n`;
+            if (includeSettings) prompt += `2. **Einstellungsbereich:** ⚙-Button für Titel, Kundenname, Datum und Agendapunkte (bereits in Vorlage)\n`;
+            if (includeProtocol) prompt += `3. **Protokoll/Notizen:** Notizen-Sidebar pro Folie mit PDF- und TXT-Export über html2pdf.js (CDN)\n`;
+            if (includeState) prompt += `4. **JSON Export/Import:** Gesamten Arbeitsfortschritt als JSON speichern/laden\n`;
+            prompt += `\n`;
 
-            // --- HILFSFUNKTION FÜR MODULE (URL vs EMBEDDED) ---
+            // --- HILFSFUNKTION FÜR MODULE ---
             function appendModuleContent(moduleTitle, folderName, instructionText) {
                 let out = `==== ${moduleTitle} ====\n`;
                 out += `- ${instructionText}\n`;
-                
-                if (embedCode) {
-                    const data = loadedFunctions[folderName];
-                    if (data) {
-                        if (data.md) out += `--- ANLEITUNG (${folderName}.md) ---\n${data.md}\n\n`;
-                        if (data.html) out += `--- HTML TEMPLATE (${folderName}.html) ---\n\`\`\`html\n${data.html}\n\`\`\`\n\n`;
-                        if (data.js) out += `--- JAVASCRIPT (${folderName}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
-                        if (data.css) out += `--- CSS STYLES (${folderName}.css) ---\n\`\`\`css\n${data.css}\n\`\`\`\n\n`;
-                    } else {
-                        out += `(FEHLER: Code für '${folderName}' wurde nicht gefunden. Bitte GitHub neu laden.)\n\n`;
-                    }
+                const data = loadedFunctions[folderName];
+                if (embedCode && data) {
+                    // Checkbox aktiv: vollständigen Code einbetten
+                    if (data.md)   out += `--- ANLEITUNG (${folderName}.md) ---\n${data.md}\n\n`;
+                    if (data.html) out += `--- HTML TEMPLATE (${folderName}.html) ---\n\`\`\`html\n${data.html}\n\`\`\`\n\n`;
+                    if (data.js)   out += `--- JAVASCRIPT (${folderName}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
+                    if (data.css)  out += `--- CSS STYLES (${folderName}.css) ---\n\`\`\`css\n${data.css}\n\`\`\`\n\n`;
                 } else {
-                    out += `- Basis-Ordner: ${stdBaseUrl}${folderName}/\n`;
-                    out += `- Lese zwingend die Vorgaben (.md, .html, .js, .css) über dein Web-Search-Tool aus diesem Ordner und wende sie exakt an.\n\n`;
+                    // Nur Repository-URLs übergeben, KI soll per Web-Search laden
+                    out += `- Lade diese Dateien zwingend über dein Web-Search-Tool und wende sie exakt an:\n`;
+                    out += `  - ${libBaseUrl}${folderName}/${folderName}.md\n`;
+                    out += `  - ${libBaseUrl}${folderName}/${folderName}.js\n`;
+                    out += `  - ${libBaseUrl}${folderName}/${folderName}.html\n`;
+                    if (data && data.css) out += `  - ${libBaseUrl}${folderName}/${folderName}.css\n`;
+                    out += `\n`;
                 }
                 return out;
             }
 
-            // 2. STANDARD-FOLIEN & TEMPLATES LOGIC
-            prompt += `### STANDARD-FUNKTIONEN & FOLIEN-TEMPLATES (STRIKT BEFOLGEN!)\n`;
-            prompt += `Du musst für den Aufbau der Präsentation zwingend die folgenden Vorlagen nutzen. Anstatt eines generischen Boilerplates verwendest du für die jeweiligen Folien exakt die definierten Gerüste:\n\n`;
-
-            prompt += appendModuleContent("TITELFOLIE (Immer Folie 1)", "titel", "Wende dieses Gerüst exakt für die erste Folie an.");
-            prompt += appendModuleContent("AGENDA (Immer Folie 2)", "agenda", "Wende dieses Gerüst exakt für die Agenda-Folie an.");
-            prompt += appendModuleContent("STANDARD-FOLIE (Inhaltsfolien)", "stdfolie", "Nutze dieses HTML-Gerüst für ALLE regulären Content-Folien.");
-
+            // === SCHRITT 5: FOLIEN-TEMPLATES FÜR STANDARDFOLIEN ===
+            prompt += `### SCHRITT 5: STANDARD-FOLIEN-TEMPLATES (STRIKT BEFOLGEN)\n`;
+            prompt += `Für den Aufbau der Präsentation MUSST du diese Vorlagen aus der Bibliothek verwenden:\n\n`;
+            prompt += appendModuleContent("TITELFOLIE (Folie 1 – bereits in Vorlage)", "titel", "Passe nur Titel, Kunde und Datum an – ändere NICHT die Struktur.");
+            prompt += appendModuleContent("AGENDA (Folie 2 – bereits in Vorlage)", "agenda", "Setze agendaData gemäß Schritt 3 – das Rendering übernimmt renderAgendaSlide().");
+            prompt += appendModuleContent("STANDARD-INHALTSFOLIE", "stdfolie", "Nutze dieses Gerüst für ALLE regulären Content-Folien.");
             if (includeChapters) {
-                prompt += appendModuleContent("KAPITELFOLIEN", "kapitel", "Füge vor jedem neuen Kapitel eine Trennfolie ein. Nutze hierfür exakt dieses Gerüst.");
+                prompt += appendModuleContent("KAPITELFOLIE", "kapitel", "Füge vor jedem Kapitel eine Trennfolie ein.");
             }
             if (includeDisclaimer) {
-                prompt += appendModuleContent("DISCLAIMER (Immer letzte Folie)", "dg_disclaimer", "Füge als allerletzte Folie den Disclaimer ein. Nutze hierfür exakt dieses Gerüst.");
+                prompt += appendModuleContent("DISCLAIMER (letzte Folie)", "dg_disclaimer", "Füge als allerletzte Folie den Disclaimer ein.");
             }
 
             prompt += `### ABSOLUTE SYSTEM-REGELN FÜR DIE KI (STRIKT BEFOLGEN!)\n`;
-            prompt += `1. **KEINE EIGENE KREATIVITÄT BEIM DESIGN:** Du darfst absolut KEIN eigenes CSS erfinden, keine neuen Klassen ausdenken und absolut KEINE Inline-Styles (style="...") verwenden! Nutze ausschließlich die Klassen aus dem bereitgestellten CSS.\n`;
-            prompt += `2. **FULL-SCREEN LAYOUT:** Die Folien dürfen NICHT wie kleine Karten aussehen. Sie müssen den gesamten Bildschirm füllen. Ändere nichts an der .slide Klasse.\n`;
-            prompt += `3. **BRANDING (EXTREM WICHTIG):** JEDE einzelne Folie (<div class="slide">) MUSS als allererste Kind-Elemente die Divs für Logo und Claim enthalten. Lässt du diese weg, ist die Präsentation unbrauchbar!\n\n`;
+            prompt += `1. **KEIN EIGENES CSS:** Erfinde absolut kein eigenes CSS, keine neuen Klassen und keine Inline-Styles. Nutze ausschließlich die Klassen aus der geladenen Vorlage.\n`;
+            prompt += `2. **FULL-SCREEN LAYOUT:** Folien müssen den gesamten Bildschirm füllen. Ändere NICHTS an .slide oder .presentation.\n`;
+            prompt += `3. **BRANDING PFLICHT:** JEDE Folie MUSS als erste Kind-Elemente <div class="branding-logo"></div> und <div class="branding-claim"></div> enthalten.\n`;
+            prompt += `4. **SLIDE-COUNTER:** JEDE Folie MUSS ein <div class="slide-counter">X / Y</div> enthalten.\n\n`;
 
-            // --- KI ODER MANUELLER MODUS ---
+            // === KI ODER MANUELLER MODUS ===
             if (mode === 'ai') {
                 const topic = document.getElementById('aiTopic').value;
-                prompt += `MODUS: Voll-KI Generierung.\n`;
-                prompt += `Recherchiere und erstelle den Inhalt und baue die Folien basierend auf folgendem Auftrag:\n"${topic}"\n`;
-                prompt += `Teile die Inhalte logisch auf die Agenda-Punkte auf.\n\n`;
-                
-                // KI MODUS: CUSTOM ZUSATZFUNKTIONEN
+                prompt += `### SCHRITT 6: INHALT GENERIEREN (KI-Modus)\n`;
+                prompt += `Recherchiere und erstelle den Inhalt basierend auf folgendem Auftrag:\n"${topic}"\n`;
+                prompt += `Teile die Inhalte logisch auf die Agenda-Punkte auf. Ersetze die Beispiel-Folien der Vorlage vollständig durch neue Inhaltsfolien.\n\n`;
+
                 if (selectedFunctions.size > 0) {
                     prompt += `### ZUSATZFUNKTIONEN (CUSTOM MODULE)\n`;
-                    prompt += `Ich habe spezielle Zusatzfunktionen entwickelt. Binde die folgenden ausgewählten Funktionen exakt so in das HTML/JS Konstrukt ein:\n\n`;
-                    
+                    prompt += `Binde die folgenden ausgewählten Funktionen in die Präsentation ein. Lade und integriere die Bauanleitungen exakt:\n\n`;
                     selectedFunctions.forEach(funcName => {
-                        prompt += appendModuleContent(`FUNKTION: ${funcName}`, funcName, "Lese zwingend die Bauanleitungen aus den jeweiligen .md Dateien und nutze die Logik!");
+                        prompt += appendModuleContent(`FUNKTION: ${funcName}`, funcName, "Integriere diese Funktion auf einer passenden Folie. Lies die Bauanleitung (.md) und nutze die Logik exakt.");
                     });
-                } else {
-                    prompt += `(Keine spezifischen Zusatzfunktionen geladen. Nutze Standard-Bordmittel).\n`;
                 }
 
             } else {
                 // MANUELLER MODUS
                 const topic = document.getElementById('manualTopic').value;
-                prompt += `MODUS: Manuelle Inhalte + KI Strukturierung.\n`;
+                prompt += `### SCHRITT 6: INHALT EINBAUEN (Manueller Modus)\n`;
                 prompt += `Generelles Thema: "${topic}".\n`;
-                prompt += `Erstelle das Layout und verknüpfe die folgenden von mir exakt vorgegebenen Inhalte auf die jeweiligen Folien:\n`;
-                
+                prompt += `Ersetze die Beispiel-Folien der Vorlage durch folgende vorgegebene Inhalte:\n`;
+
                 const slideInputs = document.querySelectorAll('.manual-slide-input');
                 const slideFuncs = document.querySelectorAll('.slide-function-select');
                 slideInputs.forEach((input, index) => {
@@ -828,18 +826,16 @@
                     const funcVal = slideFuncs[index].value;
                     if(contentVal !== "" || funcVal !== "") {
                         prompt += `\n[Folie ${index + 1}]:\n${contentVal}\n`;
-                        
                         if(funcVal !== "") {
-                            prompt += `-> WICHTIG: Binde auf dieser Folie zwingend die Zusatzfunktion "${funcVal}" ein!\n`;
-                            prompt += `-> Befolge hierfür strikt die nachfolgende Bauanleitung:\n\n`;
-                            prompt += appendModuleContent(`FUNKTIONS-DETAILS: ${funcVal}`, funcVal, "Bauanleitung und Logik für diese spezifische Folie.");
+                            prompt += `-> Binde auf dieser Folie zwingend die Zusatzfunktion "${funcVal}" ein!\n`;
+                            prompt += appendModuleContent(`FUNKTIONS-DETAILS: ${funcVal}`, funcVal, "Bauanleitung für diese spezifische Folie.");
                         }
                     }
                 });
                 prompt += `\n`;
             }
 
-            prompt += `\nGebe mir NUR den validen, vollständigen HTML Quellcode zurück, der direkt im Browser geöffnet und getestet werden kann.`;
+            prompt += `\nGebe mir NUR den validen, vollständigen HTML Quellcode zurück, der direkt im Browser geöffnet werden kann.`;
 
             document.getElementById('finalPrompt').value = prompt;
         }

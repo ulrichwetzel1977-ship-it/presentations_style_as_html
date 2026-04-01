@@ -1,43 +1,20 @@
-# Blueprint: Kanban & Card-Sorting UI
+# Blueprint: Erweitertes Kanban Board (Component: Kanban)
 
-## 1. UI-Struktur (HTML)
-Für ein funktionsfähiges Board muss die KI ein Grid mit Spalten erstellen.
+Dieses Modul stellt ein hochgradig anpassbares Kanban-Board zur Verfügung. Es unterstützt das dynamische Anlegen, Bearbeiten und Löschen von Spalten (Buckets) und Karten (Tasks).
 
-### Container-Struktur:
-- **Board:** `<div class="kanban-board">` (Flexbox oder Grid)
-- **Spalte:** `<div class="kanban-col" id="col-todo">`
-  - Jede Spalte benötigt eine Überschrift (`h4`) und einen "Add"-Button.
-  - Der Button muss `KanbanModule.addCard('col-todo')` aufrufen.
+## 1. Features
+- **Buckets (Spalten):** Können per Button hinzugefügt werden. Name und Kopf-Farbe sind über ein Modal anpassbar.
+- **Karten (Tasks):** Werden über ein Modal gepflegt. Das Modal bietet einen Langtext-Editor (Rich-Text/Multiline) und eine Farbauswahl für den Karten-Hintergrund.
+- **Drag & Drop:** Karten können frei zwischen den Buckets verschoben werden.
+- **State-Management:** Das gesamte Board wird über ein JSON-Objekt gesteuert, was den Export/Import des Status extrem vereinfacht.
 
-## 2. Visuelles Design (CSS)
-Das Design muss dem "App-Style" aus der SAP-Vorlage folgen:
+## 2. Platzhalter für die KI-Generierung
+- `{{SLIDE_NUM}}`: Foliennummer
+- `{{TAG}}`: Kategorientag (z.B. "Workshop")
+- `{{SLIDE_TITLE}}`: Titel der Folie
+- `{{BOARD_ID}}`: Eine eindeutige ID für das Board (z.B. `board-1`), falls mehrere Boards existieren.
 
-- **Board:** `display: flex; gap: 20px; align-items: flex-start;`
-- **Spalten:**
-  - Hintergrund: `var(--surface2)` (Hellgrau) oder transparent mit Border.
-  - Border-Radius: `14px`.
-  - Min-Height: `300px`.
-  - Padding: `15px`.
-- **Karten:**
-  - Nutze die Klasse `.glass-card`.
-  - Box-Shadow: Subtil, beim Dragging verstärken.
-  - Schriftgröße: Etwas kleiner (`14px`) für kompakte Darstellung.
-- **Interaktive Effekte:**
-  - `.drag-over`: Die Spalte sollte sich leicht verfärben (z. B. `background: var(--accent-soft)`), wenn eine Karte darüber gehalten wird.
-
-## 3. Standard-Konfiguration
-Wenn nicht anders verlangt, erstelle immer 3 Spalten:
-1. **Backlog** (id: `col-backlog`)
-2. **In Arbeit** (id: `col-progress`)
-3. **Erledigt** (id: `col-done`)
-
-## 4. Beispiel für die KI:
-```html
-<div class="kanban-board">
-    <div class="kanban-col" id="col-todo">
-        <div class="flex justify-between">
-            <h4>To Do</h4>
-            <button onclick="KanbanModule.addCard('col-todo')">+</button>
-        </div>
-        </div>
-    </div>
+## 3. HTML-Struktur
+Das Modul besteht aus:
+1. Der Folie (`.slide-kanban`) mit dem `.kanban-board` Container.
+2. Zwei globalen Modals (`#kanbanBucketModal` und `#kanbanCardModal`), die am Ende des `<body>` oder direkt in der Präsentation platziert werden müssen.

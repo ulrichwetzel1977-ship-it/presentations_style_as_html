@@ -1,27 +1,36 @@
-<div class="slide slide-agenda" data-slide="{{SLIDE_NUM}}" data-title="Agenda">
+<div class="slide slide-content" data-slide="{{SLIDE_NUM}}" data-title="{{SLIDE_TITLE}}">
   <div class="branding-logo"></div>
   <div class="branding-claim"></div>
   <div class="slide-counter">{{SLIDE_NUM}} / {{TOTAL_SLIDES}}</div>
-  
+
   <div class="slide-header">
     <div>
       <div class="slide-module-tag">{{TAG}}</div>
-      <div class="slide-title">Agenda</div>
+      <div class="slide-title">{{SLIDE_TITLE}}</div>
     </div>
+    <button onclick="openSettings();" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 14px;font-family:var(--font);font-size:12px;font-weight:600;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:6px;flex-shrink:0">⚙️ Agenda anpassen</button>
   </div>
   <div class="slide-body">
-    <ul class="agenda-list" id="agendaList">
-      <li class="agenda-item">
-        <span class="agenda-time">{{TIME}}</span>
-        <div>
-          <div class="agenda-title">{{AGENDA_TITLE}}</div>
-          <div class="agenda-desc">{{AGENDA_DESCRIPTION}}</div>
-        </div>
-      </li>
-      <li class="agenda-item is-break">
-        <span class="agenda-time">{{TIME}}</span>
-        <div><div class="agenda-title">Pause</div></div>
-      </li>
-    </ul>
+    <ul class="agenda-items" id="display-agenda-list"></ul>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>⚙️ Agenda bearbeiten</h2>
+      <button class="modal-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+        <label style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;">📋 Agenda-Punkte</label>
+        <button class="btn-secondary" style="font-size:11px;padding:5px 10px;" onclick="addAgendaRow()">+ Zeile</button>
+      </div>
+      <div id="settings-agenda-list" style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeSettings()">Abbrechen</button>
+      <button class="btn-primary" onclick="saveSettings()">✓ Speichern & Schließen</button>
+    </div>
   </div>
 </div>

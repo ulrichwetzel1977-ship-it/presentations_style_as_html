@@ -131,8 +131,8 @@ body, html {
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
 }
-.card .card-title { color: #fff; font-weight: 700; font-size: 15px; margin-bottom: 8px; }
-.card .card-text { color: rgba(255,255,255,0.88); font-size: 13px; line-height: 1.5; }
+.card-title { color: #fff; font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+.card-text { color: rgba(255,255,255,0.88); font-size: 13px; line-height: 1.5; }
 
 .callout {
     border-radius: var(--radius-sm);
@@ -247,19 +247,75 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
 .slide-chapter .branding-claim::after { color: rgba(255,255,255,0.6); }
 
 /* AGENDA */
-.slide-agenda .agenda-list { list-style: none; padding: 0; margin: 0; }
-.slide-agenda .agenda-item {
+.agenda-items { list-style: none; }
+.agenda-item {
     display: grid;
     grid-template-columns: 120px 1fr;
-    gap: 20px;
+    gap: 16px;
     padding: 14px 0;
     border-bottom: 1px solid var(--border);
     align-items: start;
 }
-.slide-agenda .agenda-time { font-size: 14px; font-weight: 700; color: var(--primary); }
-.slide-agenda .agenda-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
-.slide-agenda .agenda-desc { font-size: 12px; color: var(--text-secondary); }
-.slide-agenda .agenda-item.is-break { opacity: 0.6; font-style: italic; background-color: var(--surface); padding-left: 10px; }
+.agenda-time { font-size: 13px; font-weight: 600; color: var(--primary); padding-top: 2px; }
+.agenda-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.agenda-desc { font-size: 13px; color: var(--text-secondary); }
+.agenda-break { opacity: 0.5; font-style: italic; }
+
+/* === AGENDA SETTINGS MODAL === */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+    width: 600px;
+    max-width: 95vw;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.modal-header {
+    padding: 24px 28px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.modal-header h2 { font-size: 20px; font-weight: 600; margin: 0; }
+.modal-close {
+    background: var(--surface-alt);
+    border: none;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+.modal-close:hover { background: var(--border); }
+.modal-body { padding: 24px 28px; overflow-y: auto; flex: 1; }
+.modal-footer {
+    padding: 16px 28px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+.agenda-setting-row { display: flex; gap: 8px; align-items: flex-start; padding: 8px; background: var(--surface-alt); border-radius: var(--radius-sm); margin-bottom: 8px; }
+.agenda-setting-row input { padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-family); font-size: 13px; outline: none; width: 100%; }
+.btn-icon { background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px 6px; border-radius: 4px; line-height: 1; color: var(--text-secondary); transition: background .2s; }
+.btn-icon:hover { background: var(--border); }
 
 /* CHECKLIST */
 .slide-checklist .checklist { list-style: none; padding: 0; margin: 0; }
@@ -581,6 +637,54 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
   .risk-high .gap-risk-label { color: var(--danger); }
   .risk-med .gap-risk-label { color: var(--warning); }
   .risk-low .gap-risk-label { color: var(--success); }
+
+    /* CARDS */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 24px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+  .card-icon {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    margin-bottom: 14px;
+  }
+
+    /* LEVEL PILLS */
+  .level-bar {
+    display: flex;
+    gap: 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin: 16px 0;
+  }
+  .level-seg {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .level-a { background: #f0fff4; color: #1a7f3c; }
+  .level-b { background: #fff8f0; color: #c25e00; }
+  .level-c { background: #fff4e6; color: #9b5500; }
+  .level-d { background: #fff1f0; color: #c5342a; }
+  .level-seg span { display: block; font-size: 10px; font-weight: 400; opacity: 0.8; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -622,19 +726,11 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
     <input type="text" id="set-customer" value="Musterkunden">
     <label>Datum</label>
     <input type="text" id="set-date" value="30.03.2026">
-    <label>Agenda (je Zeile: HH:MM | Titel | Beschreibung)</label>
-    <textarea id="set-agenda">09:00 | Begrüßung &amp; Vorstellung | Eröffnung des Workshops
-09:30 | SAP Betriebsmodelle im Überblick | On-Premise, RISE, GROW
-10:30 | GROW with SAP | Public Cloud Einführung
-11:00 | RISE with SAP | Private Cloud Migration
-11:30 | Pause | Kaffeepause
-11:45 | Vergleich &amp; FUE-Kalkulation | Live-Sizing
-12:30 | Mittagspause |
-13:15 | ECC &amp; S/4HANA Schmerzpunkte | Erfahrungswerte
-14:00 | Clean Core Strategie | Ansätze &amp; Lösungen
-14:45 | Workshop: Offene Themen | Kanban Board
-15:15 | Next Steps &amp; Ausblick | Checkliste
-15:45 | Abschluss | Q&amp;A</textarea>
+    <label>Agenda</label>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+      <button class="btn-secondary" style="font-size:11px;padding:4px 10px;margin-top:0;" onclick="addAgendaRow()">+ Zeile</button>
+    </div>
+    <div id="agenda-settings-list" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;margin-bottom:4px;"></div>
     <button class="btn-primary" onclick="applySettings()">Übernehmen</button>
     <button class="btn-secondary" onclick="closeSettings()">Schließen</button>
   </div>
@@ -678,20 +774,7 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
     </div>
   </div>
   <div class="slide-body">
-    <ul class="agenda-list" id="agendaList">
-      <li class="agenda-item"><span class="agenda-time">09:00</span><div><div class="agenda-title">Begrüßung &amp; Vorstellung</div><div class="agenda-desc">Eröffnung des Workshops, Vorstellungsrunde, Zielsetzung</div></div></li>
-      <li class="agenda-item"><span class="agenda-time">09:30</span><div><div class="agenda-title">SAP Betriebsmodelle im Überblick</div><div class="agenda-desc">On-Premise, RISE with SAP, GROW with SAP – Vergleich &amp; Entscheidungskriterien</div></div></li>
-      <li class="agenda-item"><span class="agenda-time">10:30</span><div><div class="agenda-title">GROW with SAP</div><div class="agenda-desc">Public Cloud, Standardprozesse, Vor- &amp; Nachteile, IT-Organisation</div></div></li>
-      <li class="agenda-item"><span class="agenda-time">11:00</span><div><div class="agenda-title">RISE with SAP</div><div class="agenda-desc">Private Cloud Migration, Komplexlandschaft, IT-Auswirkungen</div></div></li>
-      <li class="agenda-item is-break"><span class="agenda-time">11:30</span><div><div class="agenda-title">Pause</div></div></li>
-      <li class="agenda-item"><span class="agenda-time">11:45</span><div><div class="agenda-title">Vergleich &amp; FUE-Kalkulation</div><div class="agenda-desc">Tabellarischer Vergleich, Live-Sizing-Rechner, TCO &amp; ROI</div></div></li>
-      <li class="agenda-item is-break"><span class="agenda-time">12:30</span><div><div class="agenda-title">Mittagspause</div></div></li>
-      <li class="agenda-item"><span class="agenda-time">13:15</span><div><div class="agenda-title">ECC &amp; S/4HANA Schmerzpunkte</div><div class="agenda-desc">Erfahrungswerte aus Migration &amp; Release-Wechsel</div></div></li>
-      <li class="agenda-item"><span class="agenda-time">14:00</span><div><div class="agenda-title">Clean Core Strategie</div><div class="agenda-desc">Technische Schuld abbauen, Roadmap, Transformationsvergleich</div></div></li>
-      <li class="agenda-item"><span class="agenda-time">14:45</span><div><div class="agenda-title">Workshop: Offene Themen</div><div class="agenda-desc">Kanban Board – Offen · In Klärung · Entscheidung</div></div></li>
-      <li class="agenda-item"><span class="agenda-time">15:15</span><div><div class="agenda-title">Next Steps &amp; Ausblick</div><div class="agenda-desc">Interaktive Checkliste, konkrete Maßnahmen</div></div></li>
-      <li class="agenda-item"><span class="agenda-time">15:45</span><div><div class="agenda-title">Abschluss &amp; Q&amp;A</div></div></li>
-    </ul>
+    <ul class="agenda-items" id="display-agenda-list"></ul>
   </div>
 </div>
 
@@ -1790,6 +1873,43 @@ tr:nth-child(even) td { background-color: #f9f9f9; }
             </div>
           </div>
         </div>
+        <div class="callout info" style="margin-bottom:20px">
+        <div class="callout-icon">🏗️</div>
+        <div class="callout-content">
+          <h4>Clean Core Prinzip (v2.3, August 2025)</h4>
+          <p>Strenge Trennung von SAP-Standard-Code und kundeneigenen Erweiterungen. Dies ist die einzige Strategie, um Upgrade-Stabilität, Cloud-Fähigkeit und niedrige TCO dauerhaft zu sichern.</p>
+        </div>
+      </div>
+
+      <div class="level-bar">
+        <div class="level-seg level-a">Level A<span>ABAP Cloud · Released APIs · Upgrade-stabil</span></div>
+        <div class="level-seg level-b">Level B<span>Classic APIs · BAPIs · Wrapping nötig</span></div>
+        <div class="level-seg level-c">Level C<span>Custom Wrapper · temporär erlaubt</span></div>
+        <div class="level-seg level-d">Level D<span>Modifikationen · VERBOTEN · Tech Debt</span></div>
+      </div>
+
+      <div class="cards-grid" style="margin-top:16px">
+        <div class="card" style="border-top:3px solid var(--success)">
+          <div class="card-title">✅ Rule 1: Released APIs Only</div>
+          <div class="card-text">Direkte Tabellenzugriffe (SELECT * FROM T005) sind verboten. Nutze Cloud-Successors wie I_COUNTRY. Alles andere ist technische Schuld.</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--success)">
+          <div class="card-title">✅ Rule 2: No Modifications</div>
+          <div class="card-text">SAP-Originalcode bleibt unberührt. Erweiterungspunkte (BAdIs) werden genutzt. Zero Modifications ist kein Nice-to-have, sondern Pflicht.</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--success)">
+          <div class="card-title">✅ Rule 3: Cloud-Optimized ABAP</div>
+          <div class="card-text">Moderne ABAP-Befehle, CDS Views, RAP-Modell, OData. Veraltete Statements (Dynpro, Classic SQL) verursachen Fehler in der Cloud-Laufzeit.</div>
+        </div>
+      </div>
+
+      <div class="callout warning" style="margin-top:8px">
+        <div class="callout-icon">📉</div>
+        <div class="callout-content">
+          <h4>Signavio-Effekt: 65–70 % weniger Custom Code</h4>
+          <p>Durch konsequente Prozessanalyse mit SAP Signavio vor der Migration kann der Custom-Code-Bedarf um bis zu 70 % reduziert werden. „Fit-to-Standard" statt teurer Eigenentwicklung.</p>
+        </div>
+      </div>
       </div>
       <div class="tab-panel" id="tab-cc-schmerz">
         <table style="font-size:12px; margin-top:6px">
@@ -2097,7 +2217,10 @@ document.addEventListener('keydown', (e) => {
 // ============================================
 // SETTINGS
 // ============================================
-function openSettings() { document.getElementById('settingsOverlay').classList.add('open'); }
+function openSettings() {
+  openAgendaSettings();
+  document.getElementById('settingsOverlay').classList.add('open');
+}
 function closeSettings() { document.getElementById('settingsOverlay').classList.remove('open'); }
 
 document.getElementById('settingsOverlay').addEventListener('click', (e) => {
@@ -2108,31 +2231,13 @@ function applySettings() {
   const title = document.getElementById('set-title').value;
   const customer = document.getElementById('set-customer').value;
   const date = document.getElementById('set-date').value;
-  const agendaRaw = document.getElementById('set-agenda').value;
 
   document.getElementById('cover-title').innerHTML = title.replace(/–/g,'–');
   document.getElementById('cover-customer').textContent = customer;
   document.getElementById('cover-date').textContent = date;
   document.title = title;
 
-  const lines = agendaRaw.trim().split('\n').filter(l => l.trim());
-  const agendaList = document.getElementById('agendaList');
-  var agendaData = [];
-  agendaList.innerHTML = '';
-  lines.forEach(line => {
-    const parts = line.split('|').map(p => p.trim());
-    const time = parts[0] || '';
-    const agTitle = parts[1] || '';
-    const desc = parts[2] || '';
-    const isBreak = agTitle.toLowerCase().includes('pause');
-    const li = document.createElement('li');
-    agendaData = [
-          { time: parts[0], title:parts[1], desc: parts[2], isBreak: isBreak ? true : false }
-  ]
-    li.className = 'agenda-item' + (isBreak ? ' is-break' : '');
-    li.innerHTML = `<span class="agenda-time">${time}</span><div><div class="agenda-title">${agTitle}</div>${desc ? `<div class="agenda-desc">${desc}</div>` : ''}</div>`;
-    agendaList.appendChild(li);
-  });
+  saveAgendaSettings();
   closeSettings();
 }
 
@@ -2673,12 +2778,86 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
+// AGENDA MODULE
+// ============================================
+var agendaData = [
+  { time:'09:00 – 09:30', title:'Begrüßung & Vorstellung', desc:'Eröffnung des Workshops, Vorstellungsrunde, Zielsetzung', isBreak:false },
+  { time:'09:30 – 10:30', title:'SAP Betriebsmodelle im Überblick', desc:'On-Premise, RISE with SAP, GROW with SAP – Vergleich & Entscheidungskriterien', isBreak:false },
+  { time:'10:30 – 11:00', title:'GROW with SAP', desc:'Public Cloud, Standardprozesse, Vor- & Nachteile, IT-Organisation', isBreak:false },
+  { time:'11:00 – 11:30', title:'RISE with SAP', desc:'Private Cloud Migration, Komplexlandschaft, IT-Auswirkungen', isBreak:false },
+  { time:'11:30 – 11:45', title:'☕ Kaffeepause', desc:'', isBreak:true },
+  { time:'11:45 – 12:30', title:'Vergleich & FUE-Kalkulation', desc:'Tabellarischer Vergleich, Live-Sizing-Rechner, TCO & ROI', isBreak:false },
+  { time:'12:30 – 13:15', title:'🥗 Mittagspause', desc:'', isBreak:true },
+  { time:'13:15 – 14:00', title:'ECC & S/4HANA Schmerzpunkte', desc:'Erfahrungswerte aus Migration & Release-Wechsel', isBreak:false },
+  { time:'14:00 – 14:45', title:'Clean Core Strategie', desc:'Technische Schuld abbauen, Roadmap, Transformationsvergleich', isBreak:false },
+  { time:'14:45 – 15:15', title:'Workshop: Offene Themen', desc:'Kanban Board – Offen · In Klärung · Entscheidung', isBreak:false },
+  { time:'15:15 – 15:45', title:'Next Steps & Ausblick', desc:'Interaktive Checkliste, konkrete Maßnahmen', isBreak:false },
+  { time:'15:45 – 16:00', title:'✅ Abschluss & Q&A', desc:'', isBreak:false }
+];
+
+function renderAgendaSlide() {
+  var list = document.getElementById('display-agenda-list');
+  if (!list) return;
+  list.innerHTML = '';
+  agendaData.forEach(function(item) {
+    var li = document.createElement('li');
+    li.className = 'agenda-item' + (item.isBreak ? ' agenda-break' : '');
+    li.innerHTML = '<div class="agenda-time">' + item.time + '</div>' +
+      '<div class="agenda-content">' +
+        '<div class="agenda-title">' + item.title + '</div>' +
+        (item.desc ? '<div class="agenda-desc">' + item.desc + '</div>' : '') +
+      '</div>';
+    list.appendChild(li);
+  });
+}
+
+function openAgendaSettings() {
+  var list = document.getElementById('agenda-settings-list');
+  if (!list) return;
+  list.innerHTML = '';
+  agendaData.forEach(function(item, idx) {
+    list.innerHTML += '<div class="agenda-setting-row" id="agset-' + idx + '">' +
+      '<input type="text" style="width:150px;flex-shrink:0;" value="' + item.time.replace(/"/g,'&quot;') + '" id="agset-time-' + idx + '" placeholder="09:00 – 10:30">' +
+      '<div style="flex:1;display:flex;flex-direction:column;gap:4px;">' +
+        '<input type="text" value="' + item.title.replace(/"/g,'&quot;').replace(/&/g,'&amp;') + '" id="agset-title-' + idx + '" placeholder="Titel">' +
+        '<input type="text" value="' + item.desc.replace(/"/g,'&quot;').replace(/&/g,'&amp;') + '" id="agset-desc-' + idx + '" placeholder="Beschreibung (leer = als Pause markiert)">' +
+      '</div>' +
+      '<button class="btn-icon" onclick="removeAgendaRow(' + idx + ')" title="Entfernen">🗑️</button>' +
+    '</div>';
+  });
+}
+
+function addAgendaRow() {
+  agendaData.push({ time:'00:00 – 00:00', title:'Neuer Punkt', desc:'', isBreak:false });
+  openAgendaSettings();
+}
+
+function removeAgendaRow(idx) {
+  agendaData.splice(idx, 1);
+  openAgendaSettings();
+}
+
+function saveAgendaSettings() {
+  var newAgenda = [];
+  for (var i = 0; i < agendaData.length; i++) {
+    var timeEl = document.getElementById('agset-time-' + i);
+    if (!timeEl) continue;
+    var title = document.getElementById('agset-title-' + i).value;
+    var desc  = document.getElementById('agset-desc-' + i).value;
+    newAgenda.push({ time: timeEl.value, title: title, desc: desc, isBreak: desc.trim() === '' && (title.toLowerCase().includes('pause') || title.includes('☕') || title.includes('🥗')) });
+  }
+  agendaData = newAgenda;
+  renderAgendaSlide();
+}
+
+// ============================================
 // INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
   KanbanModule.init();
   FueTcoModule.calculateAll();
   updateNotesPanel();
+  renderAgendaSlide();
 });
 </script>
 </body>

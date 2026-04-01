@@ -8,14 +8,60 @@
       <div class="slide-module-tag">{{TAG}}</div>
       <div class="slide-title">{{SLIDE_TITLE}}</div>
     </div>
+    <button class="kanban-btn-add-col" onclick="KanbanModule.openBucketModal(null, '{{BOARD_ID}}')">
+      + Neues Bucket
+    </button>
   </div>
+  
   <div class="slide-body">
-    <div class="kanban-board">
-      <div class="kanban-col" id="{{COL_1_ID}}">
-        <div class="kanban-col-header">
-          {{COL_1_TITLE}} <button onclick="KanbanModule.addCard('{{COL_1_ID}}')">+</button>
-        </div>
-        </div>
+    <div class="kanban-board" id="{{BOARD_ID}}"></div>
+  </div>
+</div>
+
+<div class="kanban-modal-overlay" id="kanbanBucketModal">
+  <div class="kanban-modal">
+    <div class="kanban-modal-header">
+      <h3 id="kb-modal-title">Bucket bearbeiten</h3>
+      <button class="kanban-modal-close" onclick="KanbanModule.closeModals()">✕</button>
+    </div>
+    <div class="kanban-modal-body">
+      <label>Name des Buckets</label>
+      <input type="text" id="kb-bucket-name" class="kanban-input">
+      
+      <label>Farbe (Kopfzeile)</label>
+      <input type="color" id="kb-bucket-color" class="kanban-color-picker" value="#E3000F">
+    </div>
+    <div class="kanban-modal-footer">
+      <button id="kb-btn-del-bucket" class="kanban-btn-danger" onclick="KanbanModule.deleteCurrentBucket()">Bucket Löschen</button>
+      <div>
+        <button class="kanban-btn-secondary" onclick="KanbanModule.closeModals()">Abbrechen</button>
+        <button class="kanban-btn-primary" onclick="KanbanModule.saveBucket()">Speichern</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="kanban-modal-overlay" id="kanbanCardModal">
+  <div class="kanban-modal kanban-modal-large">
+    <div class="kanban-modal-header">
+      <h3 id="kc-modal-title">Karte bearbeiten</h3>
+      <button class="kanban-modal-close" onclick="KanbanModule.closeModals()">✕</button>
+    </div>
+    <div class="kanban-modal-body">
+      <label>Inhalt / Beschreibung (Langtext)</label>
+      <div id="kc-card-content" class="kanban-editor" contenteditable="true" placeholder="Details hier eintragen..."></div>
+      
+      <label>Kartenfarbe (Hintergrund)</label>
+      <div style="display: flex; gap: 10px; margin-top: 5px;">
+        <input type="color" id="kc-card-color" class="kanban-color-picker" value="#ffffff">
+      </div>
+    </div>
+    <div class="kanban-modal-footer">
+      <button id="kc-btn-del-card" class="kanban-btn-danger" onclick="KanbanModule.deleteCurrentCard()">Karte Löschen</button>
+      <div>
+        <button class="kanban-btn-secondary" onclick="KanbanModule.closeModals()">Abbrechen</button>
+        <button class="kanban-btn-primary" onclick="KanbanModule.saveCard()">Speichern</button>
+      </div>
+    </div>
   </div>
 </div>
