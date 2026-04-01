@@ -888,7 +888,8 @@
                 prompt += `WICHTIG: 
                 - Ersetze in der aufgerufenen template.html das vorkommen von {{THEME_CSS_URL}} durch ${loadedThemesUrls[design]}.
                 - Ersetze {{PRESENTATION_TITLE}} mit dem Titel.
-                - Ersetze {{THEME_CLASS}} mit: theme-${loadedThemesUrls[design]}\n\n`;
+                - Ersetze {{THEME_CLASS}} mit: ${design}\n\n`;
+
                 // === TITELBILD VARIABLE ÜBERGEBEN ===
                 const coverImageUrl = document.getElementById('presCoverImage').value;
                 if (coverImageUrl) {
