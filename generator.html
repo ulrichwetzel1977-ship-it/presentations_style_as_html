@@ -714,7 +714,7 @@
             prompt += `### SCHRITT 1: HTML-VORLAGE LADEN (PFLICHT)\n`;
             prompt += `BEVOR du irgendetwas generierst, MUSST du dein Web-Search-Tool nutzen und den vollständigen Quelltext der folgenden HTML-Vorlage abrufen:\n`;
             prompt += `${rawBaseUrl}template.html\n\n`;
-            prompt += `Lösche oder verändere keine bestehenden Skripte im Template, sondern ersetze NUR die Platzhalter.\n`;
+            prompt += `Lösche oder verändere keine bestehenden Skripte im Template, sondern ersetze NUR die Platzhalter.\n\n`;
             //prompt += `Diese Vorlage ist deine **einzige und vollständige Basis**. Du übernimmst daraus:\n`;
             //prompt += `- Den gesamten <style>-Block (CSS + Theme) unverändert\n`;
             //prompt += `- Die Struktur der .presentation > .slide Hierarchie\n`;
@@ -725,10 +725,10 @@
             // === SCHRITT 2: THEME METADATEN SETZEN (nur wenn abweichend) ===
             if (isCustomTheme) {
                 prompt += `### SCHRITT 2: THEME & METADATEN SETZEN\n`;
-                /*prompt += `WICHTIG: 
+                prompt += `WICHTIG: 
                 - Ersetze in der aufgerufenen template.html das vorkommen von {{THEME_CSS_URL}} durch ${loadedThemesUrls[design]}.
                 - Ersetze {{PRESENTATION_TITLE}} mit dem Titel.
-                - Ersetze {{THEME_CLASS}} mit: theme-${loadedThemesUrls[design]}\n\n`;*/
+                - Ersetze {{THEME_CLASS}} mit: theme-${loadedThemesUrls[design]}\n\n`;
                 
                 if (embedCode && loadedThemes[design]) {
                     const themeCssReady = loadedThemes[design].replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);

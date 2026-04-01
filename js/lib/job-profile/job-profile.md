@@ -1,23 +1,27 @@
-# Blueprint: Job-Profile (Theme-basierter Editor & PDF-Export)
+# Kontext & Ziel
+Ich habe eine HTML-Seite, die auf einem globalen CSS-System (`layout.css` und Theme-Dateien wie `theme-datagroup.css`) basiert. Ich möchte das interaktive "Job-Profile & Rollen"-Modul in diese Seite integrieren.
 
-## 1. UI-Struktur (Modal)
-- **Header:** Keine harten Farben oder Verläufe! Nutze ausschließlich die globalen Theme-Variablen (z.B. `background: var(--header-bg); color: var(--header-text);`).
-- **Body:** Nutze die Klasse `.job-pdf-view`. Das Layout wird zentral in der `layout.css` gesteuert.
-- **Felder:** Nutze `.job-edit-field` (borderless Textareas). Diese wechseln bei `:focus` den Hintergrund auf `var(--primary-soft)`. Die Schriftfarbe ist `var(--text)`.
+# Ressourcen
+Du erhältst von mir:
+1. Den Code meiner bestehenden HTML-Seite.
+2. Den HTML-Code des Job-Profile-Templates (`job-profile-template.html`).
+3. Den CSS-Code für die Profile (`job-profile.css`).
+4. Den JS-Code für die Logik (`job-profile.js`).
 
-## 2. Inhalts-Sektionen
-Die KI muss folgende 8 Sektionen in Tabellenform (`.job-pdf-table`) oder als Textblöcke generieren:
-1. **Stammdaten:** Titel, Abteilung, Eingruppierung, Inhaber, Stand.
-2. **Mission:** Übergeordnete Zielsetzung.
-3. **Reporting:** Führungskraft, Unterstellte, Stellvertretung.
-4. **Aufgaben:** Kernaufgaben (70-80%), Sonderaufgaben, Admin.
-5. **Befugnisse:** Finanziell, Personell, Sachlich.
-6. **Schnittstellen:** Intern & Extern.
-7. **Anforderungsprofil:** Ausbildung, Erfahrung, Methoden, Skills, Sozialkompetenz.
-8. **KPIs:** Quantitativ & Qualitativ.
+# Deine Aufgabe
+Bitte integriere das Modul anhand dieser strengen Vorgaben in meine HTML-Seite:
 
-## 3. Integration & Print-Logik
-- **Button "PDF drucken" -> `JobModule.printPDF()`**
-  *Wichtig:* Das Skript generiert kein eigenes HTML/CSS mehr. Es ruft lediglich `window.print()` auf. Die Darstellung für den PDF-Export (Ausblenden der UI, Formatierung als A4-Dokument) wird ausschließlich über die `@media print` Query in der `layout.css` in Kombination mit dem aktuell geladenen Theme (Apple, Datagroup, etc.) gesteuert!
-- **Button "Text kopieren" -> `JobModule.copyToClipboard()`**
-  Generiert eine reine Text-Repräsentation (Plain Text) aus den Feldern.
+1. **HTML-Platzierung:**
+   - Den Block `ROLLEN & JOB-PROFILE ANZEIGE` platzierst du in dem dafür vorgesehenen Content-Bereich (z.B. innerhalb des `slide-body` der entsprechenden Präsentations-Folie).
+   - Den Block `JOB PROFILE MODAL` musst du ganz unten in der HTML-Struktur platzieren, direkt vor dem schließenden `</body>`-Tag, um Z-Index-Konflikte zu vermeiden.
+
+2. **CSS & JS Einbindung:**
+   - Binde `job-profile.css` im `<head>` ein, **strikt nach** der `layout.css` und der Theme-Datei, damit die darin verwendeten globalen Variablen (`--primary`, `--surface`, etc.) korrekt ausgelesen werden.
+   - Binde `job-profile.js` am Ende des Dokuments ein.
+
+3. **Styling & Konsistenz:**
+   - Verändere keine Klassennamen im HTML.
+   - Der JavaScript-Code manipuliert das DOM (erstellt Rollenkarten). Lasse die Logik für `innerHTML` innerhalb von `renderRoleCard()` unangetastet, sie wurde bereits für das Theme-System optimiert.
+   - Beachte den `@media print` Block im CSS. Er ist überlebenswichtig, damit beim Klick auf "Als PDF drucken" nur das Modal auf DIN A4 gedruckt wird und nicht die restliche HTML-Seite.
+
+Gib mir danach den fertigen HTML-Code zur Überprüfung zurück.

@@ -1,0 +1,89 @@
+<div class="role-module-wrapper">
+  <div class="slide-header">
+    <div>
+      <div class="slide-module-tag">Organisation</div>
+      <h2 class="slide-title">Die neuen Kernrollen</h2>
+    </div>
+  </div>
+  
+  <div class="slide-body">
+    <div class="module-actions" style="display: flex; justify-content: flex-end; margin-bottom: 24px;">
+      <button class="btn-primary" onclick="addRole()">+ Rolle hinzufügen</button>
+    </div>
+
+    <div id="roleGrid" class="role-grid"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="jobProfileModal">
+  <div class="modal" style="width: 860px; max-height: 95vh;">
+    <div class="modal-header" style="background-color: var(--primary); border-radius: 14px 14px 0 0; flex-shrink: 0; border-bottom: none;">
+      <div>
+        <h2 id="jp-modal-title" style="color: #ffffff; font-size: 18px; margin-bottom: 2px;">Stellenausschreibung</h2>
+        <p style="font-size: 11px; opacity: 0.8; margin: 0; color: #ffffff;">Rollenbeschreibung im Cloud-IT-Kontext</p>
+      </div>
+      <button class="modal-close" onclick="closeJobProfile()" style="background: rgba(255,255,255,0.2); color: #ffffff;">✕</button>
+    </div>
+    
+    <div class="modal-body job-pdf-view">
+      <h3>1. Stammdaten der Stelle</h3>
+      <table class="job-pdf-table">
+        <tr><th>Stellenbezeichnung</th><td><textarea class="job-edit-field" id="jp-title" style="font-weight: 700; font-size: 14px; min-height: 34px;"></textarea></td></tr>
+        <tr><th>Abteilung / Team</th><td><textarea class="job-edit-field" id="jp-dept"></textarea></td></tr>
+        <tr><th>Eingruppierung</th><td><textarea class="job-edit-field" id="jp-grade"></textarea></td></tr>
+        <tr><th>Stelleninhaber</th><td><textarea class="job-edit-field" id="jp-holder" placeholder="Name (optional)"></textarea></td></tr>
+        <tr><th>Gültig ab / Stand</th><td><textarea class="job-edit-field" id="jp-date"></textarea></td></tr>
+      </table>
+
+      <h3>2. Übergeordnete Zielsetzung (Mission)</h3>
+      <textarea class="job-edit-field" id="jp-mission" style="border: 1px solid var(--border); padding: 10px 12px; border-radius: var(--radius-sm); min-height: 70px;"></textarea>
+
+      <h3>3. Einordnung in die Organisation</h3>
+      <table class="job-pdf-table">
+        <tr><th>Führungskraft</th><td><textarea class="job-edit-field" id="jp-reports"></textarea></td></tr>
+        <tr><th>Unterstellte Mitarbeiter</th><td><textarea class="job-edit-field" id="jp-reports-to"></textarea></td></tr>
+        <tr><th>Stellvertretung</th><td><textarea class="job-edit-field" id="jp-deputy"></textarea></td></tr>
+      </table>
+
+      <h3>4. Aufgaben- und Verantwortungsbereich</h3>
+      <table class="job-pdf-table">
+        <tr><th>Kernaufgaben (70–80 %)</th><td><textarea class="job-edit-field" id="jp-tasks" style="min-height: 80px;"></textarea></td></tr>
+        <tr><th>Sonderaufgaben (10–20 %)</th><td><textarea class="job-edit-field" id="jp-special"></textarea></td></tr>
+        <tr><th>Administration (5–10 %)</th><td><textarea class="job-edit-field" id="jp-admin"></textarea></td></tr>
+      </table>
+
+      <h3>5. Befugnisse und Vollmachten</h3>
+      <table class="job-pdf-table">
+        <tr><th>Finanziell</th><td><textarea class="job-edit-field" id="jp-budget"></textarea></td></tr>
+        <tr><th>Personell</th><td><textarea class="job-edit-field" id="jp-personal"></textarea></td></tr>
+        <tr><th>Sachlich</th><td><textarea class="job-edit-field" id="jp-auth"></textarea></td></tr>
+      </table>
+
+      <h3>6. Schnittstellen</h3>
+      <table class="job-pdf-table">
+        <tr><th>Intern</th><td><textarea class="job-edit-field" id="jp-intern"></textarea></td></tr>
+        <tr><th>Extern</th><td><textarea class="job-edit-field" id="jp-extern"></textarea></td></tr>
+      </table>
+
+      <h3>7. Anforderungsprofil (Soll-Profil)</h3>
+      <table class="job-pdf-table">
+        <tr><th>Ausbildung</th><td><textarea class="job-edit-field" id="jp-edu"></textarea></td></tr>
+        <tr><th>Berufserfahrung</th><td><textarea class="job-edit-field" id="jp-exp"></textarea></td></tr>
+        <tr><th>Methodenkompetenz</th><td><textarea class="job-edit-field" id="jp-methods"></textarea></td></tr>
+        <tr><th>Spezifische Skills</th><td><textarea class="job-edit-field" id="jp-skills" style="min-height: 50px;"></textarea></td></tr>
+        <tr><th>Sozialkompetenz</th><td><textarea class="job-edit-field" id="jp-social"></textarea></td></tr>
+      </table>
+
+      <h3>8. Leistungskriterien (KPIs)</h3>
+      <table class="job-pdf-table">
+        <tr><th>Quantitative KPIs</th><td><textarea class="job-edit-field" id="jp-kpis-q" style="min-height: 50px;"></textarea></td></tr>
+        <tr><th>Qualitative KPIs</th><td><textarea class="job-edit-field" id="jp-kpis-ql"></textarea></td></tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <span style="font-size: 12px; color: var(--text-secondary); margin-right: auto; align-self: center;">Alle Felder sind direkt bearbeitbar.</span>
+      <button class="btn-secondary" onclick="copyJobProfileText()">📋 Text kopieren</button>
+      <button class="btn-primary" onclick="window.print()">🖨️ Als PDF drucken</button>
+    </div>
+  </div>
+</div>
