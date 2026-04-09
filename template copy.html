@@ -1,50 +1,55 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Von SAP bis Rechenzentrum – Business Transformation & CORBOX</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<style>
-/* ==========================================
-   THEME: DATAGROUP SE (Corporate Identity)
-   ========================================== */
-:root {
-    --primary: #E3000F;
-    --primary-hover: #cc000e;
-    --primary-soft: #fde5e6;
-    --bg-color: #ffffff;
-    --surface: #ffffff;
-    --surface-alt: #E6E6E6;
-    --border: #cccccc;
-    --text: #1d1d1f;
-    --text-secondary: #6e6e73;
-    --claim-color: #E3000F;
-    --danger: #E3000F;
-    --warning: #ff9500;
-    --warning-bg: #fff3e0;
-    --success: #008a00;
-    --success-bg: #e8f5e9;
-    --info: #62b15b;
-    --info-bg: #e8f5e9;
-    --danger-bg: #fde5e6;
-    --radius: 0px;
-    --radius-sm: 0px;
-    --shadow: none;
-    --font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-    --glass-bg: #ffffff;
-    --glass-filter: none;
-    --header-bg: #E6E6E6;
-    --header-text: #1d1d1f;
-    --table-header-bg: #E3000F;
-    --table-header-text: #ffffff;
-    --app-bg: #333333;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{PRESENTATION_TITLE}}</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
+    <style id="basic-style">
+        :root {
+            /* Neutrale Fallback-Variablen */
+            --primary: #0071e3; --primary-soft: #e8f0fe;
+            --bg-color: #ffffff; --surface: #ffffff; --surface-alt: #f5f5f7;
+            --border: #d2d2d7; --text: #1d1d1f; --text-secondary: #6e6e73;
+            --danger: #ff3b30; --warning: #ff9500; --success: #34c759; --info: #0071e3;
+            --radius: 8px; --radius-sm: 4px; --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --app-bg: #000000; --table-header-bg: #f5f5f7; --table-header-text: #1d1d1f;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html {
+            font-family: var(--font-family); background-color: var(--app-bg);
+            color: var(--text); width: 100vw; height: 100vh; overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .presentation { width: 100vw; height: 100vh; position: relative; background-color: var(--bg-color); }
+        .slide { position: absolute; inset: 0; display: none; flex-direction: column; opacity: 0; transition: opacity 0.4s ease; }
+        .slide.active { display: flex; opacity: 1; z-index: 10; }
+
+        /* Globale UI Overlays */
+        .controls-overlay { position: fixed; z-index: 9000; pointer-events: none; inset: 0; }
+        .controls-overlay > * { pointer-events: auto; }
+        
+        .notes-toggle { position: fixed; right: 0; top: 50%; transform: translateY(-50%); background: var(--primary); color: #fff; border: none; padding: 12px 6px; font-size: 11px; font-weight: 700; writing-mode: vertical-lr; cursor: pointer; letter-spacing: 0.08em; }
+        .nav-buttons { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; }
+        .nav-btn { background: var(--primary); color: #fff; border: none; padding: 8px 22px; font-size: 18px; cursor: pointer; border-radius: var(--radius-sm); }
+        
+        /* Sidebar Basis */
+        .notes-sidebar { position: fixed; right: -360px; top: 0; width: 360px; height: 100vh; background: var(--surface); border-left: 3px solid var(--primary); z-index: 9001; transition: right 0.3s ease; display: flex; flex-direction: column; }
+        .notes-sidebar.open { right: 0; }
+    </style>
+
+    <style id="layout-css">
 /* ==========================================
-   LAYOUT.CSS
+   LAYOUT.CSS - Globales Layout & Base Components
    ========================================== */
+
+/* --- GRUNDSTRUKTUR & RESETS --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body, html {
@@ -53,46 +58,47 @@ body, html {
     color: var(--text);
     height: 100vh;
     width: 100vw;
-    overflow: hidden;
+    overflow: hidden; 
     -webkit-font-smoothing: antialiased;
 }
 
+/* --- PRÄSENTATIONS-CONTAINER --- */
 .presentation {
     width: 100vw;
     height: 100vh;
     position: relative;
     overflow: hidden;
+    background-color: var(--bg-color);
 }
 
+/* --- DIE EINZELNE FOLIE (Full-Screen) --- */
 .slide {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
+    inset: 0;
+    display: none;
     flex-direction: column;
-    background-color: var(--bg-color);
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
 }
 
 .slide.active {
+    display: flex;
     opacity: 1;
-    pointer-events: all;
+    z-index: 10;
 }
 
+/* --- STANDARD SLIDE-LAYOUT --- */
 .slide-header {
-    background-color: var(--surface-alt) !important;
-    border-bottom: none;
-    padding: 20px 60px;
+    padding: 24px 60px;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--header-bg);
     flex-shrink: 0;
 }
 
 .slide-module-tag {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--primary);
     text-transform: uppercase;
@@ -101,1387 +107,796 @@ body, html {
 }
 
 .slide-title {
-    font-size: clamp(20px, 2.5vw, 32px);
+    font-size: clamp(24px, 3vw, 36px);
     font-weight: 700;
-    color: var(--text);
-    /*letter-spacing: -0.01em;*/
-    letter-spacing: normal;
+    color: var(--header-text);
+    line-height: 1.2;
 }
 
 .slide-body {
     padding: 30px 60px 70px;
     overflow-y: auto;
-    overflow-x: auto;
-    width: 100%;
     flex: 1;
+    width: 100%;
 }
 
-.cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.card {
-    background: var(--primary);
-    color: #fff;
-    border-radius: var(--radius);
-    padding: 20px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-}
-.card .card-title { color: #fff; font-weight: 700; font-size: 15px; margin-bottom: 8px; }
-.card .card-text { color: rgba(255,255,255,0.88); font-size: 13px; line-height: 1.5; }
-
-.callout {
-    border-radius: var(--radius-sm);
-    padding: 14px 18px;
-    margin-bottom: 12px;
-    border-left: 4px solid var(--primary);
-    display: flex;
-    gap: 14px;
-    background: var(--primary-soft);
-    font-size: 14px;
-}
-.callout.warning { border-color: var(--warning); background: var(--warning-bg); }
-.callout.success { border-color: var(--success); background: var(--success-bg); }
-.callout.danger { background: #fff1f0; border-color: var(--danger-bg); }
-.callout.info { background: var(--info-bg); border-color: var(--info); }
-
-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 0; overflow: hidden; border: none; }
-th { background-color: var(--primary) !important; color: #fff !important; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; padding: 11px 16px; text-align: left; border: 1px solid var(--primary); }
-td { padding: 10px 16px; border: 1px solid var(--border); vertical-align: top; background-color: #fff; font-size: 13px; }
-tr:nth-child(even) td { background-color: #f9f9f9; }
-
-/* ==========================================
-   BRANDING
-   ========================================== */
+/* --- BRANDING PLATZHALTER --- */
 .branding-logo {
     position: absolute;
-    top: 18px;
-    right: 36px;
+    top: 20px;
+    right: 40px;
     width: 180px;
-    height: 52px;
-    background-image: url('https://raw.githubusercontent.com/ulrichwetzel1977-ship-it/presentations_style_as_html/main/assets/images/Datagroup_design/header/logo.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: right top;
+    height: 50px;
     z-index: 1000;
 }
 
 .branding-claim {
     position: absolute;
     bottom: 20px;
-    left: 36px;
+    left: 40px;
     font-size: 13px;
-    font-weight: 700;
-    color: var(--claim-color);
+    font-weight: 600;
+    color: var(--text-secondary);
     z-index: 1000;
 }
-.branding-claim::after { content: "IT's that simple."; }
 
-/* ==========================================
-   SLIDE COUNTER & NAV
-   ========================================== */
 .slide-counter {
     position: absolute;
     bottom: 20px;
-    right: 36px;
+    right: 40px;
     font-size: 12px;
     color: var(--text-secondary);
     z-index: 1000;
 }
 
-.nav-buttons {
-    position: fixed;
-    bottom: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 12px;
-    z-index: 9000;
-}
-.nav-btn {
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    padding: 8px 22px;
-    font-size: 18px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background 0.2s;
-}
-.nav-btn:hover { background: var(--primary-hover); }
+/* --- TYPOGRAFIE & LISTEN --- */
+h1, h2, h3, h4 { color: var(--header-text); margin-bottom: 10px; }
+p { font-size: 15px; line-height: 1.6; margin-bottom: 16px; color: var(--text); }
+ul.standard-list { font-size: 15px; line-height: 1.6; padding-left: 24px; margin-bottom: 16px; color: var(--text); }
+ul.standard-list li { margin-bottom: 8px; }
 
+/* --- STANDARD KOMPONENTEN --- */
+
+/* Callout / Hinweis-Boxen */
+.callout {
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 14px;
+    background-color: var(--info-bg);
+    border-left: 4px solid var(--info);
+    color: var(--text);
+    font-size: 14px;
+}
+.callout.warning { border-color: var(--warning); background-color: var(--warning-bg); }
+.callout.danger { border-color: var(--danger); background-color: var(--danger-bg); }
+.callout.success { border-color: var(--success); background-color: var(--success-bg); }
+
+/* Basis-Tabellen */
+table.std-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+table.std-table th {
+    background-color: var(--table-header-bg);
+    color: var(--table-header-text);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+}
+table.std-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    vertical-align: top;
+    color: var(--text);
+}
+table.std-table tr:last-child td { border-bottom: none; }
+
+/* Basis-Karten (Grid) */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+}
+.card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+.card-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--header-text); }
+.card-text { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+
+/* Globale UI Buttons */
+.btn-primary {
+    background-color: var(--primary); 
+    color: #ffffff; 
+    border: none;
+    padding: 10px 20px; 
+    border-radius: var(--radius-sm);
+    font-family: inherit; 
+    font-size: 14px; 
+    font-weight: 600; 
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+.btn-primary:hover { filter: brightness(0.9); }
+
+.btn-secondary {
+    background-color: var(--surface-alt); 
+    color: var(--text); 
+    border: 1px solid var(--border);
+    padding: 10px 20px; 
+    border-radius: var(--radius-sm);
+    font-family: inherit; 
+    font-size: 14px; 
+    font-weight: 600; 
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.btn-secondary:hover { background-color: var(--border); }
+</style>
+
+    <style id="theme-css">
 /* ==========================================
-   COVER SLIDE
+   THEME: DATAGROUP SE (Corporate Identity)
    ========================================== */
+
+:root {
+    /* Layout Farben */
+    --app-bg: #333333;
+    --bg-color: #ffffff;
+    --header-bg: #E6E6E6;          /* Grau hinterlegter Header */
+    --surface: #ffffff;
+    --surface-alt: #E6E6E6;        /* Hellgrau für alternative Flächen */
+    
+    /* Text & Akzente */
+    --primary: #E3000F;            /* Offizielles DATAGROUP Rot */
+    --primary-hover: #cc000e;
+    --primary-soft: #fde5e6;
+    --border: #cccccc;
+    --text: #1d1d1f;
+    --header-text: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --claim-color: #E3000F;        /* Roter Claim */
+    
+    /* Tabellen */
+    --table-header-bg: #E3000F;    /* Roter Tabellen-Kopf laut CI */
+    --table-header-text: #ffffff;
+    
+    /* Status */
+    --info: #E3000F;     --info-bg: #fde5e6;
+    --success: #008a00;  --success-bg: #e8f5e9;
+    --warning: #ff9500;  --warning-bg: #fff3e0;
+    --danger: #E3000F;   --danger-bg: #fde5e6;
+
+    /* Formen (0px für den eckigen CORBOX-Würfel-Look) */
+    --radius: 0px;
+    --radius-sm: 0px;
+    --shadow: none;
+    
+    /* Typografie */
+    --font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+/* --- DATAGROUP BRANDING ELEMENTS --- */
+.branding-logo {
+    background-image: url('https://raw.githubusercontent.com/ulrichwetzel1977-ship-it/presentations_style_as_html/main/assets/images/Datagroup_design/header/logo.png'); /* Pfad anpassen */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right top;
+}
+
+.branding-claim {
+    color: var(--claim-color);
+}
+.branding-claim::after {
+    content: "IT's that simple."; 
+    display: block; 
+}
+
+/* --- DATAGROUP SPEZIFISCHE LAYOUT-ÜBERSCHREIBUNGEN --- */
+.slide-header {
+    border-bottom: none; /* Kein Rand unterm Header */
+}
+
+table.std-table th {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--primary); /* Tabellenkopf-Border rot */
+}
+
+/* Spezifische DATAGROUP "Service-Block" Karte */
+.card.dg-style {
+    background-color: var(--primary);
+    color: #ffffff;
+    border: none;
+}
+.card.dg-style .card-title, 
+.card.dg-style .card-text {
+    color: #ffffff;
+}
+
+/* Disclaimer wird in DG-Präsentationen immer angezeigt */
+.slide-disclaimer {
+    display: flex !important;
+}
+</style>
+    
+    <style id="module-css-titel">
+/* ==========================================
+   TITEL / COVER SLIDE STYLES
+   ========================================== */
+
 .slide-cover {
-    background: #1d1d1f !important;
+    position: relative; /* Wichtig für das Overlay */
+    /* 1. Hintergrundfarbe (greift, wenn kein Bild da ist oder das Bild lädt) */
+    background-color: var(--cover-bg, var(--bg-color)); 
+    
+    /* 2. Hintergrundbild (greift, wenn die Variable im Theme definiert wurde) */
+    background-image: var(--cover-bg-image, none);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
     justify-content: center;
     align-items: flex-start;
     padding: 60px;
 }
-.slide-cover .branding-claim::after { color: #E3000F; }
-.cover-content { margin-top: 60px; }
-.cover-eyebrow { font-size: 13px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 18px; }
-.cover-title { font-size: clamp(28px, 4vw, 52px); font-weight: 700; color: #fff; line-height: 1.15; margin-bottom: 20px; max-width: 780px; }
-.cover-subtitle { font-size: 18px; color: rgba(255,255,255,0.6); margin-bottom: 40px; }
-.cover-meta { display: flex; gap: 32px; }
-.cover-meta-item label { font-size: 11px; font-weight: 600; color: var(--primary); text-transform: uppercase; display: block; margin-bottom: 4px; }
-.cover-meta-item span { font-size: 15px; color: #fff; font-weight: 500; }
 
-/* CHAPTER SLIDE */
-.slide-chapter {
-    background: var(--primary) !important;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 80px 80px;
-}
-.chapter-number { font-size: 80px; font-weight: 900; color: rgba(255,255,255,0.12); line-height: 1; margin-bottom: -20px; }
-.chapter-title { font-size: clamp(28px, 4vw, 48px); font-weight: 700; color: #fff; margin-bottom: 16px; max-width: 700px; }
-.chapter-desc { font-size: 16px; color: rgba(255,255,255,0.75); max-width: 600px; }
-.slide-chapter .branding-logo { filter: brightness(10); }
-.slide-chapter .branding-claim { color: rgba(255,255,255,0.6); }
-.slide-chapter .branding-claim::after { color: rgba(255,255,255,0.6); }
-
-/* AGENDA */
-.agenda-items { list-style: none; }
-.agenda-item {
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    gap: 16px;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--border);
-    align-items: start;
-}
-.agenda-time { font-size: 13px; font-weight: 600; color: var(--primary); padding-top: 2px; }
-.agenda-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-.agenda-desc { font-size: 13px; color: var(--text-secondary); }
-.agenda-break { opacity: 0.5; font-style: italic; }
-
-/* === AGENDA SETTINGS MODAL === */
-.modal-overlay {
-    position: fixed;
+/* OPTIONAL ABER EMPFOHLEN: Ein leichtes Overlay, damit der weiße Text auf hellen Bildern lesbar bleibt */
+.slide-cover::before {
+    content: "";
+    position: absolute;
     inset: 0;
-    z-index: 300;
-    background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(8px);
-    display: none;
-    align-items: center;
-    justify-content: center;
+    /* Nutzt eine Theme-Variable für das Overlay, standardmäßig 40% Schwarz */
+    background: var(--cover-overlay, rgba(0, 0, 0, 0.4)); 
+    z-index: 1;
+}
+
+/* Damit der eigentliche Text und die Logos ÜBER der Abdunkelung liegen */
+.slide-cover > .branding-logo,
+.slide-cover > .branding-claim,
+.slide-cover > .slide-counter,
+.slide-cover > .cover-content {
+    position: relative;
+    z-index: 2; 
+}
+</style>
+<style id="module-css-agenda">
+/* ==========================================
+   AGENDA MODUL CSS
+   Nutzung der globalen Variablen aus layout.css & Themes
+   ========================================== */
+
+/* --- AGENDA ANZEIGE (Folie) --- */
+.agenda-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.agenda-items { 
+  list-style: none; 
+  padding: 0;
+  margin: 0;
+}
+
+.agenda-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+}
+
+.agenda-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary, #0071e3); /* Fallback, falls --primary fehlt */
+  padding-top: 2px;
+}
+
+.agenda-title { 
+  font-size: 15px; 
+  font-weight: 600; 
+  margin-bottom: 2px; 
+  color: var(--text);
+}
+
+.agenda-desc { 
+  font-size: 13px; 
+  color: var(--text-secondary); 
+}
+
+.agenda-break {
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.btn-icon-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* --- AGENDA SETTINGS MODAL --- */
+.agenda-modal {
+  width: 600px;
+  max-height: 85vh;
+}
+
+.agenda-settings-header {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.agenda-settings-header label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* --- AKTIONEN IM CONTENT-BEREICH --- */
+.agenda-actions {
+  display: flex;
+  justify-content: flex-end; /* Schiebt den Button nach rechts */
+  margin-bottom: 24px;       /* Abstand zur Agenda-Liste */
+}
+
+.btn-sm {
+  font-size: 11px;
+  padding: 5px 10px;
+}
+
+.settings-agenda-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.setting-row { 
+  display: flex; 
+  gap: 8px; 
+  align-items: flex-start; 
+  padding: 8px; 
+  background-color: var(--surface-alt, #f5f5f7); 
+  border-radius: var(--radius-sm, 8px); 
+}
+
+.setting-time-input {
+  width: 130px;
+  flex-shrink: 0;
+}
+
+.setting-inputs-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setting-row input[type="text"] { 
+  padding: 6px 10px; 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-sm, 4px); 
+  font-family: inherit; 
+  font-size: 13px; 
+  outline: none; 
+  width: 100%; 
+  background-color: var(--surface, #ffffff);
+  color: var(--text);
+}
+
+.setting-row input[type="text"]:focus {
+  border-color: var(--primary);
+}
+
+.btn-icon-del { 
+  background: none; 
+  border: none; 
+  cursor: pointer; 
+  font-size: 16px; 
+  padding: 4px 6px; 
+  border-radius: 4px; 
+  color: var(--text-secondary); 
+  transition: background 0.2s, color 0.2s; 
+}
+
+.btn-icon-del:hover { 
+  background-color: var(--border); 
+  color: var(--danger, #ff3b30);
+}
+
+/* Basis Modal Styles (falls in layout.css nicht vollständig vorhanden) */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
 }
 .modal-overlay.open { display: flex; }
-.modal {
-    background: var(--surface);
-    border-radius: var(--radius);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
-    width: 600px;
-    max-width: 95vw;
-    max-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-.modal-header {
-    padding: 24px 28px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-.modal-header h2 { font-size: 20px; font-weight: 600; margin: 0; }
-.modal-close {
-    background: var(--surface-alt);
-    border: none;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--text-secondary);
-    transition: all 0.2s;
-}
-.modal-close:hover { background: var(--border); }
-.modal-body { padding: 24px 28px; overflow-y: auto; flex: 1; }
-.modal-footer {
-    padding: 16px 28px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-}
-.agenda-setting-row { display: flex; gap: 8px; align-items: flex-start; padding: 8px; background: var(--surface-alt); border-radius: var(--radius-sm); margin-bottom: 8px; }
-.agenda-setting-row input { padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-family); font-size: 13px; outline: none; width: 100%; }
-.btn-icon { background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px 6px; border-radius: 4px; line-height: 1; color: var(--text-secondary); transition: background .2s; }
-.btn-icon:hover { background: var(--border); }
-
-/* CHECKLIST */
-.slide-checklist .checklist { list-style: none; padding: 0; margin: 0; }
-.slide-checklist .checklist-item {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 11px 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
-}
-.slide-checklist .checklist-item:hover { border-color: var(--primary); background: var(--primary-soft); }
-.slide-checklist .checklist-check {
-    width: 22px; height: 22px;
-    border: 2px solid var(--text-secondary);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    color: transparent;
-    transition: all 0.2s; flex-shrink: 0; font-size: 13px;
-}
-.slide-checklist .checklist-text { font-size: 14px; font-weight: 500; color: var(--text); }
-.slide-checklist .checklist-subtext { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
-.slide-checklist .checklist-item.checked { opacity: 0.6; background: var(--bg-color); border-color: var(--border); }
-.slide-checklist .checklist-item.checked .checklist-check { background-color: var(--success); border-color: var(--success); color: white; }
-.slide-checklist .checklist-item.checked .checklist-text { text-decoration: line-through; color: var(--text-secondary); }
-
-/* KANBAN */
-.slide-kanban .kanban-board { display: flex; gap: 20px; height: calc(100% - 20px); align-items: stretch; }
-.slide-kanban .kanban-col {
-    flex: 1;
-    background-color: var(--surface-alt);
-    border: 1px solid var(--border);
-    padding: 14px;
-    display: flex; flex-direction: column; gap: 10px;
-    min-height: 300px;
-}
-.slide-kanban .kanban-col.drag-over { background: var(--primary-soft); border-color: var(--primary); }
-.slide-kanban .kanban-col-header {
-    font-size: 12px; font-weight: 700; text-transform: uppercase;
-    color: #fff;
-    background: var(--primary);
-    padding: 8px 12px;
-    margin: -14px -14px 8px -14px;
-    display: flex; justify-content: space-between; align-items: center;
-}
-.slide-kanban .kanban-col-header button {
-    background: rgba(255,255,255,0.25); border: none; color: #fff;
-    width: 22px; height: 22px; font-size: 16px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-}
-.slide-kanban .kanban-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    padding: 12px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    cursor: grab; font-size: 13px;
-    position: relative;
-}
-.slide-kanban .kanban-card:hover { border-color: var(--primary); }
-.slide-kanban .kanban-card .card-delete {
-    position: absolute; top: 6px; right: 8px;
-    background: none; border: none; cursor: pointer;
-    color: var(--text-secondary); font-size: 12px;
-}
-.slide-kanban .kanban-card .card-content { outline: none; min-height: 20px; }
-
-/* TABS */
-.slide-tabs .tabs-header {
-    display: flex; gap: 4px;
-    border-bottom: 2px solid var(--border);
-    margin-bottom: 14px;
-    flex-shrink: 0; overflow-x: auto;
-}
-.slide-tabs .tab-btn {
-    background: transparent; border: none;
-    border-bottom: 3px solid transparent;
-    padding: 9px 14px;
-    font-family: inherit; font-size: 12px; font-weight: 600;
-    color: var(--text-secondary); cursor: pointer;
-    white-space: nowrap; transition: all 0.2s; margin-bottom: -2px;
-}
-.slide-tabs .tab-btn:hover { color: var(--primary); }
-.slide-tabs .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-.slide-tabs .tab-panel { display: none; }
-.slide-tabs .tab-panel.active { display: block; }
-
-/* BADGES */
-.badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 2px 9px; border-radius: 20px;
-    font-size: 11px; font-weight: 600; white-space: nowrap;
-    border: 1px solid transparent;
-}
-.badge-success { background: var(--success-bg); color: var(--success); border-color: var(--success); }
-.badge-warning { background: var(--warning-bg); color: var(--warning); border-color: var(--warning); }
-.badge-danger  { background: var(--danger-bg);  color: var(--danger);  border-color: var(--danger); }
-.badge-info    { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
-
-/* DISCLAIMER */
-.slide-disclaimer {
-    display: flex !important;
-    background-color: var(--surface-alt) !important;
-}
-.disclaimer-text { font-size: 11px; line-height: 1.5; color: var(--text-secondary); text-align: justify; }
-.disclaimer-text p { margin-bottom: 10px; }
-
-/* ==========================================
-   SETTINGS PANEL
-   ========================================== */
-.settings-btn {
-    position: fixed; top: 16px; left: 16px;
-    background: rgba(0,0,0,0.5); color: #fff; border: none;
-    width: 38px; height: 38px; font-size: 18px; cursor: pointer;
-    z-index: 9999; display: flex; align-items: center; justify-content: center;
-}
-.settings-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-    z-index: 10000; display: none; align-items: center; justify-content: center;
-}
-.settings-overlay.open { display: flex; }
-.settings-panel {
-    background: #fff; width: 480px; max-width: 95vw;
-    padding: 28px; max-height: 80vh; overflow-y: auto;
-}
-.settings-panel h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--primary); }
-.settings-panel label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; display: block; margin-bottom: 4px; margin-top: 14px; }
-.settings-panel input, .settings-panel textarea {
-    width: 100%; border: 1px solid var(--border); padding: 9px 12px;
-    font-family: inherit; font-size: 14px; color: var(--text);
-}
-.settings-panel textarea { min-height: 100px; resize: vertical; }
-.btn-primary {
-    background: var(--primary); color: #fff; border: none;
-    padding: 10px 24px; font-family: inherit; font-size: 14px; font-weight: 600;
-    cursor: pointer; margin-top: 16px;
-}
-.btn-secondary {
-    background: var(--surface-alt); color: var(--text); border: 1px solid var(--border);
-    padding: 10px 24px; font-family: inherit; font-size: 14px; font-weight: 600;
-    cursor: pointer; margin-top: 16px; margin-left: 8px;
-}
-
-/* ==========================================
-   NOTES / PROTOCOL PANEL
-   ========================================== */
-.notes-toggle {
-    position: fixed; right: 0; top: 50%;
-    transform: translateY(-50%);
-    background: var(--primary); color: #fff; border: none;
-    padding: 12px 6px; font-size: 11px; font-weight: 700;
-    writing-mode: vertical-lr; cursor: pointer; z-index: 9000;
-    letter-spacing: 0.08em;
-}
-.notes-sidebar {
-    position: fixed; right: -360px; top: 0; width: 360px; height: 100vh;
-    background: #fff; border-left: 3px solid var(--primary);
-    z-index: 9001; transition: right 0.3s ease;
-    display: flex; flex-direction: column;
-}
-.notes-sidebar.open { right: 0; }
-.notes-header {
-    background: var(--primary); color: #fff;
-    padding: 14px 18px;
-    display: flex; justify-content: space-between; align-items: center;
-}
-.notes-header h4 { font-size: 14px; font-weight: 700; }
-.notes-header button { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; }
-.notes-slide-info { padding: 10px 18px; background: var(--surface-alt); font-size: 12px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
-.notes-textarea {
-    flex: 1; width: 100%; border: none; padding: 16px;
-    font-family: inherit; font-size: 13px; resize: none;
-    color: var(--text); line-height: 1.6;
-}
-.notes-textarea:focus { outline: none; }
-.notes-actions { padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
-.notes-actions button { flex: 1; padding: 8px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; border: none; min-width: 100px; }
-.btn-export-pdf { background: var(--primary); color: #fff; }
-.btn-export-txt { background: var(--surface-alt); color: var(--text); border: 1px solid var(--border) !important; }
-.btn-export-json { background: #1d1d1f; color: #fff; }
-.btn-import-json { background: var(--surface-alt); color: var(--text); border: 1px solid var(--border) !important; }
-
-/* ==========================================
-   FUE CALCULATOR embedded
-   ========================================== */
-.fue-wrapper { height: 100%; overflow-y: auto; }
-.fue-grid { display: grid; grid-template-columns: 300px 1fr 280px; gap: 16px; height: 100%; }
-.fue-card { background: var(--surface-alt); border: 1px solid var(--border); padding: 16px; }
-.fue-card h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--primary); margin-bottom: 12px; border-bottom: 2px solid var(--primary); padding-bottom: 6px; }
-.fue-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; display: block; margin-bottom: 4px; margin-top: 10px; }
-.fue-input {
-    width: 100%; border: 1px solid var(--border); padding: 8px 10px;
-    font-family: inherit; font-size: 14px; font-weight: 600;
-    background: #fff; color: var(--text);
-}
-.fue-input:focus { outline: 2px solid var(--primary); }
-.fue-kpi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-.fue-kpi { background: var(--surface-alt); border: 1px solid var(--border); padding: 12px; }
-.fue-kpi .k-label { font-size: 11px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; }
-.fue-kpi .k-value { font-size: 22px; font-weight: 700; color: var(--primary); margin-top: 4px; }
-.fue-kpi.highlight { background: var(--primary); border-color: var(--primary); }
-.fue-kpi.highlight .k-label { color: rgba(255,255,255,0.7); }
-.fue-kpi.highlight .k-value { color: #fff; }
-.fue-tshirt table { font-size: 12px; }
-.fue-tshirt .active-tier td { background: var(--primary-soft) !important; font-weight: 700; color: var(--primary); }
-.chart-container { position: relative; height: 280px; }
-
-/* ==========================================
-   COMPARISON / PROCESS BLOCKS
-   ========================================== */
-.betriebsmodell-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-.bm-card {
-    border: 2px solid var(--border);
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-.bm-card-header {
-    background: var(--primary);
-    color: white;
-    padding: 12px 16px;
-    font-size: 14px;
-    font-weight: 700;
-    text-align: center;
-    margin: -24px -24px 12px -24px;
-}
-.bm-card-header.onprem { background: #444; }
-.bm-card-header.grow { background: #007a3d; }
-.bm-card-title { font-size: 14px; font-weight: 700; color: var(--text); }
-.bm-card ul { list-style: none; padding: 0; }
-.bm-card ul li { padding: 5px 0; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
-.bm-card ul li:last-child { border-bottom: none; }
-.bm-card ul li::before { content: "✓"; color: var(--success); font-weight: 700; flex-shrink: 0; }
-.bm-card ul li.con::before { content: "✗"; color: var(--danger); }   
-   
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-.info-block { background: var(--surface-alt); border: 1px solid var(--border); padding: 16px; }
-.info-block h4 { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-.info-block ul { padding-left: 16px; font-size: 13px; line-height: 1.7; }
-.info-block ul li { margin-bottom: 4px; }
-.pro-con { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.pros { background: var(--success-bg); border: 1px solid var(--success); padding: 14px; }
-.cons { background: var(--danger-bg); border: 1px solid var(--danger); padding: 14px; }
-.pros h5, .cons h5 { font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
-.pros h5 { color: var(--success); }
-.cons h5 { color: var(--danger); }
-.pros ul, .cons ul { padding-left: 14px; font-size: 12px; line-height: 1.7; }
-
-.highlight-box {
-    background: var(--primary);
-    color: #fff; padding: 16px 20px;
-    margin-bottom: 14px;
-    font-size: 14px; line-height: 1.6;
-}
-.highlight-box strong { display: block; font-size: 16px; margin-bottom: 6px; }
-
-.tag { display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 700; margin-right: 4px; }
-.tag-red { background: var(--primary); color: #fff; }
-.tag-grey { background: #999; color: #fff; }
-.tag-green { background: var(--success); color: #fff; }
-
-/* Scrollbar styling */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background-color: #ccc; }
-
-/* PDF export area */
-#pdf-notes-export { display: none; }
-
-/* === RACI TABELLE () === */
-  .raci-tab { background:none; border:none; border-bottom:3px solid transparent; padding:8px 14px; font-family:var(--font); font-size:12px; font-weight:600; color:var(--text-secondary); cursor:pointer; white-space:nowrap; transition:all .2s; margin-bottom:-2px; }
-  .raci-tab:hover { color:var(--accent); }
-  .raci-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
-  .raci-panel { overflow-x:auto; }
-  .raci-table { width:100%; border-collapse:collapse; font-size:12px; }
-  .raci-table thead tr { background:#1d1d1f; color:white; }
-  .raci-table th { padding:9px 12px; text-align:left; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
-  .raci-table td { padding:7px 12px; border-bottom:1px solid var(--border); vertical-align:middle; line-height:1.4; }
-  .raci-table tr:hover td { background:var(--surface2); }
-  .raci-table tr:last-child td { border-bottom:none; }
-  .raci-sap      { font-weight:700; color:#065f46; white-space:nowrap; }
-  .raci-customer { font-weight:700; color:#7c3aed; white-space:nowrap; }
-  .raci-shared   { font-weight:700; color:var(--accent); white-space:nowrap; }
-  .raci-cas      { font-weight:700; color:#92400e; white-space:nowrap; }
-  .cat-std       { background:#d1fae5; color:#065f46; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
-  .cat-cas, .cat-opt { background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
-  .cat-excluded  { background:#fee2e2; color:#991b1b; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
-  .cat-additional{ background:#ede9fe; color:#5b21b6; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
-
-  /* GAP MATRIX */
-  .gap-matrix {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  .gap-item {
-    background: white;
-    border-radius: var(--radius);
-    padding: 18px 20px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    border-top: 4px solid;
-  }
-  .gap-item.risk-high { border-top-color: var(--danger); }
-  .gap-item.risk-med { border-top-color: var(--warning); }
-  .gap-item.risk-low { border-top-color: var(--success); }
-  .gap-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
-  .gap-item p { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
-  .gap-risk-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-  .risk-high .gap-risk-label { color: var(--danger); }
-  .risk-med .gap-risk-label { color: var(--warning); }
-  .risk-low .gap-risk-label { color: var(--success); }
-
-    /* CARDS */
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  .card {
-    background: white;
-    border-radius: var(--radius);
-    padding: 24px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-
-  .card-icon {
-    width: 44px; height: 44px;
-    border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    margin-bottom: 14px;
-  }
-
-  .card-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-  .card-text { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
-
-    /* LEVEL PILLS */
-  .level-bar {
-    display: flex;
-    gap: 0;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    border: 1px solid var(--border);
-    margin: 16px 0;
-  }
-  .level-seg {
-    flex: 1;
-    padding: 12px;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  .level-a { background: #f0fff4; color: #1a7f3c; }
-  .level-b { background: #fff8f0; color: #c25e00; }
-  .level-c { background: #fff4e6; color: #9b5500; }
-  .level-d { background: #fff1f0; color: #c5342a; }
-  .level-seg span { display: block; font-size: 10px; font-weight: 400; opacity: 0.8; margin-top: 2px; }
+.modal { background: var(--surface); border-radius: var(--radius, 14px); box-shadow: 0 8px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
+.modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-close { background: var(--surface-alt); border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; color: var(--text-secondary); }
+.modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
 </style>
-</head>
-<body>
 
-<!-- ==========================================
-   NAV & UTILITY BUTTONS
-   ========================================== -->
-<button class="settings-btn" onclick="openSettings()" title="Einstellungen">⚙</button>
-<button class="notes-toggle" onclick="toggleNotes()">N O T I Z E N</button>
-
-<div class="nav-buttons">
-  <button class="nav-btn" onclick="navigate(-1)">&#8592;</button>
-  <button class="nav-btn" onclick="navigate(1)">&#8594;</button>
-</div>
-
-<!-- NOTES SIDEBAR -->
-<aside class="notes-sidebar" id="notesSidebar">
-  <div class="notes-header">
-    <h4>📝 Notizen / Protokoll</h4>
-    <button onclick="toggleNotes()">✕</button>
-  </div>
-  <div class="notes-slide-info" id="notesSlideInfo">Folie 1 – Titelfolie</div>
-  <textarea class="notes-textarea" id="notesTextarea" placeholder="Notizen zu dieser Folie eingeben..."></textarea>
-  <div class="notes-actions">
-    <button class="btn-export-pdf" onclick="exportNotesPDF()">PDF Export</button>
-    <button class="btn-export-txt" onclick="exportNotesTXT()">TXT Export</button>
-    <button class="btn-export-json" onclick="exportJSON()">JSON Speichern</button>
-    <button class="btn-import-json" onclick="importJSON()">JSON Laden</button>
-  </div>
-</aside>
-
-<!-- SETTINGS OVERLAY -->
-<div class="settings-overlay" id="settingsOverlay">
-  <div class="settings-panel">
-    <h3>⚙ Präsentations-Einstellungen</h3>
-    <label>Titel</label>
-    <input type="text" id="set-title" value="Von SAP bis Rechenzentrum – Business Transformation &amp; CORBOX">
-    <label>Kundenname</label>
-    <input type="text" id="set-customer" value="Musterkunden">
-    <label>Datum</label>
-    <input type="text" id="set-date" value="30.03.2026">
-    <label>Agenda</label>
-    <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
-      <button class="btn-secondary" style="font-size:11px;padding:4px 10px;margin-top:0;" onclick="addAgendaRow()">+ Zeile</button>
-    </div>
-    <div id="agenda-settings-list" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;margin-bottom:4px;"></div>
-    <button class="btn-primary" onclick="applySettings()">Übernehmen</button>
-    <button class="btn-secondary" onclick="closeSettings()">Schließen</button>
-  </div>
-</div>
-
-<!-- ==========================================
-   PRESENTATION
-   ========================================== -->
-<div class="presentation" id="presentation">
-
-<!-- ==========================================
-   FOLIE 1: TITELFOLIE
-   ========================================== -->
-<div class="slide slide-cover active" data-slide="1" data-title="Titelfolie">
-  <div class="branding-logo"></div>
-  <div class="branding-claim"></div>
-  <div class="slide-counter">1 / 23</div>
-  <div class="cover-content">
-    <div class="cover-eyebrow">DATAGROUP SE · Workshop</div>
-    <div class="cover-title" id="cover-title">Von SAP bis Rechenzentrum –<br>Business Transformation &amp; CORBOX</div>
-    <div class="cover-subtitle">SAP Betriebsmodelle · RISE · GROW · Clean Core · Transformation Strategy</div>
-    <div class="cover-meta">
-      <div class="cover-meta-item"><label>Kunde</label><span id="cover-customer">Musterkunden</span></div>
-      <div class="cover-meta-item"><label>Datum</label><span id="cover-date">30.03.2026</span></div>
-      <div class="cover-meta-item"><label>Presenter</label><span>DATAGROUP SE</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- ==========================================
-   FOLIE 2: AGENDA
-   ========================================== -->
-<div class="slide slide-agenda" data-slide="2" data-title="Agenda">
-  <div class="branding-logo"></div>
-  <div class="branding-claim"></div>
-  <div class="slide-counter">2 / 23</div>
-  <div class="slide-header">
-    <div>
-      <div class="slide-module-tag">DATAGROUP SE · Workshop</div>
-      <div class="slide-title">Agenda</div>
-    </div>
-  </div>
-  <div class="slide-body">
-    <ul class="agenda-items" id="display-agenda-list"></ul>
-  </div>
-</div>
-
-
-<!-- ==========================================
-   FOLIE 23: DISCLAIMER
-   ========================================== -->
-<div class="slide slide-disclaimer" data-slide="23" data-title="Rechtliche Hinweise">
-  <div class="branding-logo"></div>
-  <div class="branding-claim"></div>
-  <div class="slide-counter">23 / 23</div>
-  <div class="slide-header">
-    <div>
-      <div class="slide-module-tag">DATAGROUP SE</div>
-      <div class="slide-title">Rechtliche Hinweise / Disclaimer</div>
-    </div>
-  </div>
-  <div class="slide-body disclaimer-text">
-    <p>Diese Präsentation wurde von der Firma DATAGROUP SE erstellt und ist ausschließlich als Entscheidungshilfe für den Empfänger gedacht.</p>
-    <p>Diese Präsentation ist kein Prospekt und versteht sich in keiner Art und Weise als Angebot oder Aufforderung, Gesellschaftsanteile oder sonstige Anteile zu kaufen bzw. zu zeichnen.</p>
-    <p>Diese Präsentation wurde nach bestem Wissen zusammengestellt, dennoch übernimmt DATAGROUP SE keinerlei Gewähr für Genauigkeit und Vollständigkeit der ausdrücklich oder implizit gemachten Angaben. Dies gilt auch für jede andere schriftliche oder mündliche Aussage, die gegenüber dem interessierten Empfänger oder dessen Beratern gemacht wurde. Jegliche Haftung ist ausdrücklich ausgeschlossen.</p>
-    <p>Diese Präsentation beinhaltet Angaben, Schätzungen und Voraussagen in Bezug auf die erwartete zukünftige Entwicklung. Sie basieren auf verschiedenen Annahmen, die vom Management der DATAGROUP SE in Bezug auf die erwarteten Ergebnisse getroffen wurden, und können sich je nach der tatsächlichen Entwicklung als wahr oder falsch herausstellen. Für die Richtigkeit dieser Angaben wird keine Gewähr übernommen. Die in dieser Präsentation gemachten Angaben sind nur eine Auswahl und deshalb nicht vollständig. Erweiterungen, Änderungen oder Korrekturen bleiben ausdrücklich vorbehalten. Für die Richtigkeit von Kennzahlen und Schätzungen aus explizit gekennzeichneten, öffentlich zugänglichen Quellen übernimmt die DATAGROUP SE keine Gewähr.</p>
-    <p>Diese Präsentation ist vertraulich und sie bzw. ihr Inhalt darf weder ganz noch teilweise an Dritte weitergegeben werden.</p>
-    <p>Ohne vorherige Zustimmung der DATAGROUP SE dürfen unter keinen Umständen Mitarbeiter, Repräsentanten, Vertreter, Berater, Kunden oder Lieferanten der DATAGROUP SE kontaktiert werden.</p>
-  </div>
-</div>
-
-</div><!-- end .presentation -->
-
-<!-- ==========================================
-   JAVASCRIPT MODULES
-   ========================================== -->
-<script>
-// ============================================
-// NAVIGATION
-// ============================================
-const slides = document.querySelectorAll('.slide');
-const TOTAL = slides.length;
-let currentIdx = 0;
-const notesData = {}; // {slideIdx: "text"}
-
-function showSlide(idx) {
-  slides[currentIdx].classList.remove('active');
-  currentIdx = Math.max(0, Math.min(idx, TOTAL - 1));
-  slides[currentIdx].classList.add('active');
-  updateNotesPanel();
-}
-
-function navigate(dir) {
-  showSlide(currentIdx + dir);
-}
-
-document.addEventListener('keydown', (e) => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
-  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
-  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); exportJSON(); }
-});
-
-// ============================================
-// SETTINGS
-// ============================================
-function openSettings() {
-  openAgendaSettings();
-  document.getElementById('settingsOverlay').classList.add('open');
-}
-function closeSettings() { document.getElementById('settingsOverlay').classList.remove('open'); }
-
-document.getElementById('settingsOverlay').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('settingsOverlay')) closeSettings();
-});
-
-function applySettings() {
-  const title = document.getElementById('set-title').value;
-  const customer = document.getElementById('set-customer').value;
-  const date = document.getElementById('set-date').value;
-
-  document.getElementById('cover-title').innerHTML = title.replace(/–/g,'–');
-  document.getElementById('cover-customer').textContent = customer;
-  document.getElementById('cover-date').textContent = date;
-  document.title = title;
-
-  saveAgendaSettings();
-  closeSettings();
-}
-
-// RACI switch
-function switchRaciTab(id, btn) {
-  document.querySelectorAll('.raci-panel').forEach(function(p){ p.style.display='none'; });
-  document.querySelectorAll('.raci-tab').forEach(function(t){ t.classList.remove('active'); });
-  var panel = document.getElementById('raci-panel-'+id);
-  if (panel) panel.style.display='block';
-  if (btn) btn.classList.add('active');
-}
-
-
-// ============================================
-// NOTES / PROTOCOL
-// ============================================
-function toggleNotes() {
-  document.getElementById('notesSidebar').classList.toggle('open');
-}
-
-function updateNotesPanel() {
-  const slide = slides[currentIdx];
-  const num = slide.getAttribute('data-slide');
-  const title = slide.getAttribute('data-title');
-  document.getElementById('notesSlideInfo').textContent = `Folie ${num} – ${title}`;
-  document.getElementById('notesTextarea').value = notesData[currentIdx] || '';
-}
-
-document.getElementById('notesTextarea').addEventListener('input', (e) => {
-  notesData[currentIdx] = e.target.value;
-});
-
-function exportNotesTXT() {
-  let out = `WORKSHOP-PROTOKOLL\nKunde: ${document.getElementById('cover-customer').textContent}\nDatum: ${document.getElementById('cover-date').textContent}\n\n`;
-  slides.forEach((slide, i) => {
-    const note = notesData[i];
-    if (note && note.trim()) {
-      out += `--- Folie ${slide.getAttribute('data-slide')}: ${slide.getAttribute('data-title')} ---\n${note}\n\n`;
-    }
-  });
-  const blob = new Blob([out], { type: 'text/plain' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'protokoll.txt'; a.click();
-}
-
-function exportNotesPDF() {
-  // 1. Dynamisches CSS für den Druck erzeugen
-  if (!document.getElementById('custom-print-style')) {
-      const printStyle = document.createElement('style');
-      printStyle.id = 'custom-print-style';
-      printStyle.innerHTML = `
-          @media print {
-              /* DIN A4 Format mit sicheren Rändern */
-              @page {
-                  size: A4 portrait;
-                  margin: 10mm;
-              }
-              
-              html, body {
-                  height: auto !important;
-                  overflow: visible !important;
-                  background-color: #ffffff !important;
-                  margin: 0 !important;
-                  padding: 0 !important;
-              }
-              
-              /* Alle Menüs und Overlays konsequent ausblenden */
-              #presentation, .settings-btn, .notes-toggle, .notes-sidebar, .nav-buttons, .settings-overlay, #ui-layer, .no-print {
-                  display: none !important;
-              }
-              
-              #print-section {
-                  display: block !important;
-                  position: static !important;
-                  width: 100% !important;
-              }
-
-              /* --- FIX FÜR WEISSE ZWISCHENSEITEN --- */
-              /* Höhe auf 265mm begrenzt (A4 ist 297mm - 20mm Rand = 277mm). 
-                 Die fehlenden 12mm Puffer verhindern leere Subpixel-Seitenumbrüche! */
-              .print-wrapper {
-                  page-break-after: always !important;
-                  page-break-inside: avoid !important;
-                  break-after: page !important;
-                  display: flex !important;
-                  flex-direction: column !important;
-                  height: 265mm !important;     
-                  max-height: 265mm !important;
-                  overflow: hidden !important;  
-                  padding: 0 !important;
-                  margin: 0 !important;
-                  box-sizing: border-box !important;
-              }
-
-              .print-wrapper:last-child {
-                  page-break-after: auto !important;
-                  break-after: auto !important;
-              }
-
-              /* Bilderrahmen für die Folie (Exakt 16:9 auf A4 Breite skaliert) */
-              .slide-print-container {
-                  position: relative !important;
-                  width: 190mm !important;
-                  height: 107mm !important; 
-                  overflow: hidden !important; 
-                  border: 1px solid #cccccc !important;
-                  margin-bottom: 5mm !important;
-                  box-sizing: border-box !important;
-                  flex-shrink: 0 !important;
-              }
-
-              /* Geklonte Folie bleibt nativ 1200x675px und wird auf 59.8% geschrumpft */
-              .slide-print-container .slide {
-                  position: absolute !important;
-                  top: 0 !important;
-                  left: 0 !important;
-                  width: 1200px !important;
-                  height: 675px !important;
-                  transform: scale(0.598) !important; 
-                  transform-origin: top left !important;
-                  opacity: 1 !important;
-                  visibility: visible !important;
-                  display: block !important;
-                  background: #ffffff !important;
-                  margin: 0 !important;
-                  padding: 0 !important;
-                  pointer-events: none !important;
-              }
-              
-              .slide-print-container .slide-body {
-                  overflow: hidden !important; 
-              }
-
-              /* Notizen füllen den Rest und werden abgeschnitten, falls sie zu lang sind */
-              .print-notes {
-                  flex: 1 !important; 
-                  overflow: hidden !important; 
-                  background: #f9f9f9 !important;
-                  border-left: 4px solid #E3000F !important;
-                  padding: 15px !important;
-                  font-family: Arial, sans-serif !important;
-                  font-size: 14px !important;
-                  line-height: 1.5 !important;
-                  color: #333333 !important;
-                  box-sizing: border-box !important;
-              }
-          }
-          
-          @media screen {
-              #print-section { display: none !important; }
-          }
-      `;
-      document.head.appendChild(printStyle);
-  }
-
-  // 2. Alten Druck-Container bereinigen
-  let oldPrintSection = document.getElementById('print-section');
-  if (oldPrintSection) oldPrintSection.remove();
-  
-  const printSection = document.createElement('div');
-  printSection.id = 'print-section';
-  document.body.appendChild(printSection);
-
-  // 3. Metadaten holen
-  let customer = 'Kunde';
-  if (document.getElementById('cover-customer')) customer = document.getElementById('cover-customer').textContent;
-
-  const allSlides = document.querySelectorAll('.presentation .slide');
-
-  // --- HILFSFUNKTION ZUM GENERIEREN EINER DRUCKSEITE ---
-  function createPrintPage(slide, slideIndex, note, tabIndex = -1) {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'print-wrapper';
-
-      let slideTitle = slide.getAttribute('data-title') || `Folie ${slideIndex + 1}`;
-      
-      const clone = slide.cloneNode(true);
-      clone.classList.add('active'); 
-      
-      // Geschachtelte Details/Akkordeons für den Druck aufklappen
-      clone.querySelectorAll('details').forEach(det => det.setAttribute('open', 'true'));
-
-      // --- LOGIK FÜR TABS ---
-      if (tabIndex !== -1) {
-          const clonedPanels = clone.querySelectorAll('.tab-panel');
-          const clonedBtns = clone.querySelectorAll('.tab-btn');
-          
-          // Nur den aktuellen Tab sichtbar machen
-          clonedPanels.forEach((p, idx) => {
-              if (idx === tabIndex) {
-                  p.classList.add('active');
-                  p.style.display = 'block'; // Zwingend anzeigen
-              } else {
-                  p.classList.remove('active');
-                  p.style.display = 'none';  // Verstecken
-              }
-          });
-          
-          // Button-Status & Titel anpassen
-          clonedBtns.forEach((b, idx) => {
-              if (idx === tabIndex) {
-                  b.classList.add('active');
-                  slideTitle += ` | Tab: ${b.textContent}`; // Tab-Name an den Header anhängen
-              } else {
-                  b.classList.remove('active');
-              }
-          });
-      }
-
-      // Header erstellen
-      wrapper.innerHTML += `
-          <div style="height: 15mm; margin-bottom: 5mm; display: flex; justify-content: space-between; border-bottom: 2px solid #E3000F; padding-bottom: 5px; font-family: Arial, sans-serif; align-items: flex-end; box-sizing: border-box;">
-              <div>
-                  <h2 style="font-size:16px; color:#E3000F; margin:0;">Workshop Protokoll | ${customer}</h2>
-              </div>
-              <div style="font-size:14px; color:#666;">Folie ${slideIndex + 1}: ${slideTitle}</div>
-          </div>
-      `;
-
-      const slideContainer = document.createElement('div');
-      slideContainer.className = 'slide-print-container';
-
-      // Diagramme rüberkopieren (Chart.js etc.)
-      const origCanvases = slide.querySelectorAll('canvas');
-      const clonedCanvases = clone.querySelectorAll('canvas');
-      origCanvases.forEach((origCanvas, index) => {
-          const clonedCanvas = clonedCanvases[index];
-          if (clonedCanvas && origCanvas.width > 0) {
-              clonedCanvas.width = origCanvas.width;
-              clonedCanvas.height = origCanvas.height;
-              clonedCanvas.getContext('2d').drawImage(origCanvas, 0, 0);
-          }
-      });
-
-      slideContainer.appendChild(clone);
-      wrapper.appendChild(slideContainer);
-
-      // Notizen anhängen
-      const noteDiv = document.createElement('div');
-      noteDiv.className = 'print-notes';
-      if (note.trim() !== '') {
-          noteDiv.innerHTML = `<strong>Notizen:</strong><br>${note.replace(/\n/g, '<br>')}`;
-      } else {
-          noteDiv.innerHTML = `<em>Keine Notizen zu dieser Folie erfasst.</em>`;
-      }
-      wrapper.appendChild(noteDiv);
-
-      printSection.appendChild(wrapper);
-  }
-
-  // 4. Folien durchlaufen
-  allSlides.forEach((slide, i) => {
-      let note = notesData[i] || '';
-
-      const tabPanels = slide.querySelectorAll('.tab-panel');
-      
-      // Wenn die Folie Tabs hat, für jeden Tab eine eigene Seite rendern!
-      if (tabPanels.length > 0) {
-          tabPanels.forEach((panel, tabIndex) => {
-              createPrintPage(slide, i, note, tabIndex);
-          });
-      } else {
-          // Normale Folie (keine Tabs)
-          createPrintPage(slide, i, note, -1);
-      }
-  });
-
-  // 5. Sidebar vor dem Aufruf zwingend schließen, damit sie nicht stört!
-  const sidebar = document.getElementById('notesSidebar');
-  if (sidebar) sidebar.classList.remove('open');
-
-  // 6. Native Druckfunktion verzögert aufrufen
-  setTimeout(() => {
-      window.print();
-  }, 500);
-}
-
-// ============================================
-// JSON EXPORT / IMPORT
-// ============================================
-function exportJSON() {
-  const data = {
-    version: '1.0',
-    date: new Date().toISOString(),
-    title: document.getElementById('cover-title').textContent,
-    customer: document.getElementById('cover-customer').textContent,
-    notes: notesData,
-    checklistStates: Array.from(document.querySelectorAll('.checklist-item')).map(el => ({
-      text: el.querySelector('.checklist-text')?.textContent,
-      checked: el.classList.contains('checked')
-    })),
-    kanban: getKanbanState(),
-    fueState: getFUEState()
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'workshop-state.json'; a.click();
-}
-
-function importJSON() {
-  const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
-  input.onchange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const data = JSON.parse(ev.target.result);
-        if (data.notes) Object.assign(notesData, data.notes);
-        if (data.customer) { document.getElementById('cover-customer').textContent = data.customer; document.getElementById('set-customer').value = data.customer; }
-        if (data.title) { document.getElementById('cover-title').textContent = data.title; }
-        if (data.checklistStates) {
-          const items = document.querySelectorAll('.checklist-item');
-          data.checklistStates.forEach((s, i) => { if (items[i] && s.checked) items[i].classList.add('checked'); });
-        }
-        updateNotesPanel();
-        alert('Zustand erfolgreich geladen!');
-      } catch(err) { alert('Fehler beim Laden: ' + err.message); }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
-
-function getKanbanState() {
-  const state = {};
-  document.querySelectorAll('.kanban-col').forEach(col => {
-    state[col.id] = Array.from(col.querySelectorAll('.card-content')).map(c => c.textContent.trim());
-  });
-  return state;
-}
-
-function getFUEState() {
-  const ids = ['inp-adv','inp-core','inp-self','inp-dev','inp-fue-price','inp-discount','inp-rise-capex','inp-onprem-capex','inp-onprem-opex','inp-horizon'];
-  const state = {};
-  ids.forEach(id => { const el = document.getElementById(id); if (el) state[id] = el.value; });
-  return state;
-}
-
-// ============================================
-// TABS MODULE
-// ============================================
-const TabsModule = {
-  init: function() {},
-  switchTab: function(containerId, panelId, btnElement) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    btnElement.classList.add('active');
-    const panel = document.getElementById(panelId);
-    if (panel) panel.classList.add('active');
-  }
-};
-
-// ============================================
-// CHECKLIST MODULE
-// ============================================
-const ChecklistModule = {
-  toggle: function(element) {
-    element.classList.toggle('checked');
-  }
-};
-
-// ============================================
-// KANBAN MODULE
-// ============================================
-const KanbanModule = {
-  init: function() { this.setupDragAndDrop(); },
-  addCard: function(columnId) {
-    const text = prompt('Inhalt der Karte:');
-    if (!text) return;
-    const column = document.getElementById(columnId);
-    if (!column) return;
-    const card = this.createCardElement(text, 'card-' + Date.now());
-    column.appendChild(card);
-    this.saveState();
-  },
-  createCardElement: function(text, id) {
-    const card = document.createElement('div');
-    card.className = 'kanban-card';
-    card.id = id; card.draggable = true;
-    card.innerHTML = `<button class="card-delete" onclick="this.parentElement.remove();KanbanModule.saveState()">✕</button><div class="card-content" contenteditable="true">${text}</div>`;
-    card.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', card.id); card.style.opacity = '0.5'; });
-    card.addEventListener('dragend', () => { card.style.opacity = '1'; this.saveState(); });
-    return card;
-  },
-  setupDragAndDrop: function() {
-    document.querySelectorAll('.kanban-col').forEach(col => {
-      col.addEventListener('dragover', (e) => { e.preventDefault(); col.classList.add('drag-over'); });
-      col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
-      col.addEventListener('drop', (e) => {
-        e.preventDefault(); col.classList.remove('drag-over');
-        const cardId = e.dataTransfer.getData('text/plain');
-        const card = document.getElementById(cardId);
-        if (card) { col.appendChild(card); this.saveState(); }
-      });
-    });
-    // Initial draggable setup for existing cards
-    document.querySelectorAll('.kanban-card').forEach(card => {
-      card.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', card.id); card.style.opacity = '0.5'; });
-      card.addEventListener('dragend', () => { card.style.opacity = '1'; });
-    });
-  },
-  saveState: function() {}
-};
-
-// ============================================
-// TABLE MODULE
-// ============================================
-const TableModule = { init: function() {}, addRow: function() {}, deleteRow: function() {}, save: function() {} };
-
-// ============================================
-// FUE TCO MODULE
-// ============================================
-const FueTcoModule = {
-  chart: null,
-  roiFactors: [
-    { id: 1, name: 'IT-Infrastruktur Einsparung (HW/RZ)', value: 120000 },
-    { id: 2, name: 'SAP Basis Administration Effizienz', value: 55000 },
-    { id: 3, name: 'Geringere Ausfallzeiten (SLA)', value: 20000 },
-    { id: 4, name: 'Energiekosten RZ', value: 45000 },
-    { id: 5, name: 'Agilität / Time-to-Market', value: 150000 },
-    { id: 6, name: 'Bestandsoptimierung (Working Capital)', value: 10000 },
-    { id: 7, name: 'Finanzabschluss Beschleunigung', value: 5000 },
-    { id: 8, name: 'Automatisierung HR-Prozesse', value: 4000 },
-    { id: 9, name: 'Externe Beraterkosten Reduzierung', value: 10000 },
-    { id: 10, name: 'KI / Predictive Maintenance', value: 9000 }
-  ],
-  
-  // NEU: Die Start-Funktion
-  init: function() {
-    this.renderROIFactors(); // 1. Zeichnet die Liste EINMAL beim Start
-    this.calculateAll();     // 2. Berechnet alle initialen Summen und den Chart
-  },
-  
-  gv: function(id) { return parseFloat(document.getElementById(id)?.value || 0); },
-  fmt: function(v) { if (Math.abs(v) >= 1e6) return '€ ' + (v/1e6).toFixed(2) + 'M'; if (Math.abs(v) >= 1e3) return '€ ' + (v/1e3).toFixed(0) + 'k'; return '€ ' + Math.round(v); },
-  setTxt: function(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; },
-
-  calculateAll: function() {
-    const adv = this.gv('inp-adv'); const core = this.gv('inp-core');
-    const self = this.gv('inp-self'); const dev = this.gv('inp-dev');
-    const totalFue = Math.ceil(adv * 1 + core * 0.2 + self * 0.033 + dev * 2);
-    this.setTxt('out-fue-total', totalFue.toLocaleString('de-DE'));
-    this.updateTshirtSize(totalFue);
-
-    const price = this.gv('inp-fue-price'); const disc = this.gv('inp-discount');
-    const monthlyNet = (totalFue * price) * (1 - disc/100);
-    const annualRise = monthlyNet * 12;
-    this.setTxt('out-rise-annual', this.fmt(annualRise));
-
-    const years = parseInt(document.getElementById('inp-horizon')?.value || 5);
-    const wacc = 0.08;
-    const opCapex = this.gv('inp-onprem-capex'); const riseCapex = this.gv('inp-rise-capex');
-    const opOpex = this.gv('inp-onprem-opex');
-    const annualBenefit = this.roiFactors.reduce((s, f) => s + f.value, 0);
-
-    let npvOP = opCapex, npvRise = riseCapex;
-    const labels = ['Jahr 0'], dataOP = [npvOP], dataRise = [npvRise];
-    for (let i = 1; i <= years; i++) {
-      const f = Math.pow(1 + wacc, i);
-      npvOP += opOpex / f;
-      npvRise += annualRise / f;
-      labels.push('Jahr ' + i); dataOP.push(npvOP); dataRise.push(npvRise);
-    }
-    this.setTxt('out-tco-onprem', this.fmt(npvOP));
-    this.setTxt('out-tco-rise', this.fmt(npvRise));
-
-    const savings = npvOP - npvRise;
-    const netBenefit = savings + annualBenefit * years;
-    const roi = riseCapex > 0 ? (netBenefit / riseCapex * 100) : 0;
-    this.setTxt('out-roi', roi.toFixed(0) + '%');
-    this.setTxt('out-annual-value', this.fmt(annualBenefit));
-
-    this.renderChart({ labels, dataOP, dataRise });
     
-    // Keine renderROIFactors() hier! (Wie im letzten Schritt besprochen)
-  },
+</head>
+<body class="{{THEME_CLASS}}">
+    
+    <div class="controls-overlay">
+        <button class="notes-toggle" onclick="toggleNotes()">N O T I Z E N</button>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="navigate(-1)">&#8592;</button>
+            <button class="nav-btn" onclick="navigate(1)">&#8594;</button>
+        </div>
+    </div>
 
-  updateTshirtSize: function(fue) {
-    ['xxs','xs','s','m','l'].forEach(s => { const r = document.getElementById('tier-'+s); if (r) r.classList.remove('active-tier'); });
-    const size = fue <= 135 ? 'xxs' : fue <= 550 ? 'xs' : fue <= 1000 ? 's' : fue <= 2000 ? 'm' : 'l';
-    const row = document.getElementById('tier-' + size);
-    if (row) row.classList.add('active-tier');
-  },
+    <div class="presentation" id="presentation">
 
-  renderChart: function(d) {
-    const canvas = document.getElementById('tcoChart');
-    if (!canvas || !window.Chart) return;
-    if (this.chart) this.chart.destroy();
-    this.chart = new Chart(canvas, {
-      type: 'line',
-      data: {
-        labels: d.labels,
-        datasets: [
-          { label: 'On-Premise TCO', data: d.dataOP, borderColor: '#999', backgroundColor: 'rgba(150,150,150,0.08)', fill: true, tension: 0.3, borderWidth: 2 },
-          { label: 'RISE with SAP TCO', data: d.dataRise, borderColor: '#E3000F', backgroundColor: 'rgba(227,0,15,0.08)', fill: true, tension: 0.3, borderWidth: 2 }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 } } },
-          tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': € ' + Math.round(ctx.parsed.y).toLocaleString('de-DE') } }
-        },
-        scales: {
-          y: { ticks: { callback: (v) => '€' + (v/1e6).toFixed(1) + 'M', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
-          x: { ticks: { font: { size: 11 } }, grid: { display: false } }
+        {{TITELFOLIE_CONTENT}}
+        
+        {{AGENDA_CONTENT}}
+        
+        {{CONTENT_SLIDES}}
+        
+        {{SCHLUSSFOLIE_CONTENT}}
+        
+        {{DISCLAIMER_CONTENT}}
+
+    </div>
+
+    <aside class="notes-sidebar" id="notesSidebar">
+        <div style="background:var(--primary); color:#fff; padding:15px; display:flex; justify-content:space-between; align-items:center;">
+            <h4 style="margin:0; color:#fff; font-size:14px;">📝 Protokoll & Notizen</h4>
+            <button onclick="toggleNotes()" style="background:none; border:none; color:#fff; cursor:pointer; font-size:16px;">✕</button>
+        </div>
+        <div id="notesSlideInfo" style="padding:10px 15px; background:var(--surface-alt); font-size:12px; color:var(--text-secondary); font-weight:bold; border-bottom:1px solid var(--border);">Folie 1</div>
+        
+        <textarea id="notesTextarea" placeholder="Notizen zur aktuellen Folie..." style="flex:1; padding:15px; border:none; outline:none; resize:none; font-family:inherit; font-size:13px; background:var(--surface); color:var(--text);"></textarea>
+        
+        <div style="padding:10px; border-top:1px solid var(--border); display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <button onclick="exportPresentationPDF()" style="padding:8px; background:var(--primary); color:#fff; border:none; cursor:pointer; font-size:12px; font-weight:bold; border-radius:var(--radius-sm);">PDF Präsentation</button>
+            <button onclick="exportNotesTXT()" style="padding:8px; background:var(--surface-alt); color:var(--text); border:1px solid var(--border); cursor:pointer; font-size:12px; font-weight:bold; border-radius:var(--radius-sm);">TXT Protokoll</button>
+            <button onclick="exportJSON()" style="padding:8px; background:#1d1d1f; color:#fff; border:none; cursor:pointer; font-size:12px; font-weight:bold; border-radius:var(--radius-sm);">JSON Speichern</button>
+            <button onclick="document.getElementById('json-upload').click()" style="padding:8px; background:var(--surface-alt); color:var(--text); border:1px solid var(--border); cursor:pointer; font-size:12px; font-weight:bold; border-radius:var(--radius-sm);">JSON Laden</button>
+            <input type="file" id="json-upload" style="display:none" accept=".json" onchange="importJSON(event)">
+        </div>
+    </aside>
+
+    <script>
+        let currentIdx = 0;
+        let notesData = {};
+
+        // Hilfsfunktion, um immer die aktuellen Slides zu holen (wichtig bei dynamischem Aufbau)
+        function getSlides() {
+            return document.querySelectorAll('.presentation > .slide');
         }
-      }
-    });
-  },
 
-  renderROIFactors: function() {
-    const list = document.getElementById('roi-factors-list');
-    if (!list) return;
-    list.innerHTML = '';
-    this.roiFactors.forEach((f, i) => {
-      const div = document.createElement('div');
-      div.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px;padding:8px;background:#f9f9f9;border:1px solid #eee;';
-      div.innerHTML = `
-        <span style="font-size:11px;color:#999;min-width:16px">${i+1}</span>
-        <input type="text" value="${f.name}" oninput="FueTcoModule.roiFactors[${i}].name=this.value" style="flex:1;border:none;background:transparent;font-size:12px;outline:none;color:var(--text)">
-        <input type="number" value="${f.value}" oninput="FueTcoModule.roiFactors[${i}].value=parseFloat(this.value)||0;FueTcoModule.calculateAll()" style="width:80px;border:1px solid #ddd;padding:3px 6px;font-size:12px;font-weight:700;color:var(--success);text-align:right">
-        <button onclick="FueTcoModule.roiFactors.splice(${i},1); FueTcoModule.renderROIFactors(); FueTcoModule.calculateAll()" style="background:none;border:none;cursor:pointer;color:#ccc;font-size:14px">✕</button>
-      `;
-      list.appendChild(div);
-    });
-  },
+        // 1. Init & Navigation
+        function initPresentation() {
+            showSlide(currentIdx);
+            
+            document.addEventListener('keydown', (e) => {
+                // Keine Navigation triggern, wenn der User gerade tippt
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') navigate(1);
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
+            });
+        }
 
-  addROIFactor: function() {
-    this.roiFactors.push({ id: Date.now(), name: 'Neuer Business Value', value: 50000 });
-    this.renderROIFactors(); 
-    this.calculateAll();
-  }
+        function showSlide(idx) {
+            const slides = getSlides();
+            if (slides.length === 0) return;
+            
+            // Aktuelle ausblenden
+            if(slides[currentIdx]) slides[currentIdx].classList.remove('active');
+            
+            // Neue berechnen
+            currentIdx = Math.max(0, Math.min(idx, slides.length - 1));
+            slides[currentIdx].classList.add('active');
+            
+            updateNotesPanel();
+        }
+
+        function navigate(dir) { showSlide(currentIdx + dir); }
+
+        // 2. Notes & Protokoll
+        function toggleNotes() { document.getElementById('notesSidebar').classList.toggle('open'); }
+        
+        function updateNotesPanel() {
+            const slides = getSlides();
+            if (slides.length === 0) return;
+            const slide = slides[currentIdx];
+            const t = slide.getAttribute('data-title') || 'Unbenannt';
+            document.getElementById('notesSlideInfo').textContent = `Folie ${currentIdx + 1} – ${t}`;
+            document.getElementById('notesTextarea').value = notesData[currentIdx] || '';
+        }
+        
+        document.getElementById('notesTextarea').addEventListener('input', (e) => { 
+            notesData[currentIdx] = e.target.value; 
+        });
+
+        // 3. Export & Import
+        function exportPresentationPDF() {
+            const element = document.getElementById('presentation');
+            const slides = getSlides();
+            
+            // Alle Slides temporär sichtbar machen für den Export
+            slides.forEach(s => { s.style.position = 'relative'; s.style.display = 'flex'; s.style.opacity = '1'; });
+            
+            html2pdf().set({
+                margin: 0, filename: 'Praesentation.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+            }).from(element).save().then(() => {
+                // Layout wiederherstellen
+                slides.forEach(s => { s.style.position = 'absolute'; s.style.display = 'none'; });
+                showSlide(currentIdx);
+            });
+        }
+
+        function exportNotesTXT() {
+            const slides = getSlides();
+            let out = `WORKSHOP-PROTOKOLL\n\n`;
+            slides.forEach((s, i) => {
+                if(notesData[i] && notesData[i].trim() !== '') {
+                    out += `--- Folie ${i+1}: ${s.getAttribute('data-title') || 'Unbenannt'} ---\n${notesData[i]}\n\n`;
+                }
+            });
+            const blob = new Blob([out], { type: 'text/plain' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'protokoll.txt'; a.click();
+        }
+
+        function exportJSON() {
+            const data = {
+                notes: notesData
+            };
+            
+            // Hook für externe Module (z.B. Kanban, Agenda, Job-Profile), um ihren Status im JSON zu speichern
+            if(window.gatherModuleStates) {
+                data.modules = window.gatherModuleStates();
+            }
+
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'workshop-status.json'; a.click();
+        }
+
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if(data.notes) { 
+                        notesData = data.notes; 
+                        updateNotesPanel(); 
+                    }
+                    
+                    // Hook für externe Module, um ihren Status wiederherzustellen
+                    if(data.modules && window.applyModuleStates) {
+                        window.applyModuleStates(data.modules);
+                    }
+                    
+                    alert('Status erfolgreich geladen!');
+                } catch(err) { 
+                    alert('Fehler beim Laden der JSON-Datei.'); 
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Input resetten, damit selbe Datei nochmal geladen werden kann
+        }
+
+        window.onload = initPresentation;
+    </script>
+
+    <script id="module-js-titel">
+/**
+ * MODULE: TITEL & SETTINGS
+ * Verwaltung der Präsentationsdaten und Synchronisation der Claims.
+ */
+const TitelModule = {
+    
+    init: function() {
+        // Initiale Daten aus dem HTML in die Input-Felder laden
+        document.getElementById('inp-title').value = document.getElementById('cover-title').textContent;
+        document.getElementById('inp-customer').value = document.getElementById('cover-customer').textContent;
+        document.getElementById('inp-date').value = document.getElementById('cover-date').textContent;
+        document.getElementById('inp-presenter').value = document.getElementById('cover-presenter').textContent;
+        
+        // Initialen Claim setzen
+        this.updateGlobalClaims(document.getElementById('inp-customer').value);
+    },
+
+    openSettings: function() {
+        document.getElementById('titelSettingsModal').classList.add('open');
+    },
+
+    closeSettings: function() {
+        document.getElementById('titelSettingsModal').classList.remove('open');
+    },
+
+    applySettings: function() {
+        const title = document.getElementById('inp-title').value;
+        const customer = document.getElementById('inp-customer').value;
+        const date = document.getElementById('inp-date').value;
+        const presenter = document.getElementById('inp-presenter').value;
+
+        // UI auf der Titelfolie aktualisieren
+        document.getElementById('cover-title').textContent = title;
+        document.getElementById('cover-customer').textContent = customer;
+        document.getElementById('cover-date').textContent = date;
+        document.getElementById('cover-presenter').textContent = presenter;
+        
+        // Browsertitel aktualisieren
+        document.title = title;
+
+        // Globalen Claim auf allen Folien synchronisieren
+        this.updateGlobalClaims(customer);
+
+        this.closeSettings();
+        
+        // Optional: Status für JSON-Export sichern
+        if (window.exportJSON) {
+            console.log("Settings angewendet.");
+        }
+    },
+
+    /**
+     * Aktualisiert den Claim-Text im Branding-Bereich aller Slides
+     */
+    updateGlobalClaims: function(customerName) {
+        const claims = document.querySelectorAll('.branding-claim');
+        claims.forEach(el => {
+            el.innerHTML = `SAP Transformation | ${customerName}`;
+        });
+    }
 };
 
-// GANZ WICHTIG: Hier am Ende des Scripts starten wir das Modul!
-document.addEventListener('DOMContentLoaded', () => {
-  FueTcoModule.init();
-});
+// Initialisierung
+document.addEventListener('DOMContentLoaded', () => TitelModule.init());
+</script>
+<script id="module-js-agenda">
+/* ==========================================
+   AGENDA LOGIK
+   ========================================== */
 
-// ============================================
-// AGENDA MODULE
-// ============================================
-var agendaData = [
-  { time:'09:00 – 09:30', title:'Begrüßung & Vorstellung', desc:'Eröffnung des Workshops, Vorstellungsrunde, Zielsetzung', isBreak:false },
-  { time:'09:30 – 10:30', title:'SAP Betriebsmodelle im Überblick', desc:'On-Premise, RISE with SAP, GROW with SAP – Vergleich & Entscheidungskriterien', isBreak:false },
-  { time:'10:30 – 11:00', title:'GROW with SAP', desc:'Public Cloud, Standardprozesse, Vor- & Nachteile, IT-Organisation', isBreak:false },
-  { time:'11:00 – 11:30', title:'RISE with SAP', desc:'Private Cloud Migration, Komplexlandschaft, IT-Auswirkungen', isBreak:false },
-  { time:'11:30 – 11:45', title:'☕ Kaffeepause', desc:'', isBreak:true },
-  { time:'11:45 – 12:30', title:'Vergleich & FUE-Kalkulation', desc:'Tabellarischer Vergleich, Live-Sizing-Rechner, TCO & ROI', isBreak:false },
-  { time:'12:30 – 13:15', title:'🥗 Mittagspause', desc:'', isBreak:true },
-  { time:'13:15 – 14:00', title:'ECC & S/4HANA Schmerzpunkte', desc:'Erfahrungswerte aus Migration & Release-Wechsel', isBreak:false },
-  { time:'14:00 – 14:45', title:'Clean Core Strategie', desc:'Technische Schuld abbauen, Roadmap, Transformationsvergleich', isBreak:false },
-  { time:'14:45 – 15:15', title:'Workshop: Offene Themen', desc:'Kanban Board – Offen · In Klärung · Entscheidung', isBreak:false },
-  { time:'15:15 – 15:45', title:'Next Steps & Ausblick', desc:'Interaktive Checkliste, konkrete Maßnahmen', isBreak:false },
-  { time:'15:45 – 16:00', title:'✅ Abschluss & Q&A', desc:'', isBreak:false }
+// Initiale Agenda-Daten
+let agendaData = [
+  { time:'09:00 – 10:30', title:'📦 Modul 1 – Das Fundament', desc:'Einführung und Grundlagen.', isBreak:false },
+  { time:'10:30 – 10:45', title:'☕ Kaffeepause', desc:'', isBreak:true },
+  { time:'10:45 – 12:30', title:'🗺️ Modul 2 – Deep Dive', desc:'Vertiefung der Thematik.', isBreak:false }
 ];
 
+// Rendert die Agenda auf der Präsentationsfolie
 function renderAgendaSlide() {
-  var list = document.getElementById('display-agenda-list');
+  const list = document.getElementById('display-agenda-list');
   if (!list) return;
   list.innerHTML = '';
-  agendaData.forEach(function(item) {
-    var li = document.createElement('li');
-    li.className = 'agenda-item' + (item.isBreak ? ' agenda-break' : '');
-    li.innerHTML = '<div class="agenda-time">' + item.time + '</div>' +
-      '<div class="agenda-content">' +
-        '<div class="agenda-title">' + item.title + '</div>' +
-        (item.desc ? '<div class="agenda-desc">' + item.desc + '</div>' : '') +
-      '</div>';
-    list.appendChild(li);
+  
+  agendaData.forEach(item => {
+    if (item.isBreak) {
+      list.innerHTML += `
+        <li class="agenda-item agenda-break">
+          <div class="agenda-time">${item.time}</div>
+          <div class="agenda-content">
+            <div class="agenda-title">${item.title}</div>
+          </div>
+        </li>`;
+    } else {
+      list.innerHTML += `
+        <li class="agenda-item">
+          <div class="agenda-time">${item.time}</div>
+          <div class="agenda-content">
+            <div class="agenda-title">${item.title}</div>
+            <div class="agenda-desc">${item.desc}</div>
+          </div>
+        </li>`;
+    }
   });
 }
 
+// Öffnet das Modal und baut die Eingabefelder auf
 function openAgendaSettings() {
-  var list = document.getElementById('agenda-settings-list');
+  const list = document.getElementById('settings-agenda-list');
   if (!list) return;
   list.innerHTML = '';
-  agendaData.forEach(function(item, idx) {
-    list.innerHTML += '<div class="agenda-setting-row" id="agset-' + idx + '">' +
-      '<input type="text" style="width:150px;flex-shrink:0;" value="' + item.time.replace(/"/g,'&quot;') + '" id="agset-time-' + idx + '" placeholder="09:00 – 10:30">' +
-      '<div style="flex:1;display:flex;flex-direction:column;gap:4px;">' +
-        '<input type="text" value="' + item.title.replace(/"/g,'&quot;').replace(/&/g,'&amp;') + '" id="agset-title-' + idx + '" placeholder="Titel">' +
-        '<input type="text" value="' + item.desc.replace(/"/g,'&quot;').replace(/&/g,'&amp;') + '" id="agset-desc-' + idx + '" placeholder="Beschreibung (leer = als Pause markiert)">' +
-      '</div>' +
-      '<button class="btn-icon" onclick="removeAgendaRow(' + idx + ')" title="Entfernen">🗑️</button>' +
-    '</div>';
+  
+  agendaData.forEach((item, idx) => {
+    list.innerHTML += `
+      <div class="setting-row" id="set-ag-${idx}">
+        <input type="text" class="setting-time-input" value="${item.time}" id="set-ag-time-${idx}">
+        <div class="setting-inputs-col">
+          <input type="text" value="${item.title.replace(/"/g,'&quot;')}" id="set-ag-title-${idx}" placeholder="Titel">
+          <input type="text" value="${item.desc.replace(/"/g,'&quot;')}" id="set-ag-desc-${idx}" placeholder="Beschreibung (leer = Pause)">
+        </div>
+        <button class="btn-icon-del" onclick="removeAgendaRow(${idx})" title="Zeile löschen">🗑️</button>
+      </div>`;
   });
+  
+  document.getElementById('agendaSettingsModal').classList.add('open');
 }
 
+// Fügt eine neue, leere Zeile im Modal hinzu
 function addAgendaRow() {
   agendaData.push({ time:'00:00 – 00:00', title:'Neuer Punkt', desc:'', isBreak:false });
-  openAgendaSettings();
+  openAgendaSettings(); // Re-render Modal
 }
 
+// Löscht eine Zeile im Modal
 function removeAgendaRow(idx) {
   agendaData.splice(idx, 1);
-  openAgendaSettings();
+  openAgendaSettings(); // Re-render Modal
 }
 
+// Schließt das Modal ohne zu speichern
+function closeAgendaSettings() {
+  const modal = document.getElementById('agendaSettingsModal');
+  if (modal) modal.classList.remove('open');
+}
+
+// Speichert die Eingaben aus dem Modal in das Array und aktualisiert die Ansicht
 function saveAgendaSettings() {
-  var newAgenda = [];
-  for (var i = 0; i < agendaData.length; i++) {
-    var timeEl = document.getElementById('agset-time-' + i);
+  let newAgenda = [];
+  for (let i = 0; i < agendaData.length; i++) {
+    const timeEl = document.getElementById(`set-ag-time-${i}`);
     if (!timeEl) continue;
-    var title = document.getElementById('agset-title-' + i).value;
-    var desc  = document.getElementById('agset-desc-' + i).value;
-    newAgenda.push({ time: timeEl.value, title: title, desc: desc, isBreak: desc.trim() === '' && (title.toLowerCase().includes('pause') || title.includes('☕') || title.includes('🥗')) });
+    
+    const title = document.getElementById(`set-ag-title-${i}`).value;
+    const desc  = document.getElementById(`set-ag-desc-${i}`).value;
+    
+    newAgenda.push({ 
+      time: timeEl.value, 
+      title: title, 
+      desc: desc, 
+      isBreak: desc.trim() === '' 
+    });
   }
+  
   agendaData = newAgenda;
   renderAgendaSlide();
+  closeAgendaSettings();
 }
 
-// ============================================
-// INIT
-// ============================================
+// Schließe Modal bei Klick auf den Hintergrund
 document.addEventListener('DOMContentLoaded', () => {
-  KanbanModule.init();
-  FueTcoModule.calculateAll();
-  updateNotesPanel();
+  const modalOverlay = document.getElementById('agendaSettingsModal');
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', function(e) { 
+      if (e.target === this) closeAgendaSettings(); 
+    });
+  }
+  
+  // Initiales Rendern beim Laden der Seite
   renderAgendaSlide();
 });
 </script>
+
+
 </body>
 </html>

@@ -471,11 +471,10 @@
             agendaItemCount++;
             const container = document.getElementById('agendaItemsContainer');
             const div = document.createElement('div');
-            div.className = "flex items-center space-x-2";
+            div.className = "flex space-x-2";
             div.innerHTML = `
-                <input type="time" class="input-field agenda-time" style="flex:0 0 120px" value="${time}">
-                <input type="text" class="input-field agenda-topic" style="flex:1" placeholder="Agenda-Punkt / Thema..." value="${topic}">
-                <button onclick="this.closest('div').remove(); generatePrompt();" class="btn-secondary" style="flex:0 0 auto;padding:0.35rem 0.6rem" title="Entfernen"><i class="fa-solid fa-times"></i></button>
+                <input type="time" class="input-field w-1/3 agenda-time" value="${time}">
+                <input type="text" class="input-field w-2/3 agenda-topic" placeholder="Thema..." value="${topic}">
             `;
             container.appendChild(div);
         }
@@ -906,96 +905,6 @@
             const isCustomTheme = design.startsWith('theme-') && loadedThemesUrls[design];
             const embedCode = document.getElementById('chkEmbedCode').checked;
 
-            // Feature-Flags früh lesen (werden für Template-Vorverarbeitung benötigt)
-            const includeSettings = document.getElementById('chkFeatureSettings').checked;
-            const includeProtocol = document.getElementById('chkFeatureProtocol').checked;
-            const includeState = document.getElementById('chkFeatureState').checked;
-            const includeDisclaimer = document.getElementById('chkDisclaimerState').checked;
-            const includeChapters = document.getElementById('chkFeatureChapters').checked;
-
-            // Alle benötigten Module ermitteln
-            const requiredModules = new Set(['titel', 'agenda', 'stdfolie']);
-            if (includeChapters)   requiredModules.add('kapitel');
-            if (includeDisclaimer) requiredModules.add('dg_disclaimer');
-            if (mode === 'ai') {
-                selectedFunctions.forEach(fn => requiredModules.add(fn));
-            } else {
-                document.querySelectorAll('.slide-function-select').forEach(sel => {
-                    if (sel.value) requiredModules.add(sel.value);
-                });
-            }
-
-            // Manuelle Folien als HTML bauen (für Embed-Modus)
-            function buildManualSlidesHtml() {
-                let slidesHtml = '';
-                const slideInputs = document.querySelectorAll('.manual-slide-input');
-                const slideFuncs = document.querySelectorAll('.slide-function-select');
-                slideInputs.forEach((input, index) => {
-                    const contentVal = input.value.trim();
-                    const funcVal = slideFuncs[index].value;
-                    if (contentVal === '' && funcVal === '') return;
-                    if (funcVal && loadedFunctions[funcVal] && loadedFunctions[funcVal].html) {
-                        slidesHtml += `\n<!-- FOLIE ${index + 1}: ${funcVal} | Inhalt: ${contentVal || 'siehe Funktion'} -->\n`;
-                        slidesHtml += loadedFunctions[funcVal].html + '\n';
-                    } else {
-                        slidesHtml += `\n<!-- KI: FOLIE ${index + 1} – Erstelle eine passende Inhaltsfolie basierend auf dieser Beschreibung: "${contentVal}". Nutze das stdfolie-Template als Gerüst. -->\n`;
-                    }
-                });
-                return slidesHtml;
-            }
-
-            // Fertig vorbereitetes Template mit inlineiertem CSS/JS bauen (für Embed-Modus)
-            function buildEmbeddedTemplate() {
-                if (typeof baseTemplateHtml === 'undefined' || !baseTemplateHtml) return null;
-                let tpl = baseTemplateHtml;
-
-                // 1. <link> für layout.css → inline <style>
-                if (typeof baseLayoutCss !== 'undefined' && baseLayoutCss) {
-                    const layoutCssReady = baseLayoutCss.replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);
-                    const layoutLinkTag = `<link rel="stylesheet" href="https://raw.githubusercontent.com/${repoOwner}/${repoName}/${defaultBranchName}/css/layout.css">`;
-                    tpl = tpl.replace(layoutLinkTag, `<style id="layout-css">\n${layoutCssReady}\n</style>`);
-                }
-
-                // 2. <link id="theme-stylesheet"> → inline <style>
-                if (isCustomTheme && loadedThemes[design]) {
-                    const themeCssReady = loadedThemes[design].replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);
-                    tpl = tpl.replace(
-                        `<link id="theme-stylesheet" rel="stylesheet" href="{{THEME_CSS_URL}}">`,
-                        `<style id="theme-css">\n${themeCssReady}\n</style>`
-                    );
-                }
-
-                // 3. {{MODULE_CSS_LINKS}} → inline <style>-Blöcke
-                let moduleCssBlock = '';
-                requiredModules.forEach(modName => {
-                    const data = loadedFunctions[modName];
-                    if (data && data.css) {
-                        moduleCssBlock += `<style id="module-css-${modName}">\n${data.css}\n</style>\n`;
-                    }
-                });
-                tpl = tpl.replace('{{MODULE_CSS_LINKS}}', moduleCssBlock);
-
-                // 4. {{MODULE_JS_SCRIPTS}} → inline <script>-Blöcke
-                let moduleJsBlock = '';
-                requiredModules.forEach(modName => {
-                    const data = loadedFunctions[modName];
-                    if (data && data.js) {
-                        moduleJsBlock += `<script id="module-js-${modName}">\n${data.js}\n<\/script>\n`;
-                    }
-                });
-                tpl = tpl.replace('{{MODULE_JS_SCRIPTS}}', moduleJsBlock);
-
-                // 5. Im manuellen Modus: Folieninhalte direkt einsetzen
-                if (mode === 'manual') {
-                    const manualSlidesHtml = buildManualSlidesHtml();
-                    if (manualSlidesHtml) {
-                        tpl = tpl.replace('{{CONTENT_SLIDES}}', manualSlidesHtml);
-                    }
-                }
-
-                return tpl;
-            }
-
             // Build Prompt String
             let prompt = `Act as an Expert Frontend Developer and Presentation Designer.\n\n`;
             prompt += `AUFGABE: Erstelle eine interaktive Präsentation als **EINE EINZIGE HTML-DATEI** (Single-File). Sämtliches CSS und JavaScript muss direkt im <style> und <script> Block der HTML Datei integriert sein. Keine externen lokalen Dateien referenzieren (benutze NICHT die Tailwind Klassen).\n\n`;
@@ -1008,10 +917,9 @@
 
             // === SCHRITT 1: TEMPLATE ALS BASIS ===
             if (embedCode && typeof baseTemplateHtml !== 'undefined' && baseTemplateHtml) {
-                const embeddedTemplate = buildEmbeddedTemplate();
-                prompt += `### SCHRITT 1: HTML-VORLAGE (BASIS – CSS & JS bereits integriert)\n`;
-                prompt += `Nutze den folgenden Quelltext als strikte Basis. CSS (Layout, Theme, Module) und JavaScript der Module sind bereits inline eingebettet. Lösche oder verändere keine bestehenden Skripte, sondern ersetze NUR die verbleibenden Inhalts-Platzhalter.\n`;
-                prompt += `\`\`\`html\n${embeddedTemplate}\n\`\`\`\n\n`;
+                prompt += `### SCHRITT 1: HTML-VORLAGE (BASIS)\n`;
+                prompt += `Nutze den folgenden Quelltext als strikte Basis für die HTML-Datei. Lösche oder verändere keine bestehenden Skripte im Template, sondern ersetze NUR die Platzhalter.\n`;
+                prompt += `\`\`\`html\n${baseTemplateHtml}\n\`\`\`\n\n`;
             } else {
                 prompt += `### SCHRITT 1: HTML-VORLAGE LADEN (PFLICHT)\n`;
                 prompt += `BEVOR du irgendetwas generierst, MUSST du dein Web-Search-Tool nutzen und den vollständigen Quelltext der folgenden HTML-Vorlage abrufen:\n`;
@@ -1020,8 +928,12 @@
             }
 
             // === SCHRITT 1b: BASIS-LAYOUT CSS ===
-            // Im Embed-Modus bereits in buildEmbeddedTemplate() als <style id="layout-css"> eingebettet
-            if (!embedCode) {
+            if (embedCode && typeof baseLayoutCss !== 'undefined' && baseLayoutCss) {
+                prompt += `### SCHRITT 1b: BASIS-LAYOUT (CSS)\n`;
+                const layoutCssReady = baseLayoutCss.replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);
+                prompt += `Füge das folgende Basis-Layout-CSS zwingend in den <style>-Block der HTML-Datei ein (dies bildet die visuelle Grundstruktur):\n`;
+                prompt += `\`\`\`css\n${layoutCssReady}\n\`\`\`\n\n`;
+            } else {
                 prompt += `### SCHRITT 1b: BASIS-LAYOUT LADEN\n`;
                 prompt += `Lade zwingend die Basis-CSS-Datei über dein Web-Search-Tool ab und füge sie in den <style>-Block ein:\n`;
                 prompt += `${rawBaseUrl}css/layout.css\n\n`;
@@ -1031,9 +943,7 @@
             if (isCustomTheme) {
                 prompt += `### SCHRITT 2: THEME & METADATEN SETZEN\n`;
                 prompt += `WICHTIG: \n`;
-                if (!embedCode) {
-                    prompt += `- Ersetze in der Vorlage (falls vorhanden) {{THEME_CSS_URL}} durch ${loadedThemesUrls[design]}.\n`;
-                }
+                prompt += `- Ersetze in der Vorlage (falls vorhanden) {{THEME_CSS_URL}} durch ${loadedThemesUrls[design]}.\n`;
                 prompt += `- Ersetze {{PRESENTATION_TITLE}} mit dem Titel.\n`;
                 prompt += `- Ersetze {{THEME_CLASS}} mit: ${design}\n\n`;
 
@@ -1048,16 +958,17 @@
                 if (typeof loadedIconsUrls !== 'undefined' && Object.keys(loadedIconsUrls).length > 0) {
                     prompt += `### VERFÜGBARE GRAFIK-SYMBOLE (ICONS)\n`;
                     prompt += `Nutze für die visuelle Gestaltung der Folien (z.B. in Karten oder Listen) bevorzugt die folgenden Symbole. Binde sie mit einem <img> Tag ein:\n`;
-
+                    
                     for (const [name, url] of Object.entries(loadedIconsUrls)) {
                         prompt += `- Symbol "${name}": ${url}\n`;
                     }
                     prompt += `WICHTIG: Erfinde keine eigenen Icon-Pfade. Nutze nur die oben genannten URLs.\n\n`;
                 }
-
+                
                 if (embedCode && loadedThemes[design]) {
-                    // Theme-CSS ist bereits als <style id="theme-css"> in der Vorlage eingebettet
-                    prompt += `Das Theme-CSS ist bereits als <style id="theme-css"> in der Vorlage eingebettet. Passe nur Titel, Theme-Klasse und ggf. das Titelbild an.\n\n`;
+                    const themeCssReady = loadedThemes[design].replace(/\{\{GH_RAW_BASE\}\}/g, rawBaseUrl);
+                    prompt += `Ersetze im <style>-Block den :root { ... } Abschnitt mit folgendem CSS:\n`;
+                    prompt += `\`\`\`css\n${themeCssReady}\n\`\`\`\n\n`;
                 } else {
                     prompt += `Lade das Theme-CSS zwingend über dein Web-Search-Tool von folgender URL und ersetze damit den :root { ... } Abschnitt im <style>-Block:\n`;
                     prompt += `${loadedThemesUrls[design]}\n`;
@@ -1067,15 +978,10 @@
 
             // === SCHRITT 3: ZUSAMMENBAU DER MODULE (PLATZHALTER & SAMMLUNG) ===
             prompt += `SCHRITT 3: ZUSAMMENBAU DER MODULE (PLATZHALTER & SAMMLUNG)\n`;
-            if (embedCode) {
-                prompt += 'CSS und JavaScript aller Module sind bereits inline in der Vorlage eingebettet. Ersetze NUR die folgenden Inhalts-Platzhalter:\n';
-            } else {
-                prompt += 'Ich benötige für diese Präsentation verschiedene Module. Gehe beim Ersetzen der Platzhalter im Template exakt so vor:\n';
-                prompt += '1. {{MODULE_CSS_LINKS}}: Sammle die CSS-Links (<link rel="stylesheet" href="...">) ALLER unten geforderten Module und füge sie hier als Liste UNTEREINANDER ein. Schreibe niemals Styles direkt in die HTML-Slides!\n';
-                prompt += '2. {{MODULE_JS_SCRIPTS}}: Sammle die JavaScript-Dateien (<script src="..."><\\/script>) ALLER geforderten Module und füge sie hier UNTEREINANDER ein.\n';
-                prompt += '3. ';
-            }
-            prompt += 'Ordne die HTML-Blöcke der Folien (<div class="slide">...</div>) exakt in diese Platzhalter ein:\n';
+            prompt += 'Ich benötige für diese Präsentation verschiedene Module. Gehe beim Ersetzen der Platzhalter im Template exakt so vor:\n';
+            prompt += '1. {{MODULE_CSS_LINKS}}: Sammle die CSS-Links (<link rel="stylesheet" href="...">) ALLER unten geforderten Module und füge sie hier als Liste UNTEREINANDER ein. Schreibe niemals Styles direkt in die HTML-Slides!\n';
+            prompt += '2. {{MODULE_JS_SCRIPTS}}: Sammle die JavaScript-Dateien (<script src="..."><\\/script>) ALLER geforderten Module und füge sie hier UNTEREINANDER ein.\n';
+            prompt += '3. Ordne die HTML-Blöcke der Folien (<div class="slide">...</div>) exakt in diese Platzhalter ein:\n';
             prompt += '- {{TITELFOLIE_CONTENT}}: HTML der Titelfolie.\n';
             prompt += '- {{AGENDA_CONTENT}}: HTML der Agenda-Folie.\n';
             prompt += '- {{CONTENT_SLIDES}}: Sammle das HTML ALLER Inhalts-, Interaktions- und Kapitelfolien in der logischen Reihenfolge und füge sie hier UNTEREINANDER ein.\n';
@@ -1084,6 +990,12 @@
             prompt += 'WICHTIG: Wenn ein Platzhalter nicht benötigt wird, entferne ihn einfach (leer lassen).\n\n';
             prompt += `Ersetze in der Vorlage die agendaData-Variable mit den konfigurierten Agenda-Punkten:\n`;
             prompt += `\`\`\`javascript\nvar agendaData = [\n  // Fülle hier die Agenda-Punkte ein basierend auf den oben angegebenen Agenda/Kapitel-Daten\n  // Format: { time:'HH:MM – HH:MM', title:'Titel', desc:'Beschreibung', isBreak:false }\n];\n\`\`\`\n\n`;
+
+            const includeSettings = document.getElementById('chkFeatureSettings').checked;
+            const includeProtocol = document.getElementById('chkFeatureProtocol').checked;
+            const includeState = document.getElementById('chkFeatureState').checked;
+            const includeDisclaimer = document.getElementById('chkDisclaimerState').checked;
+            const includeChapters = document.getElementById('chkFeatureChapters').checked;
 
             // === SCHRITT 4: PFLICHTFUNKTIONEN ===
             prompt += `### SCHRITT 4: PFLICHTFUNKTIONEN (aus Vorlage übernehmen oder ergänzen)\n`;
@@ -1104,9 +1016,8 @@
                 if (embedCode && data) {
                     if (data.md)   out += `--- ANLEITUNG (${folderName}.md) ---\n${data.md}\n\n`;
                     if (data.html) out += `--- HTML TEMPLATE (${folderName}.html) ---\n\`\`\`html\n${data.html}\n\`\`\`\n\n`;
-                    if (data.js || data.css) {
-                        out += `(CSS & JS für dieses Modul sind bereits im <head> der Vorlage eingebettet – nicht erneut einbinden.)\n\n`;
-                    }
+                    if (data.js)   out += `--- JAVASCRIPT (${folderName}.js) ---\n\`\`\`javascript\n${data.js}\n\`\`\`\n\n`;
+                    if (data.css)  out += `--- CSS STYLES (${folderName}.css) ---\n\`\`\`css\n${data.css}\n\`\`\`\n\n`;
                 } else {
                     out += `- Lade diese Dateien zwingend über dein Web-Search-Tool und wende sie exakt an:\n`;
                     out += `  - ${libBaseUrl}${folderName}/${folderName}.md\n`;
@@ -1154,45 +1065,24 @@
 
             } else {
                 const topic = document.getElementById('manualTopic').value;
-                if (embedCode) {
-                    prompt += `### SCHRITT 6: INHALT FERTIGSTELLEN (Manueller Modus)\n`;
-                    prompt += `Generelles Thema: "${topic}".\n`;
-                    prompt += `Die Folienstruktur ist bereits in der Vorlage eingebaut:\n`;
-                    prompt += `- Folien mit Funktionen enthalten das HTML-Template der jeweiligen Funktion – befülle es mit den passenden Inhalten laut dem Kommentar direkt vor der Folie.\n`;
-                    prompt += `- Folien ohne Funktion sind als KI-Platzhalter-Kommentare markiert – ersetze jeden Kommentar durch eine vollständige Folie im stdfolie-Format.\n`;
-                    prompt += `- Beachte die .md-Anleitungen der eingesetzten Module (siehe SCHRITT 5).\n\n`;
+                prompt += `### SCHRITT 6: INHALT EINBAUEN (Manueller Modus)\n`;
+                prompt += `Generelles Thema: "${topic}".\n`;
+                prompt += `Ersetze die Beispiel-Folien der Vorlage durch folgende vorgegebene Inhalte:\n`;
 
-                    // appendModuleContent nur für Funktionen die auf Folien eingesetzt wurden
-                    const usedFuncs = new Set();
-                    document.querySelectorAll('.slide-function-select').forEach(sel => {
-                        if (sel.value) usedFuncs.add(sel.value);
-                    });
-                    if (usedFuncs.size > 0) {
-                        prompt += `### ANLEITUNGEN FÜR EINGESETZTE FUNKTIONEN\n`;
-                        usedFuncs.forEach(funcName => {
-                            prompt += appendModuleContent(`FUNKTIONS-DETAILS: ${funcName}`, funcName, "Befülle das bereits eingebaute HTML-Template dieser Funktion mit passenden Inhalten.");
-                        });
-                    }
-                } else {
-                    prompt += `### SCHRITT 6: INHALT EINBAUEN (Manueller Modus)\n`;
-                    prompt += `Generelles Thema: "${topic}".\n`;
-                    prompt += `Ersetze die Beispiel-Folien der Vorlage durch folgende vorgegebene Inhalte:\n`;
-
-                    const slideInputs = document.querySelectorAll('.manual-slide-input');
-                    const slideFuncs = document.querySelectorAll('.slide-function-select');
-                    slideInputs.forEach((input, index) => {
-                        const contentVal = input.value.trim();
-                        const funcVal = slideFuncs[index].value;
-                        if(contentVal !== "" || funcVal !== "") {
-                            prompt += `\n[Folie ${index + 1}]:\n${contentVal}\n`;
-                            if(funcVal !== "") {
-                                prompt += `-> Binde auf dieser Folie zwingend die Zusatzfunktion "${funcVal}" ein!\n`;
-                                prompt += appendModuleContent(`FUNKTIONS-DETAILS: ${funcVal}`, funcVal, "Bauanleitung für diese spezifische Folie.");
-                            }
+                const slideInputs = document.querySelectorAll('.manual-slide-input');
+                const slideFuncs = document.querySelectorAll('.slide-function-select');
+                slideInputs.forEach((input, index) => {
+                    const contentVal = input.value.trim();
+                    const funcVal = slideFuncs[index].value;
+                    if(contentVal !== "" || funcVal !== "") {
+                        prompt += `\n[Folie ${index + 1}]:\n${contentVal}\n`;
+                        if(funcVal !== "") {
+                            prompt += `-> Binde auf dieser Folie zwingend die Zusatzfunktion "${funcVal}" ein!\n`;
+                            prompt += appendModuleContent(`FUNKTIONS-DETAILS: ${funcVal}`, funcVal, "Bauanleitung für diese spezifische Folie.");
                         }
-                    });
-                    prompt += `\n`;
-                }
+                    }
+                });
+                prompt += `\n`;
             }
 
             prompt += `\nGebe mir NUR den validen, vollständigen HTML Quellcode der gesamten Seite zurück, der direkt im Browser geöffnet werden kann.`;
